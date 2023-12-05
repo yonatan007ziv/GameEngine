@@ -1,6 +1,5 @@
 ﻿
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 
 namespace OpenGLRenderer.Models;
 

@@ -8,7 +8,7 @@ internal class GameObject : IDisposable
 	public List<Mesh> Meshes { get; set; } = new List<Mesh>();
 
 	public GameObject(Vector3 origin)
-    {
+	{
 		Position = origin;
 	}
 
@@ -25,6 +25,8 @@ internal class GameObject : IDisposable
 	}
 	*/
 
+	public void Delete()
+		=> Dispose();
 	public void Dispose()
 	{
 		Meshes.ForEach(m => m.Dispose());

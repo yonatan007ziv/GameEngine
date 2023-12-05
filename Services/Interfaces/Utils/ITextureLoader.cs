@@ -4,5 +4,5 @@ namespace OpenGLRenderer.Services.Interfaces.Utils;
 
 internal interface ITextureLoader
 {
-    Texture LoadTexture(string path);
+	Texture LoadTexture(string path);
 }

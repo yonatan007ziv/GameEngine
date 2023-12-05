@@ -21,11 +21,15 @@ internal class CustomMesh : Mesh
 		modelData.VertexArray.Bind();
 		shaderProgram.Bind();
 
-		GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // temp 5 hard coded
+		GL.DrawElements(PrimitiveType.Triangles, modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
+		modelData.VertexArray.Unbind();
 	}
+
+	public void Delete()
+		=> Dispose();
 
 	public override void Dispose()
 	{
-		throw new NotImplementedException();
+		
 	}
 }

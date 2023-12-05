@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenGLRenderer.Services;
-using OpenGLRenderer.Services.Implementations.OpenGL;
+using OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 
 namespace OpenGLRenderer;
 

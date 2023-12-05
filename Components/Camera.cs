@@ -22,7 +22,7 @@ internal class Camera
 	private readonly float height;
 
 	public Camera(GameObject parent, int sensitivitySpeed, int movementSpeed, float width, float height)
-    {
+	{
 		this.parent = parent;
 		this.sensitivitySpeed = sensitivitySpeed;
 		this.movementSpeed = movementSpeed;
@@ -37,6 +37,8 @@ internal class Camera
 
 	private void UpdateKeyboard(KeyboardState keyboardState, float deltaTime)
 	{
+		float movementSpeed = this.movementSpeed * (keyboardState.IsKeyDown(Keys.LeftShift) ? 2.5f : 1);
+
 		if (keyboardState.IsKeyDown(Keys.W))
 			parent.Position += front * movementSpeed * deltaTime;
 
@@ -48,20 +50,24 @@ internal class Camera
 
 		if (keyboardState.IsKeyDown(Keys.D))
 			parent.Position += right * movementSpeed * deltaTime;
+
+		if (keyboardState.IsKeyDown(Keys.E))
+			parent.Position += up * movementSpeed * deltaTime;
+
+		if (keyboardState.IsKeyDown(Keys.Q))
+			parent.Position -= up * movementSpeed * deltaTime;
 	}
 
 	private void UpdateMatrices()
 	{
 		ViewMatrix = Matrix4.LookAt(parent.Position, parent.Position + front, up);
-		ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90), width / height, 0.1f, 25);
+		ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90), width / height, 0.1f, 100);
 	}
 
-	public void Update(MouseState mouseState, KeyboardState keyboardState, FrameEventArgs args)
+	public void Update(MouseState mouseState, KeyboardState keyboardState, float deltaTime)
 	{
-		float deltaTime = (float)args.Time;
-
 		UpdateMouse(mouseState, deltaTime);
 		UpdateKeyboard(keyboardState, deltaTime);
 		UpdateMatrices();
-    }
+	}
 }

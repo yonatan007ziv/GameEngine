@@ -1,7 +1,6 @@
 ﻿using OpenGLRenderer.Components;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenGLRenderer.OpenGL.Meshes;
 
@@ -16,12 +15,12 @@ internal class PrimitiveTriangle : Mesh
 		: base(parent)
 	{
 		vb = new VertexBuffer();
-		vb.WriteBuffer<float>(new float[]
+		vb.WriteBuffer(new float[]
 		{
 			v1.X + parent.Position.X, v1.Y + parent.Position.Y, v1.Z + parent.Position.Z,
 			v2.X + parent.Position.X, v2.Y + parent.Position.Y, v2.Z + parent.Position.Z,
 			v3.X + parent.Position.X, v3.Y + parent.Position.Y, v3.Z + parent.Position.Z,
-		}, BufferUsageHint.StaticDraw);
+		});
 
 		ib = new IndexBuffer();
 		ib.WriteBuffer(new uint[] { 0, 1, 2 });
@@ -36,6 +35,7 @@ internal class PrimitiveTriangle : Mesh
 		shaderProgram.Bind();
 
 		GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+		va.Unbind();
 	}
 
 	public void Delete()

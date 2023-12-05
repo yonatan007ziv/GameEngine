@@ -2,12 +2,12 @@
 
 internal class ShaderSource
 {
-    private readonly string shaderSource;
+	private readonly string shaderSource;
 
-    public ShaderSource(string shaderName)
-    {
+	public ShaderSource(string shaderName)
+	{
 		shaderSource = LoadSource(shaderName);
-    }
+	}
 
 	private string LoadSource(string shaderName)
 	{
@@ -17,6 +17,6 @@ internal class ShaderSource
 
 	public string GetSource()
 	{
-        return shaderSource;
+		return shaderSource;
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using OpenGLRenderer.Services.Implementations.OpenGL;
+using OpenGLRenderer.Services.Implementations.OpenGL.ModelImporters;
+using OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 using OpenGLRenderer.Services.Implementations.Utils;
 using OpenGLRenderer.Services.Interfaces.OpenGL;
 using OpenGLRenderer.Services.Interfaces.Utils;
@@ -12,7 +13,7 @@ internal class ServiceRegisterer
 
 
 	public ServiceRegisterer(IServiceCollection collection)
-    {
+	{
 		this.collection = collection;
 	}
 
@@ -22,8 +23,15 @@ internal class ServiceRegisterer
 
 		collection.AddSingleton<ISettingsManager, MockSettingsManager>();
 		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
-		collection.AddSingleton<IModelImporter, ModelImporter>();
+
+		RegisterModelImporters();
 
 		return collection.BuildServiceProvider();
+	}
+
+	private void RegisterModelImporters()
+	{
+		collection.AddSingleton<IModelImporter, ModelImporter>();
+		collection.AddSingleton<ObjModelImporter>();
 	}
 }
