@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace OpenGLRenderer.OpenGL;

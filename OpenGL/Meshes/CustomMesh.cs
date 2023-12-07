@@ -30,6 +30,6 @@ internal class CustomMesh : Mesh
 
 	public override void Dispose()
 	{
-		
+
 	}
 }

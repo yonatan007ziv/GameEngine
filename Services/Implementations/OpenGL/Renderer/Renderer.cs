@@ -1,4 +1,5 @@
-﻿using OpenGLRenderer.Components;
+﻿using Microsoft.Extensions.Logging;
+using OpenGLRenderer.Components;
 using OpenGLRenderer.Models;
 using OpenGLRenderer.OpenGL;
 using OpenGLRenderer.OpenGL.Meshes;
@@ -12,7 +13,10 @@ namespace OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 
 internal class Renderer : BaseRenderer
 {
+	private readonly ILogger logger;
 	private readonly IModelImporter importer;
+	private Scene currentScene;
+
 
 	// Temps
 	private float yAngle;
@@ -20,12 +24,16 @@ internal class Renderer : BaseRenderer
 	private List<GameObject> sceneObjects = new List<GameObject>();
 	private ShaderProgram shader;
 
-	public Renderer(ISettingsManager settingsManager, IModelImporter importer)
+	public Renderer(ILogger logger, ISettingsManager settingsManager, IModelImporter importer, IFactory<Scene> sceneFactory)
 		: base(settingsManager)
 	{
+		this.logger = logger;
 		this.importer = importer;
 
 		CenterWindow(new Vector2i(width, height));
+
+		// Does not deal with OpenGL logic yet due to OpenGL not binding at this time.
+		currentScene = sceneFactory.Create();
 	}
 
 	protected override void RenderFrame(float deltaTime)
@@ -36,7 +44,7 @@ internal class Renderer : BaseRenderer
 
 	protected override void UpdateFrame(float deltaTime)
 	{
-		Console.WriteLine("Fps: {0}", 1000 / deltaTime);
+		// logger.LogDebug("Fps: {0}", 1000 / deltaTime);
 
 		float sin = (float)Math.Sin(2.5 * GLFW.GetTime()) / 2 + .5f;
 		float cos = (float)Math.Cos(2.5 * GLFW.GetTime()) / 2 + .5f;
@@ -61,21 +69,25 @@ internal class Renderer : BaseRenderer
 
 	protected override void Load()
 	{
+		logger.LogInformation("Loading Renderer...");
+
+		// currentScene.Load("MainScene.scene");
+
 		shader = new ShaderProgram(new ShaderSource("DefVertex.glsl"), new ShaderSource("DefFragment.glsl"));
 
 		sceneObjects.Add(new GameObject(Vector3.Zero));
 		sceneObjects.Add(new GameObject(Vector3.Zero));
 
-		//ModelData pyramidData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Pyramid.obj");
-		//ModelData humanData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Human1.obj");
+		ModelData pyramidData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Pyramid.obj");
+		ModelData humanData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Human1.obj");
 		ModelData dragonData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\smaug.obj");
-		//ModelData bugattiData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Bugatti1.obj");
-		//ModelData treeData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Tree1.obj");
+		ModelData bugattiData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Bugatti1.obj");
+		ModelData treeData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Tree1.obj");
 
 		camera = new Camera(sceneObjects[0], 10, 10, width, height);
 
 		//_ = new CustomMesh(sceneObjects[1], pyramidData, shader);
-		//_ = new CustomMesh(sceneObjects[1], humanData, shader);
+		_ = new CustomMesh(sceneObjects[1], humanData, shader);
 		_ = new CustomMesh(sceneObjects[1], dragonData, shader);
 		//_ = new CustomMesh(sceneObjects[1], bugattiData, shader);
 		//_ = new CustomMesh(sceneObjects[1], treeData, shader);

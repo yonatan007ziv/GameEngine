@@ -4,6 +4,8 @@ namespace OpenGLRenderer.Models;
 
 internal readonly struct ModelData : IDisposable
 {
+	// for physics collision calculations maybe add a list of vector3 representing vertices
+
 	public readonly VertexArray VertexArray { get; }
 	public readonly VertexBuffer VertexBuffer { get; }
 	public readonly IndexBuffer IndexBuffer { get; }

@@ -26,7 +26,7 @@ internal class VertexArray : IDisposable
 	}
 
 	public void Delete()
-	=> Dispose();
+		=> Dispose();
 
 	public void Dispose()
 	{

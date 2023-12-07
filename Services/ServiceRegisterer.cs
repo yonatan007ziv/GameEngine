@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenGLRenderer.Models;
 using OpenGLRenderer.Services.Implementations.OpenGL.ModelImporters;
 using OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 using OpenGLRenderer.Services.Implementations.Utils;
@@ -21,8 +23,15 @@ internal class ServiceRegisterer
 	{
 		collection.AddSingleton<Renderer>();
 
+		collection.AddSingleton<ILogger, ConsoleLogger>();
+
+		collection.AddSingleton<IFileReader<string>, StringFileReader>();
 		collection.AddSingleton<ISettingsManager, MockSettingsManager>();
 		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
+		collection.AddTransient<IPerformanceAnalyzer, PerformanceAnalyzer>();
+
+		// Factories
+		collection.AddSingleton<IFactory<Scene>, SceneFactory>();
 
 		RegisterModelImporters();
 

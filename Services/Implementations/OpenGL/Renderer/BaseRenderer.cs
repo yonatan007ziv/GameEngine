@@ -1,7 +1,4 @@
-﻿using OpenGLRenderer.Components;
-using OpenGLRenderer.Models;
-using OpenGLRenderer.OpenGL.Meshes;
-using OpenGLRenderer.OpenGL;
+﻿using OpenGLRenderer.Models;
 using OpenGLRenderer.Services.Interfaces.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -15,8 +12,8 @@ internal abstract class BaseRenderer : GameWindow
 	protected int height;
 
 	public BaseRenderer(ISettingsManager settingsManager)
-        : base(new GameWindowSettings(), new NativeWindowSettings())
-    {
+		: base(new GameWindowSettings(), new NativeWindowSettings())
+	{
 		SettingsModel settings = settingsManager.LoadSettings();
 		width = settings.ScreenDimensions.X;
 		height = settings.ScreenDimensions.Y;
