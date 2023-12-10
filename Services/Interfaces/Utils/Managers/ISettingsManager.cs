@@ -1,6 +1,6 @@
 ﻿using OpenGLRenderer.Models;
 
-namespace OpenGLRenderer.Services.Interfaces.Utils;
+namespace OpenGLRenderer.Services.Interfaces.Utils.Managers;
 
 internal interface ISettingsManager
 {

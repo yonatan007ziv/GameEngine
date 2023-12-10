@@ -39,27 +39,27 @@ internal class Camera
 		float movementSpeed = this.movementSpeed * (keyboardState.IsKeyDown(Keys.LeftShift) ? 2.5f : 1);
 
 		if (keyboardState.IsKeyDown(Keys.W))
-			parent.Position += front * movementSpeed * deltaTime;
+			parent.Transform.Position += front * movementSpeed * deltaTime;
 
 		if (keyboardState.IsKeyDown(Keys.A))
-			parent.Position -= right * movementSpeed * deltaTime;
+			parent.Transform.Position -= right * movementSpeed * deltaTime;
 
 		if (keyboardState.IsKeyDown(Keys.S))
-			parent.Position -= front * movementSpeed * deltaTime;
+			parent.Transform.Position -= front * movementSpeed * deltaTime;
 
 		if (keyboardState.IsKeyDown(Keys.D))
-			parent.Position += right * movementSpeed * deltaTime;
+			parent.Transform.Position += right * movementSpeed * deltaTime;
 
 		if (keyboardState.IsKeyDown(Keys.E))
-			parent.Position += up * movementSpeed * deltaTime;
+			parent.Transform.Position += up * movementSpeed * deltaTime;
 
 		if (keyboardState.IsKeyDown(Keys.Q))
-			parent.Position -= up * movementSpeed * deltaTime;
+			parent.Transform.Position -= up * movementSpeed * deltaTime;
 	}
 
 	private void UpdateMatrices()
 	{
-		ViewMatrix = Matrix4.LookAt(parent.Position, parent.Position + front, up);
+		ViewMatrix = Matrix4.LookAt(parent.Transform.Position, parent.Transform.Position + front, up);
 		ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90), width / height, 0.1f, 100);
 	}
 

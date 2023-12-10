@@ -7,12 +7,12 @@ internal class VertexArray : IDisposable
 	public int Id { get; private set; }
 	public VertexAttribPointerType Type { get; private set; }
 
-	public VertexArray(VertexBuffer vb, IndexBuffer ib)
+	public VertexArray(VertexBuffer vb, IndexBuffer ib, TextureBuffer tb)
 	{
 		Id = GL.GenVertexArray();
 		Type = VertexAttribPointerType.Float;
 
-		LinkVbIb(vb, ib, new VertexArrayLayout());
+		Link(vb, ib, tb, new VertexArrayLayout());
 	}
 
 	public void Bind()
@@ -34,15 +34,19 @@ internal class VertexArray : IDisposable
 		GL.DeleteVertexArray(Id);
 	}
 
-	private void LinkVbIb(VertexBuffer vb, IndexBuffer ib, VertexArrayLayout layout)
+	private void Link(VertexBuffer vb, IndexBuffer ib, TextureBuffer tb, VertexArrayLayout layout)
 	{
 		Bind();
 
 		vb.Bind();
 		ib.Bind();
+		tb.Bind();
 
-		GL.VertexAttribPointer(0, 3, Type, false, 12, 0);
+		GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 5, IntPtr.Zero);
 		GL.EnableVertexAttribArray(0);
+
+		GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, sizeof(float) * 5, (IntPtr)(sizeof(float) * 3));
+		GL.EnableVertexAttribArray(1);
 
 		Unbind();
 	}

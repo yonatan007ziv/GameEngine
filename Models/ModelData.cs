@@ -9,13 +9,15 @@ internal readonly struct ModelData : IDisposable
 	public readonly VertexArray VertexArray { get; }
 	public readonly VertexBuffer VertexBuffer { get; }
 	public readonly IndexBuffer IndexBuffer { get; }
+	public readonly TextureBuffer TextureBuffer { get; }
 	public readonly int IndicesCount { get; }
 
-	public ModelData(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int indicesCount)
+	public ModelData(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, TextureBuffer textureBuffer, int indicesCount)
 	{
-		VertexArray = new VertexArray(vertexBuffer, indexBuffer);
+		VertexArray = new VertexArray(vertexBuffer, indexBuffer, textureBuffer);
 		VertexBuffer = vertexBuffer;
 		IndexBuffer = indexBuffer;
+		TextureBuffer = textureBuffer;
 		IndicesCount = indicesCount;
 	}
 

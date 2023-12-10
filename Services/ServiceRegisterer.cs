@@ -1,18 +1,22 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OpenGLRenderer.Components;
 using OpenGLRenderer.Models;
 using OpenGLRenderer.Services.Implementations.OpenGL.ModelImporters;
 using OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 using OpenGLRenderer.Services.Implementations.Utils;
+using OpenGLRenderer.Services.Implementations.Utils.Factories;
+using OpenGLRenderer.Services.Implementations.Utils.Managers;
 using OpenGLRenderer.Services.Interfaces.OpenGL;
 using OpenGLRenderer.Services.Interfaces.Utils;
+using OpenGLRenderer.Services.Interfaces.Utils.Factories;
+using OpenGLRenderer.Services.Interfaces.Utils.Managers;
 
 namespace OpenGLRenderer.Services;
 
 internal class ServiceRegisterer
 {
 	private readonly IServiceCollection collection;
-
 
 	public ServiceRegisterer(IServiceCollection collection)
 	{
@@ -26,21 +30,37 @@ internal class ServiceRegisterer
 		collection.AddSingleton<ILogger, ConsoleLogger>();
 
 		collection.AddSingleton<IFileReader<string>, StringFileReader>();
-		collection.AddSingleton<ISettingsManager, MockSettingsManager>();
 		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
 		collection.AddTransient<IPerformanceAnalyzer, PerformanceAnalyzer>();
 
-		// Factories
-		collection.AddSingleton<IFactory<Scene>, SceneFactory>();
-
+		RegisterManagers();
+		RegisterFactories();
 		RegisterModelImporters();
 
 		return collection.BuildServiceProvider();
+	}
+
+	private void RegisterManagers()
+	{
+		collection.AddSingleton<IResourceManager, ContentResourceManager>();
+		// collection.AddSingleton<IResourceManager, EmbeddedResourceManager>(); // Test in the Future
+
+		collection.AddSingleton<ISettingsManager, MockSettingsManager>();
+		collection.AddSingleton<IShaderManager, ShaderManager>();
+		collection.AddSingleton<ISceneManager, SceneManager>();
+		collection.AddSingleton<IGameObjectManager, GameObjectManager>();
+	}
+
+	private void RegisterFactories()
+	{
+		collection.AddSingleton<IFactory<Scene>, SceneFactory>();
+		collection.AddSingleton<IFactory<GameObject>, GameObjectFactory>();
 	}
 
 	private void RegisterModelImporters()
 	{
 		collection.AddSingleton<IModelImporter, ModelImporter>();
 		collection.AddSingleton<ObjModelImporter>();
+		collection.AddSingleton<FbxModelImporter>();
 	}
 }

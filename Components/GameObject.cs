@@ -1,34 +1,20 @@
-﻿using OpenTK.Mathematics;
+﻿namespace OpenGLRenderer.Components;
 
-namespace OpenGLRenderer.Components;
-
-internal class GameObject : IDisposable
+internal class GameObject
 {
-	public Vector3 Position { get; set; }
-	public List<Mesh> Meshes { get; set; } = new List<Mesh>();
+	public int Id { get; }
 
-	public GameObject(Vector3 origin)
+	public Transform Transform { get; }
+	public Mesh? Mesh;
+
+	public GameObject(int id)
 	{
-		Position = origin;
+		Id = id;
+		Transform = new Transform();
 	}
 
-	public void Draw()
+	public void Render()
 	{
-		Meshes.ForEach(m => m.Draw());
-	}
-
-
-	/*
-	public Matrix4 RotateBy(???)
-	{
-		
-	}
-	*/
-
-	public void Delete()
-		=> Dispose();
-	public void Dispose()
-	{
-		Meshes.ForEach(m => m.Dispose());
+		Mesh?.Render(Transform);
 	}
 }

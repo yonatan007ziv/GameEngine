@@ -2,21 +2,16 @@
 
 internal class ShaderSource
 {
-	private readonly string shaderSource;
+	public string Source { get; private set; }
 
 	public ShaderSource(string shaderName)
 	{
-		shaderSource = LoadSource(shaderName);
+		Source = LoadSource(shaderName);
 	}
 
 	private string LoadSource(string shaderName)
 	{
-		string path = @"D:\Code\VS Community\OpenGLRenderer\OpenGL\Shaders";
+		string path = @"D:\Code\VS Community\OpenGLRenderer\Resources\Shaders";
 		return File.ReadAllText(Path.Combine(path, shaderName));
-	}
-
-	public string GetSource()
-	{
-		return shaderSource;
 	}
 }

@@ -20,12 +20,12 @@ internal abstract class GLBuffer : IDisposable
 		GL.BufferData(Target, data.Length * Marshal.SizeOf<T>(), data, usage);
 	}
 
-	public void Bind()
+	public virtual void Bind()
 	{
 		GL.BindBuffer(Target, Id);
 	}
 
-	public void Unbind()
+	public virtual void Unbind()
 	{
 		GL.BindBuffer(Target, 0);
 	}

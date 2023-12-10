@@ -1,8 +1,9 @@
 ﻿using OpenGLRenderer.Models;
-using OpenGLRenderer.Services.Interfaces.Utils;
+using OpenGLRenderer.Services.Interfaces.Utils.Managers;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using System.Runtime.InteropServices;
 
 namespace OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 
@@ -24,6 +25,13 @@ internal abstract class BaseRenderer : GameWindow
 	new protected abstract void UpdateFrame(float deltaTime);
 	new protected abstract void Load();
 	new protected abstract void Unload();
+	protected abstract void GLDebugCallback(string msg, DebugSeverity severity);
+
+	private void GLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+	{
+		string msg = Marshal.PtrToStringAnsi(message, length);
+		GLDebugCallback(msg, severity);
+	}
 
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
@@ -54,6 +62,9 @@ internal abstract class BaseRenderer : GameWindow
 	protected override void OnLoad()
 	{
 		base.OnLoad();
+
+		GL.DebugMessageCallback(GLDebugCallback, IntPtr.Zero);
+		GL.Enable(EnableCap.DebugOutput);
 		GL.Enable(EnableCap.DepthTest);
 		Load();
 	}

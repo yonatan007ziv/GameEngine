@@ -1,5 +1,5 @@
 ﻿using OpenGLRenderer.Models;
-using OpenGLRenderer.Services.Interfaces.Utils;
+using OpenGLRenderer.Services.Interfaces.Utils.Managers;
 
 namespace OpenGLRenderer.Services.Implementations.Utils;
 
@@ -9,7 +9,7 @@ internal class MockSettingsManager : ISettingsManager
 	{
 		return new SettingsModel()
 		{
-			ScreenDimensions = new OpenTK.Mathematics.Vector2i(700, 700),
+			ScreenDimensions = new OpenTK.Mathematics.Vector2i(1000, 1000),
 			VSync = true
 		};
 	}

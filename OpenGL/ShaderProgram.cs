@@ -13,8 +13,8 @@ internal class ShaderProgram : IDisposable
 		int vId = GL.CreateShader(ShaderType.VertexShader);
 		int fId = GL.CreateShader(ShaderType.FragmentShader);
 
-		GL.ShaderSource(vId, vShader.GetSource());
-		GL.ShaderSource(fId, fShader.GetSource());
+		GL.ShaderSource(vId, vShader.Source);
+		GL.ShaderSource(fId, fShader.Source);
 
 		GL.CompileShader(vId);
 		GL.CompileShader(fId);
@@ -28,6 +28,7 @@ internal class ShaderProgram : IDisposable
 		GL.DeleteShader(fId);
 	}
 
+	[Obsolete("Don't use outside the ShaderManager")]
 	public void Bind()
 	{
 		GL.UseProgram(Id);

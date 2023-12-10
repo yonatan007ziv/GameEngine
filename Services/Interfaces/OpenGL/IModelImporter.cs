@@ -4,5 +4,5 @@ namespace OpenGLRenderer.Services.Interfaces.OpenGL;
 
 internal interface IModelImporter
 {
-	ModelData ImportModel(string path);
+	ModelData ImportModel(string model);
 }

@@ -1,19 +1,30 @@
-﻿using OpenGLRenderer.Services.Interfaces.Utils;
+﻿using OpenGLRenderer.Components;
 
 namespace OpenGLRenderer.Models;
 
 internal class Scene
 {
-	private readonly IFileReader<string> fileReader;
+	private List<GameObject> gameObjects;
 
-	public Scene(IFileReader<string> fileReader)
+	public Scene(SceneData sceneData)
 	{
-		this.fileReader = fileReader;
+		gameObjects = new List<GameObject>();
+		// ImportData(sceneData);
 	}
 
-	public void Load(string sceneName)
-	{
-		if (!fileReader.ReadFile(sceneName, out string[] lines)) { }
+	//private void ImportData(SceneData sceneData)
+	//{
 
+	//}
+
+	public void RenderScene(float deltaTime = 0) // deltaTime usage?
+	{
+		foreach (GameObject gameObject in gameObjects)
+			gameObject.Render();
+	}
+
+	public void UpdateScene(float deltaTime = 0) // deltaTime usage?
+	{
+		// collisions and such
 	}
 }

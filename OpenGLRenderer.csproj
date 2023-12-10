@@ -5,7 +5,21 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Models\Bugatti1.obj" />
+    <None Remove="Resources\Models\Human1.obj" />
+    <None Remove="Resources\Models\HumanTestNotTriangles.obj" />
+    <None Remove="Resources\Models\Pyramid.obj" />
+    <None Remove="Resources\Models\smaug.obj" />
+    <None Remove="Resources\Models\Tree1.obj" />
+    <None Remove="Resources\Scenes\MainScene.scene" />
+    <None Remove="Resources\Shaders\DefFragment.glsl" />
+    <None Remove="Resources\Shaders\DefVertex.glsl" />
+    <None Remove="Resources\Textures\Dirt.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
@@ -15,17 +29,36 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="OpenGL\Shaders\" />
-    <Folder Include="Resources\Scenes\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="OpenGL\Shaders\DefFragment.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="OpenGL\Shaders\DefVertex.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="Resources\Models\Bugatti1.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\Human1.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\HumanTestNotTriangles.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\Pyramid.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\smaug.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\Tree1.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Scenes\MainScene.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\DefFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\DefVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\Dirt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

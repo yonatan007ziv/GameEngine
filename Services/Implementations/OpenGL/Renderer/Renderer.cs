@@ -3,65 +3,62 @@ using OpenGLRenderer.Components;
 using OpenGLRenderer.Models;
 using OpenGLRenderer.OpenGL;
 using OpenGLRenderer.OpenGL.Meshes;
+using OpenGLRenderer.Resources.Shaders.Managed;
 using OpenGLRenderer.Services.Interfaces.OpenGL;
-using OpenGLRenderer.Services.Interfaces.Utils;
+using OpenGLRenderer.Services.Interfaces.Utils.Managers;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 
 internal class Renderer : BaseRenderer
 {
 	private readonly ILogger logger;
+	private readonly IGameObjectManager gameObjectManager;
+	private readonly IShaderManager shaderManager;
 	private readonly IModelImporter importer;
-	private Scene currentScene;
-
+	private readonly ISceneManager sceneManager;
 
 	// Temps
-	private float yAngle;
 	private Camera camera;
 	private List<GameObject> sceneObjects = new List<GameObject>();
 	private ShaderProgram shader;
 
-	public Renderer(ILogger logger, ISettingsManager settingsManager, IModelImporter importer, IFactory<Scene> sceneFactory)
+	public Renderer(ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IModelImporter importer, ISceneManager sceneManager)
 		: base(settingsManager)
 	{
 		this.logger = logger;
+		this.gameObjectManager = gameObjectManager;
+		this.shaderManager = shaderManager;
 		this.importer = importer;
+		this.sceneManager = sceneManager;
 
 		CenterWindow(new Vector2i(width, height));
-
-		// Does not deal with OpenGL logic yet due to OpenGL not binding at this time.
-		currentScene = sceneFactory.Create();
 	}
 
 	protected override void RenderFrame(float deltaTime)
 	{
+		sceneManager.CurrentScene.RenderScene(deltaTime);
+
+		shaderManager.BindShader(shader);
+
 		foreach (GameObject gameObject in sceneObjects)
-			gameObject.Draw();
+			gameObject.Render();
 	}
 
 	protected override void UpdateFrame(float deltaTime)
 	{
-		// logger.LogDebug("Fps: {0}", 1000 / deltaTime);
+		sceneManager.CurrentScene.UpdateScene(deltaTime);
 
-		float sin = (float)Math.Sin(2.5 * GLFW.GetTime()) / 2 + .5f;
-		float cos = (float)Math.Cos(2.5 * GLFW.GetTime()) / 2 + .5f;
-		int cL = GL.GetUniformLocation(shader.Id, "Color");
-		GL.Uniform3(cL, sin, cos, sin);
+		// logger.LogDebug("Fps: {fps}", 1 / deltaTime);
 
-		Matrix4 model = Matrix4.CreateRotationY(yAngle);
-		// yAngle += deltaTime;
-		int modelLoc = GL.GetUniformLocation(shader.Id, "model");
-		GL.UniformMatrix4(modelLoc, true, ref model);
-
+		int shaderId = shaderManager.ActiveShader.Id;
 		Matrix4 view = camera.ViewMatrix;
-		int viewLoc = GL.GetUniformLocation(shader.Id, "view");
+		int viewLoc = GL.GetUniformLocation(shaderId, "view");
 		GL.UniformMatrix4(viewLoc, true, ref view);
 
 		Matrix4 projection = camera.ProjectionMatrix;
-		int projectionLoc = GL.GetUniformLocation(shader.Id, "projection");
+		int projectionLoc = GL.GetUniformLocation(shaderId, "projection");
 		GL.UniformMatrix4(projectionLoc, true, ref projection);
 
 		camera.Update(MouseState, KeyboardState, deltaTime);
@@ -70,33 +67,54 @@ internal class Renderer : BaseRenderer
 	protected override void Load()
 	{
 		logger.LogInformation("Loading Renderer...");
+		sceneManager.LoadScene("MainScene.scene");
 
-		// currentScene.Load("MainScene.scene");
+		shader = new DefaultShader();
+		shaderManager.RegisterShader(shader);
+		shaderManager.BindShader(shader);
 
-		shader = new ShaderProgram(new ShaderSource("DefVertex.glsl"), new ShaderSource("DefFragment.glsl"));
+		sceneObjects.Add(gameObjectManager.CreateGameObject());
+		sceneObjects.Add(gameObjectManager.CreateGameObject());
+		sceneObjects.Add(gameObjectManager.CreateGameObject());
 
-		sceneObjects.Add(new GameObject(Vector3.Zero));
-		sceneObjects.Add(new GameObject(Vector3.Zero));
-
-		ModelData pyramidData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Pyramid.obj");
-		ModelData humanData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Human1.obj");
-		ModelData dragonData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\smaug.obj");
-		ModelData bugattiData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Bugatti1.obj");
-		ModelData treeData = importer.ImportModel(@"D:\Code\VS Community\OpenGLRenderer\Resources\Tree1.obj");
+		//ModelData pyramidData = importer.ImportModel("Pyramid.obj");
+		//ModelData humanData = importer.ImportModel("Human1.obj");
+		ModelData dragonData = importer.ImportModel("smaug.obj");
+		ModelData bugattiData = importer.ImportModel("Bugatti1.obj");
+		//ModelData treeData = importer.ImportModel("Tree1.obj");
 
 		camera = new Camera(sceneObjects[0], 10, 10, width, height);
 
-		//_ = new CustomMesh(sceneObjects[1], pyramidData, shader);
-		_ = new CustomMesh(sceneObjects[1], humanData, shader);
-		_ = new CustomMesh(sceneObjects[1], dragonData, shader);
-		//_ = new CustomMesh(sceneObjects[1], bugattiData, shader);
-		//_ = new CustomMesh(sceneObjects[1], treeData, shader);
+		sceneObjects[0].Transform.Position = new Vector3(0, 5, 10);
+
+		//sceneObjects[0].Mesh = new CustomMesh(pyramidData);
+		//sceneObjects[0].Mesh = new CustomMesh(humanData);
+		sceneObjects[1].Mesh = new CustomMesh(dragonData, shaderManager);
+		sceneObjects[2].Mesh = new CustomMesh(bugattiData, shaderManager);
+		// sceneObjects[0].Mesh = new CustomMesh(treeData);
 	}
 
 	protected override void Unload()
 	{
-		shader.Delete();
-		foreach (GameObject gameObject in sceneObjects)
-			gameObject.Delete();
+		shaderManager.DisposeAll();
+	}
+
+	protected override void GLDebugCallback(string msg, DebugSeverity severity)
+	{
+		switch (severity)
+		{
+			case DebugSeverity.DebugSeverityLow:
+				logger.LogInformation("GL-INFO: {errorCode}", msg);
+				break;
+			case DebugSeverity.DebugSeverityMedium:
+				logger.LogError("GL-ERROR: {errorCode}", msg);
+				break;
+			case DebugSeverity.DebugSeverityHigh:
+				logger.LogCritical("GL-CRITICAL: {errorCode}", msg);
+				break;
+			case DebugSeverity.DebugSeverityNotification:
+				logger.LogTrace("GL-TRACE: {errorCode}", msg);
+				break;
+		}
 	}
 }
