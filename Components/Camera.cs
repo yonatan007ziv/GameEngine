@@ -60,7 +60,7 @@ internal class Camera
 	private void UpdateMatrices()
 	{
 		ViewMatrix = Matrix4.LookAt(parent.Transform.Position, parent.Transform.Position + front, up);
-		ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90), width / height, 0.1f, 100);
+		ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90), width / height, 0.1f, 10000);
 	}
 
 	public void Update(MouseState mouseState, KeyboardState keyboardState, float deltaTime)

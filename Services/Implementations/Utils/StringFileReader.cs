@@ -41,4 +41,30 @@ internal class StringFileReader : IFileReader<string>
 		lines = Array.Empty<string>();
 		return false;
 	}
+
+	public bool ReadFile(string filePath, out string file)
+	{
+		try
+		{
+			performanceAnalyzer.StartSegment(0);
+
+			file = File.ReadAllText(filePath);
+
+			performanceAnalyzer.StopSegment(0);
+			performanceAnalyzer.Log();
+
+			return true;
+		}
+		catch (FileNotFoundException)
+		{
+			logger.LogError("File at {filePath} not found", filePath);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("Error loading file at {filePath}\nError: {exceptionString}", filePath, ex.ToString());
+		}
+
+		file = "";
+		return false;
+	}
 }

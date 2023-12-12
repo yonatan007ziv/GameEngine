@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using OpenGLRenderer.Components;
 using OpenGLRenderer.Models;
+using OpenGLRenderer.OpenGL;
 using OpenGLRenderer.Services.Implementations.OpenGL.ModelImporters;
 using OpenGLRenderer.Services.Implementations.OpenGL.Renderer;
 using OpenGLRenderer.Services.Implementations.Utils;
@@ -31,6 +32,7 @@ internal class ServiceRegisterer
 
 		collection.AddSingleton<IFileReader<string>, StringFileReader>();
 		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
+		collection.AddSingleton<IShaderBank, ShaderBank>();
 		collection.AddTransient<IPerformanceAnalyzer, PerformanceAnalyzer>();
 
 		RegisterManagers();
@@ -46,13 +48,15 @@ internal class ServiceRegisterer
 		// collection.AddSingleton<IResourceManager, EmbeddedResourceManager>(); // Test in the Future
 
 		collection.AddSingleton<ISettingsManager, MockSettingsManager>();
-		collection.AddSingleton<IShaderManager, ShaderManager>();
+		collection.AddSingleton<IShaderManager, ShaderManager>(provider => new ShaderManager(provider.GetRequiredService<IShaderBank>()));
 		collection.AddSingleton<ISceneManager, SceneManager>();
 		collection.AddSingleton<IGameObjectManager, GameObjectManager>();
 	}
 
 	private void RegisterFactories()
 	{
+		collection.AddSingleton<IFactory<string, string, ShaderProgram>, ShaderProgramFactory>();
+		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
 		collection.AddSingleton<IFactory<Scene>, SceneFactory>();
 		collection.AddSingleton<IFactory<GameObject>, GameObjectFactory>();
 	}

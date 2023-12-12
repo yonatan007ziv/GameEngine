@@ -26,7 +26,7 @@ internal class ContentResourceManager : IResourceManager
 			CacheResources(subDirectory, Path.Combine(depth, subDirectory.Name));
 	}
 
-	public string[] LoadResource(string resource)
+	public string[] LoadResourceLines(string resource)
 	{
 		if (!ResourceExists(resource))
 			throw new Exception();
@@ -37,6 +37,18 @@ internal class ContentResourceManager : IResourceManager
 		throw new Exception();
 	}
 
+	public string LoadResourceString(string resource)
+	{
+		if (!ResourceExists(resource))
+			throw new Exception();
+
+		if (stringFileReader.ReadFile(cachedResources[resource], out string file))
+			return file;
+
+		throw new Exception();
+	}
+
 	public bool ResourceExists(string resource)
 		=> cachedResources.ContainsKey(resource);
+
 }

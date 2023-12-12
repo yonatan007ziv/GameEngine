@@ -6,6 +6,8 @@ internal class Scene
 {
 	private List<GameObject> gameObjects;
 
+	private Camera sceneCamera; // temp obviously
+
 	public Scene(SceneData sceneData)
 	{
 		gameObjects = new List<GameObject>();
@@ -20,7 +22,7 @@ internal class Scene
 	public void RenderScene(float deltaTime = 0) // deltaTime usage?
 	{
 		foreach (GameObject gameObject in gameObjects)
-			gameObject.Render();
+			gameObject.Render(sceneCamera);
 	}
 
 	public void UpdateScene(float deltaTime = 0) // deltaTime usage?

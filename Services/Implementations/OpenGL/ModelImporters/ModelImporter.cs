@@ -22,7 +22,7 @@ internal class ModelImporter : IModelImporter
 		if (!resourceManager.ResourceExists(model))
 			throw new Exception();
 
-		string[] data = resourceManager.LoadResource(model);
+		string[] data = resourceManager.LoadResourceLines(model);
 
 		string type = model.Split('.')[1];
 		if (type == "obj")

@@ -34,6 +34,7 @@ internal class ShaderProgram : IDisposable
 		GL.UseProgram(Id);
 	}
 
+	[Obsolete("Don't use outside the ShaderManager")]
 	public void Unbind()
 	{
 		GL.UseProgram(0);

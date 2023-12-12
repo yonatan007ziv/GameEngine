@@ -4,7 +4,9 @@ namespace OpenGLRenderer.Services.Interfaces.Utils.Managers;
 
 internal interface IShaderManager
 {
+	public IShaderBank ShaderBank { get; }
 	public ShaderProgram ActiveShader { get; }
+
 	void RegisterShader(ShaderProgram shader);
 	void UnregisterShader(ShaderProgram shader);
 	void BindShader(ShaderProgram shader);

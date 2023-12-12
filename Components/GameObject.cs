@@ -1,4 +1,6 @@
-﻿namespace OpenGLRenderer.Components;
+﻿using OpenGLRenderer.OpenGL.Meshes;
+
+namespace OpenGLRenderer.Components;
 
 internal class GameObject
 {
@@ -6,6 +8,7 @@ internal class GameObject
 
 	public Transform Transform { get; }
 	public Mesh? Mesh;
+	public GizmosBoxMesh? Box;
 
 	public GameObject(int id)
 	{
@@ -13,8 +16,9 @@ internal class GameObject
 		Transform = new Transform();
 	}
 
-	public void Render()
+	public void Render(Camera camera)
 	{
-		Mesh?.Render(Transform);
+		Mesh?.Render(Transform, camera);
+		Box?.Render(Transform, camera);
 	}
 }

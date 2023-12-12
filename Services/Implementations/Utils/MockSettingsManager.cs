@@ -9,8 +9,8 @@ internal class MockSettingsManager : ISettingsManager
 	{
 		return new SettingsModel()
 		{
-			ScreenDimensions = new OpenTK.Mathematics.Vector2i(1000, 1000),
-			VSync = true
+			ScreenDimensions = new OpenTK.Mathematics.Vector2i(1920 / 2, 1080 / 2),
+			VSync = false
 		};
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using OpenGLRenderer.OpenGL;
-using OpenGLRenderer.Resources.Shaders.Managed;
+using OpenGLRenderer.Services.Interfaces.Utils;
 using OpenGLRenderer.Services.Interfaces.Utils.Managers;
 
 namespace OpenGLRenderer.Services.Implementations.Utils.Managers;
@@ -7,14 +7,17 @@ namespace OpenGLRenderer.Services.Implementations.Utils.Managers;
 internal class ShaderManager : IShaderManager
 {
 	private readonly List<ShaderProgram> _registeredShaders = new List<ShaderProgram>();
+
+	public IShaderBank ShaderBank { get; private set; }
 	public ShaderProgram ActiveShader { get; private set; }
 
-    public ShaderManager()
-    {
-		
+	public ShaderManager(IShaderBank shaderBank)
+	{
+		ShaderBank = shaderBank;
+		ActiveShader = null!;
 	}
 
-    public void RegisterShader(ShaderProgram shader)
+	public void RegisterShader(ShaderProgram shader)
 	{
 		if (!IsShaderRegistered(shader))
 			_registeredShaders.Add(shader);
@@ -35,8 +38,8 @@ internal class ShaderManager : IShaderManager
 		{
 #pragma warning disable CS0618 // Permitted Usage
 			shader.Bind();
-
 #pragma warning restore CS0618
+
 			ActiveShader = shader;
 		}
 	}
@@ -48,8 +51,11 @@ internal class ShaderManager : IShaderManager
 
 		if (ActiveShader == shader)
 		{
+#pragma warning disable CS0618 // Permitted Usage
 			shader.Unbind();
-			ActiveShader = null;
+#pragma warning restore CS0618
+
+			BindShader(ShaderBank.GetDefaultShader());
 		}
 	}
 

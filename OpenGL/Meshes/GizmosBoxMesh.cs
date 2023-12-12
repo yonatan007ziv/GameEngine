@@ -6,15 +6,55 @@ using OpenTK.Mathematics;
 
 namespace OpenGLRenderer.OpenGL.Meshes;
 
-internal class CustomMesh : Mesh
+internal class GizmosBoxMesh : Mesh
 {
-	private readonly ModelData modelData;
+	private ModelData modelData;
 	private readonly IShaderManager shaderManager;
 
-	public CustomMesh(ModelData modelData, IShaderManager shaderManager)
+	public GizmosBoxMesh(Box box, IShaderManager shaderManager)
 	{
-		this.modelData = modelData;
 		this.shaderManager = shaderManager;
+
+		modelData = new ModelData(
+			new VertexBuffer(),
+			new IndexBuffer(),
+			new TextureBuffer(),
+			box,
+			8);
+
+		float[] positions = box.JoinAll();
+		// Mock Texture Coordinates
+		float[] newArray = positions.SelectMany((value, index) => index % 3 == 2 ? new[] { value, 0.0f, 1.0f } : new[] { value }).ToArray();
+		modelData.VertexBuffer.WriteBuffer(newArray);
+
+		uint[] indexBuffer = new uint[]
+		{
+
+			// right
+			1, 5,
+			5, 6,
+			6, 2,
+			2, 1,
+
+			// left
+			0, 4,
+			4, 7,
+			7, 3,
+			3, 0,
+
+			// front
+			0, 1,
+			1, 2,
+			2, 3,
+			3, 0,
+
+			// back
+			4, 7,
+			7, 6,
+			6, 5,
+			5, 4,
+		};
+		modelData.IndexBuffer.WriteBuffer(indexBuffer);
 	}
 
 	public override void Render(Transform transform, Camera camera)
@@ -34,7 +74,7 @@ internal class CustomMesh : Mesh
 		Matrix4 view = camera.ViewMatrix;
 		Matrix4 projection = camera.ProjectionMatrix;
 
-		shaderManager.BindShader(shaderManager.ShaderBank.GetDefaultShader());
+		shaderManager.BindShader(shaderManager.ShaderBank.GetGizmosShader());
 
 		int modelLoc = GL.GetUniformLocation(shaderManager.ActiveShader.Id, "model");
 		GL.UniformMatrix4(modelLoc, true, ref modelMatrix);
@@ -47,7 +87,7 @@ internal class CustomMesh : Mesh
 		GL.UniformMatrix4(projectionLoc, true, ref projection);
 
 		modelData.VertexArray.Bind();
-		GL.DrawElements(PrimitiveType.Triangles, modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
+		GL.DrawElements(PrimitiveType.Lines, 32, DrawElementsType.UnsignedInt, 0);
 		modelData.VertexArray.Unbind();
 	}
 }

@@ -1,4 +1,5 @@
-﻿using OpenGLRenderer.Models;
+﻿using OpenGLRenderer.Components;
+using OpenGLRenderer.Models;
 using OpenGLRenderer.OpenGL;
 using OpenGLRenderer.Services.Interfaces.Utils;
 using System.Numerics;
@@ -12,7 +13,6 @@ internal class ObjModelImporter
 	public ObjModelImporter(IPerformanceAnalyzer performanceAnalyzer)
 	{
 		this.performanceAnalyzer = performanceAnalyzer;
-
 		this.performanceAnalyzer.Logging = true;
 	}
 
@@ -48,6 +48,11 @@ internal class ObjModelImporter
 					AddFaceIndexes(fVertexIndex, fTextureIndex, fNormalIndex, temp[0], temp[i + 1], temp[i + 2]);
 		}
 
+		// Bounding Box Setup
+		FindXExtreme(v, out float right, out float left);
+		FindYExtreme(v, out float top, out float bottom);
+		FindZExtreme(v, out float front, out float back);
+
 		// populate vertices and indexes
 		float[] positionsArr = VertexListToVertexBuffer(v);
 
@@ -80,6 +85,7 @@ internal class ObjModelImporter
 		VertexBuffer vb = new VertexBuffer();
 		IndexBuffer ib = new IndexBuffer();
 		TextureBuffer tb = new TextureBuffer();
+		Box boundingBox = new Box(left, right, top, bottom, front, back);
 
 		vb.WriteBuffer(vertexBuffer);
 		ib.WriteBuffer(vertexIndexArr);
@@ -88,7 +94,52 @@ internal class ObjModelImporter
 		performanceAnalyzer.StopSegment(0);
 		performanceAnalyzer.Log();
 
-		return new ModelData(vb, ib, tb, vertexIndexArr.Length);
+		return new ModelData(vb, ib, tb, boundingBox, vertexIndexArr.Length);
+	}
+
+	private void FindXExtreme(List<Vector3> v, out float right, out float left)
+	{
+		float rightMost = float.NegativeInfinity, leftMost = float.PositiveInfinity;
+		foreach (Vector3 v2 in v)
+		{
+			if (v2.X < leftMost)
+				leftMost = v2.X;
+			if (v2.X > rightMost)
+				rightMost = v2.X;
+		}
+
+		right = rightMost;
+		left = leftMost;
+	}
+
+	private void FindYExtreme(List<Vector3> v, out float top, out float bottom)
+	{
+		float topMost = float.NegativeInfinity, bottomMost = float.PositiveInfinity;
+		foreach (Vector3 v2 in v)
+		{
+			if (v2.Y < bottomMost)
+				bottomMost = v2.Y;
+			if (v2.Y > topMost)
+				topMost = v2.Y;
+		}
+
+		top = topMost;
+		bottom = bottomMost;
+	}
+
+	private void FindZExtreme(List<Vector3> v, out float front, out float back)
+	{
+		float frontMost = float.NegativeInfinity, backMost = float.PositiveInfinity;
+		foreach (Vector3 v2 in v)
+		{
+			if (v2.Z < backMost)
+				backMost = v2.Z;
+			if (v2.Z > frontMost)
+				frontMost = v2.Z;
+		}
+
+		front = frontMost;
+		back = backMost;
 	}
 
 	private static float[] VertexListToVertexBuffer(List<Vector3> vectors)
