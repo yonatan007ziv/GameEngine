@@ -30,13 +30,11 @@ internal class OpenGLShaderProgram : IShaderProgram
 		GL.DeleteShader(fId);
 	}
 
-	[Obsolete("Don't use outside the IShaderManager")]
 	public void Bind()
 	{
 		GL.UseProgram(Id);
 	}
 
-	[Obsolete("Don't use outside the IShaderManager")]
 	public void Unbind()
 	{
 		GL.UseProgram(0);

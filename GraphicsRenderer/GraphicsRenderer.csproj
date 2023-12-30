@@ -12,6 +12,7 @@
     <None Remove="Resources\Models\Human1.obj" />
     <None Remove="Resources\Models\HumanTestNotTriangles.obj" />
     <None Remove="Resources\Models\leed.obj" />
+    <None Remove="Resources\Models\Plane.obj" />
     <None Remove="Resources\Models\Pyramid.obj" />
     <None Remove="Resources\Models\smaug.obj" />
     <None Remove="Resources\Models\Tree1.obj" />
@@ -22,11 +23,18 @@
     <None Remove="Resources\Shaders\GizmosFragment.glsl" />
     <None Remove="Resources\Shaders\GizmosVertex.glsl" />
     <None Remove="Resources\Shaders\TexturedFragment.glsl" />
+    <None Remove="Resources\Textures\BackgroundTest.png" />
     <None Remove="Resources\Textures\Blue.png" />
     <None Remove="Resources\Textures\Dirt.png" />
     <None Remove="Resources\Textures\Green.png" />
     <None Remove="Resources\Textures\Red.png" />
     <None Remove="Resources\Textures\TrexTexture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Models\Plane.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +80,9 @@
     <Content Include="Resources\Shaders\TexturedFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\BackgroundTest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\Blue.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -98,7 +109,6 @@
 
   <ItemGroup>
     <Folder Include="Components\Direct11\" />
-    <Folder Include="Services\Implementations\Renderer\Direct11\" />
   </ItemGroup>
 
 </Project>
