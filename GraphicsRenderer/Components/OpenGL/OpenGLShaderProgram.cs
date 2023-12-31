@@ -1,6 +1,7 @@
 ﻿using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.Shared;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace GraphicsRenderer.Components.OpenGL;
 
@@ -43,5 +44,11 @@ internal class OpenGLShaderProgram : IShaderProgram
 	public void Dispose()
 	{
 		GL.DeleteProgram(Id);
+	}
+
+	public void SetMatrix4Uniform(ref Matrix4 value, string uniformName)
+	{
+		int loc = GL.GetUniformLocation(Id, uniformName);
+		GL.UniformMatrix4(loc, false, ref value);
 	}
 }

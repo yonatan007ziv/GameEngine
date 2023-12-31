@@ -6,22 +6,21 @@ internal class GameObject
 {
 	public int Id { get; }
 
-	// change to material later on to encapsulate textures?
-	public IShaderProgram Shader { get; set; }
+	public Material Material { get; set; }
 	public Transform Transform { get; }
 	public IMesh? Mesh;
 	public IMesh? Gizmos;
 
-	public GameObject(IShaderProgram defaultShader, int id)
+	public GameObject(Material material, int id)
 	{
-		Shader = defaultShader;
+		Material = material;
 		Id = id;
 		Transform = new Transform();
 	}
 
 	public void Render(ICamera camera)
 	{
-		Mesh?.Render(Transform, camera, Shader);
-		Gizmos?.Render(Transform, camera, Shader);
+		Mesh?.Render(Transform, camera, Material);
+		Gizmos?.Render(Transform, camera, Material);
 	}
 }

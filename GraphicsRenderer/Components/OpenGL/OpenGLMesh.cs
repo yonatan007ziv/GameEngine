@@ -16,7 +16,7 @@ internal class OpenGLMesh : IMesh
 		this.modelData = modelData;
 	}
 
-	public void Render(Transform transform, ICamera camera, IShaderProgram shader)
+	public void Render(Transform transform, ICamera camera, Material material)
 	{
 		Vector3 openTKPosition = transform.Position.ToOpenTK();
 
@@ -34,21 +34,20 @@ internal class OpenGLMesh : IMesh
 		Matrix4 view = camera.ViewMatrix;
 		Matrix4 projection = camera.ProjectionMatrix;
 
-		shader.Bind();
+		material.Bind();
 
-		int modelLoc = GL.GetUniformLocation(shader.Id, "model");
+		int modelLoc = GL.GetUniformLocation(material.ShaderProgram.Id, "model");
 		GL.UniformMatrix4(modelLoc, true, ref modelMatrix);
 
-		int viewLoc = GL.GetUniformLocation(shader.Id, "view");
+		int viewLoc = GL.GetUniformLocation(material.ShaderProgram.Id, "view");
 		GL.UniformMatrix4(viewLoc, true, ref view);
 
-		int projectionLoc = GL.GetUniformLocation(shader.Id, "projection");
+		int projectionLoc = GL.GetUniformLocation(material.ShaderProgram.Id, "projection");
 		GL.UniformMatrix4(projectionLoc, true, ref projection);
 
 		modelData.VertexArray.Bind();
 		GL.DrawElements(PrimitiveType.Triangles, modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
 		modelData.VertexArray.Unbind();
-
-		shader.Unbind();
+		material.Unbind();
 	}
 }

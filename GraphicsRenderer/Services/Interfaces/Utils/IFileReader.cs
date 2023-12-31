@@ -2,6 +2,5 @@
 
 internal interface IFileReader<T>
 {
-	bool ReadFile(string filePath, out T[] separatedFile);
-	bool ReadFile(string filePath, out T entireFile);
+	bool ReadFile(string filePath, out T? result);
 }

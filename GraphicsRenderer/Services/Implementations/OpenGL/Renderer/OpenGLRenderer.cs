@@ -1,13 +1,15 @@
-﻿using GraphicsRenderer.Components.Extensions;
-using GraphicsRenderer.Components.Interfaces;
+﻿using GraphicsRenderer.Components.Interfaces;
+using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
+using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using GraphicsRenderer.Services.Interfaces.Renderer;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
@@ -17,10 +19,11 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	public static OpenGLRenderer Instance; // TEMP!
 
 	private readonly IInputProvider inputProvider;
+	private readonly IFactory<string, ITextureBuffer> textureFactory;
 	private readonly ILogger logger;
 	private readonly IGameObjectManager gameObjectManager;
 	private readonly IShaderManager shaderManager;
-	private readonly IModelImporter importer;
+	private readonly IFactory<string, ModelData> modelFactory;
 	private readonly ISceneManager sceneManager;
 
 	// Temps
@@ -29,16 +32,17 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	private GameObject trex;
 	private GameObject plane;
 
-	public OpenGLRenderer(IInputProvider inputProvider, ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IModelImporter importer, ISceneManager sceneManager)
+	public OpenGLRenderer(IInputProvider inputProvider, IFactory<string, ITextureBuffer> textureFactory, ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IFactory<string, ModelData> modelFactory, ISceneManager sceneManager)
 		: base(settingsManager)
 	{
 		Instance = this;
 
 		this.inputProvider = inputProvider;
+		this.textureFactory = textureFactory;
 		this.logger = logger;
 		this.gameObjectManager = gameObjectManager;
 		this.shaderManager = shaderManager;
-		this.importer = importer;
+		this.modelFactory = modelFactory;
 		this.sceneManager = sceneManager;
 
 		LockMouse(true);
@@ -56,17 +60,17 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	{
 		// sceneManager.CurrentScene.UpdateScene(deltaTime);
 
-
-		// trex.Transform.Position = new System.Numerics.Vector3((float)MathHelper.Cos(GLFW.GetTime()), 0, (float)MathHelper.Sin(GLFW.GetTime())) * 25;
+		trex.Transform.Position = new Vector3((float)OpenTK.Mathematics.MathHelper.Cos(GLFW.GetTime()), 0, (float)OpenTK.Mathematics.MathHelper.Sin(GLFW.GetTime())) * 10;
+		trex.Transform.Scale = new Vector3((float)OpenTK.Mathematics.MathHelper.Sin(GLFW.GetTime()) * 0.5f + 0.75f);
 		movementController.UpdateInput(inputProvider, deltaTime);
-		camera.Update(MouseState.Position.ToNumerics(), deltaTime);
+		camera.Update(inputProvider, deltaTime);
 	}
 
 	protected override void Load()
 	{
 		logger.LogInformation("Loading Renderer...");
-
 		shaderManager.RegisterShaders();
+
 		// sceneManager.LoadScene("MainScene.scene");
 
 		GameObject player = gameObjectManager.CreateGameObject();
@@ -75,12 +79,12 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 		movementController = new MovementController(player);
 
 		trex = gameObjectManager.CreateGameObject();
-		trex.Mesh = new OpenGLMesh(importer.ImportModel("TREX.obj"));
-		trex.Shader = shaderManager.GetShader("Textured");
+		trex.Mesh = new OpenGLMesh(modelFactory.Create("TREX.obj"));
+		trex.Material = new Material(shaderManager.GetShader("Textured"), textureFactory.Create("TrexTexture.png"));
 
 		plane = gameObjectManager.CreateGameObject();
-		plane.Mesh = new OpenGLMesh(importer.ImportModel("Plane.obj"));
-		plane.Shader = shaderManager.GetShader("Textured");
+		plane.Mesh = new OpenGLMesh(modelFactory.Create("Plane.obj"));
+		plane.Material = new Material(shaderManager.GetShader("Textured"), textureFactory.Create("BackgroundTest.png"));
 		plane.Transform.Scale = new Vector3(100, 0, 100);
 	}
 

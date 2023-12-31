@@ -7,10 +7,12 @@ internal class ContentResourceManager : IResourceManager
 {
 	private readonly Dictionary<string, string> resourceNamePathDictionary = new Dictionary<string, string>();
 	private readonly IFileReader<string> stringFileReader;
+	private readonly IFileReader<FileStream> fileStreamFileReader;
 
-	public ContentResourceManager(IFileReader<string> stringFileReader)
+	public ContentResourceManager(IFileReader<string> stringFileReader, IFileReader<FileStream> fileStreamFileReader)
 	{
 		this.stringFileReader = stringFileReader;
+		this.fileStreamFileReader = fileStreamFileReader;
 
 		DiscoverResources(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), @"Resources\")), @"Resources\");
 	}
@@ -24,17 +26,16 @@ internal class ContentResourceManager : IResourceManager
 			DiscoverResources(subDirectory, Path.Combine(depth, subDirectory.Name));
 	}
 
-	public string[] LoadResourceLines(string resource)
+	public FileStream LoadResourceFileStream(string resource)
 	{
 		if (!ResourceExists(resource))
 			throw new Exception();
 
-		if (stringFileReader.ReadFile(resourceNamePathDictionary[resource], out string[] lines))
-			return lines;
+		if (fileStreamFileReader.ReadFile(resourceNamePathDictionary[resource], out FileStream stream))
+			return stream;
 
 		throw new Exception();
 	}
-
 	public string LoadResourceString(string resource)
 	{
 		if (!ResourceExists(resource))
@@ -44,6 +45,10 @@ internal class ContentResourceManager : IResourceManager
 			return file;
 
 		throw new Exception();
+	}
+	public string[] LoadResourceLines(string resource)
+	{
+		return LoadResourceString(resource).Split('\n');
 	}
 
 	public bool ResourceExists(string resource)

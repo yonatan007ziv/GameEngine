@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using GraphicsRenderer.Services.Interfaces.InputProviders;
+using OpenTK.Mathematics;
 
 namespace GraphicsRenderer.Components.Interfaces;
 
@@ -11,5 +12,5 @@ internal interface ICamera
 	Matrix4 ViewMatrix { get; }
 	Matrix4 ProjectionMatrix { get; }
 
-	void Update(System.Numerics.Vector2 mousePos, float deltaTime);
+	void Update(IInputProvider inputProvider, float deltaTime);
 }

@@ -27,6 +27,7 @@
     <None Remove="Resources\Textures\Blue.png" />
     <None Remove="Resources\Textures\Dirt.png" />
     <None Remove="Resources\Textures\Green.png" />
+    <None Remove="Resources\Textures\MissingTexture.png" />
     <None Remove="Resources\Textures\Red.png" />
     <None Remove="Resources\Textures\TrexTexture.png" />
   </ItemGroup>
@@ -90,6 +91,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Green.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\MissingTexture.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Red.png">

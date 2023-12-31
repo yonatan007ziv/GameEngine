@@ -1,6 +1,7 @@
 ﻿using GraphicsRenderer.Components.Extensions;
 using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.Shared;
+using GraphicsRenderer.Services.Interfaces.InputProviders;
 using System.Numerics;
 
 namespace GraphicsRenderer.Components.OpenGL;
@@ -31,8 +32,8 @@ internal class OpenGLCamera : ICamera
 		Vector2 deltaPos = mousePos - prevMousePos;
 		prevMousePos = mousePos;
 
-		yaw += deltaPos.X * deltaTime;
-		pitch -= deltaPos.Y * deltaTime;
+		yaw += deltaPos.X * SensitivitySpeed * deltaTime;
+		pitch -= deltaPos.Y * SensitivitySpeed * deltaTime;
 
 		if (pitch > 89)
 			pitch = 89;
@@ -56,9 +57,9 @@ internal class OpenGLCamera : ICamera
 		ProjectionMatrix = OpenTK.Mathematics.Matrix4.CreatePerspectiveFieldOfView(OpenTK.Mathematics.MathHelper.DegreesToRadians(90), (float)Width / Height, 0.1f, 10000);
 	}
 
-	public void Update(Vector2 mousePos, float deltaTime)
+	public void Update(IInputProvider inputProvider, float deltaTime)
 	{
-		UpdateMouse(mousePos, deltaTime);
+		UpdateMouse(inputProvider.MousePosition, deltaTime);
 		UpdateVectors();
 	}
 }

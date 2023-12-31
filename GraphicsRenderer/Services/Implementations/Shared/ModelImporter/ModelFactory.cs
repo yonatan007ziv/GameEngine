@@ -4,20 +4,20 @@ using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 
-internal class ModelImporter : IModelImporter
+internal class ModelFactory : IFactory<string, ModelData>
 {
 	private readonly IResourceManager resourceManager;
 	private readonly ObjModelImporter objModelImporter;
 	private readonly FbxModelImporter fbxModelImporter;
 
-	public ModelImporter(IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
+	public ModelFactory(IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
 	{
 		this.resourceManager = resourceManager;
 		this.objModelImporter = objModelImporter;
 		this.fbxModelImporter = fbxModelImporter;
 	}
 
-	public ModelData ImportModel(string model)
+	public ModelData Create(string model)
 	{
 		if (!resourceManager.ResourceExists(model))
 			throw new Exception();

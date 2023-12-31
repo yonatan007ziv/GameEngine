@@ -16,7 +16,7 @@ internal class MovementController
 	{
 		float movementSpeed = inputProvider.IsKeyDown(KeyboardButton.LSHIFT) ? 25 : 10;
 
-        if (inputProvider.IsKeyDown(KeyboardButton.W))
+		if (inputProvider.IsKeyDown(KeyboardButton.W))
 			parentTransform.Position += parentTransform.Front * movementSpeed * deltaTime;
 
 		if (inputProvider.IsKeyDown(KeyboardButton.A))

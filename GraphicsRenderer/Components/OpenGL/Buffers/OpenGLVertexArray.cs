@@ -1,35 +1,30 @@
 ﻿using GraphicsRenderer.Components.Interfaces.Buffers;
+using GraphicsRenderer.Components.Shared.Data;
 using OpenTK.Graphics.OpenGL4;
+using System.Runtime.InteropServices;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
 internal class OpenGLVertexArray : IVertexArray, IDisposable
 {
-	private readonly ITextureBuffer tb;
-
 	public int Id { get; private set; }
 	public VertexAttribPointerType Type { get; private set; }
 
-	public OpenGLVertexArray(IVertexBuffer vb, IIndexBuffer ib, ITextureBuffer tb)
+	public OpenGLVertexArray(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrtibutesLayout)
 	{
 		Id = GL.GenVertexArray();
 		Type = VertexAttribPointerType.Float;
 
-		this.tb = tb;
-
-		AttributeLayout[] arr = new AttributeLayout[] { new AttributeLayout(VertexAttribPointerType.Float, 3), new AttributeLayout(VertexAttribPointerType.Float, 2) };
-		Link(vb, ib, arr);
+		Link(vb, ib, arrtibutesLayout);
 	}
 
 	public void Bind()
 	{
-		tb.Bind();
 		GL.BindVertexArray(Id);
 	}
 
 	public void Unbind()
 	{
-		tb.Unbind();
 		GL.BindVertexArray(0);
 	}
 
@@ -43,47 +38,46 @@ internal class OpenGLVertexArray : IVertexArray, IDisposable
 	{
 		Bind();
 
+		ib.Bind();
 		vb.Bind();
 
 		// Calculate Stride Between Attributes
 		IntPtr totalStride = IntPtr.Zero;
 		foreach (AttributeLayout layout in arrayLayout)
-		{
-			// Add Other Types Later
-			if (layout.Type == VertexAttribPointerType.Float)
-				totalStride += sizeof(float) * layout.Size;
-		}
+			totalStride += Marshal.SizeOf(layout.Type) * layout.Size;
 
 		IntPtr offset = IntPtr.Zero;
 		for (int i = 0; i < arrayLayout.Length; i++)
 		{
-			GL.VertexAttribPointer(i, arrayLayout[i].Size, arrayLayout[i].Type, false, sizeof(float) * 5, offset);
+			GL.VertexAttribPointer(i, arrayLayout[i].Size, SystemToOpenTKType(arrayLayout[i].Type), false, totalStride.ToInt32(), offset);
 			GL.EnableVertexAttribArray(i);
 
-			if (arrayLayout[i].Type == VertexAttribPointerType.Float)
-				offset += sizeof(float) * arrayLayout[i].Size;
+			offset += Marshal.SizeOf(arrayLayout[i].Type) * arrayLayout[i].Size;
 		}
-
-		//GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 5, IntPtr.Zero);
-		//GL.EnableVertexAttribArray(0);
-		//
-		//GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, sizeof(float) * 5, (IntPtr)(sizeof(float) * 3));
-		//GL.EnableVertexAttribArray(1);
-
-		ib.Bind();
 
 		Unbind();
 	}
-}
 
-internal struct AttributeLayout
-{
-	public AttributeLayout(VertexAttribPointerType type, int size)
+	private VertexAttribPointerType SystemToOpenTKType(Type type)
 	{
-		Type = type;
-		Size = size;
+		if (type == typeof(sbyte))
+			return VertexAttribPointerType.Byte;
+		else if (type == typeof(byte))
+			return VertexAttribPointerType.UnsignedByte;
+		else if (type == typeof(short))
+			return VertexAttribPointerType.Short;
+		else if (type == typeof(ushort))
+			return VertexAttribPointerType.UnsignedShort;
+		else if (type == typeof(int))
+			return VertexAttribPointerType.Int;
+		else if (type == typeof(uint))
+			return VertexAttribPointerType.UnsignedInt;
+		else if (type == typeof(float))
+			return VertexAttribPointerType.Float;
+		else if (type == typeof(double))
+			return VertexAttribPointerType.Double;
+		else if (type == typeof(Half))
+			return VertexAttribPointerType.HalfFloat;
+		throw new ArgumentException("Unsupported type for VertexAttribPointer");
 	}
-
-	public VertexAttribPointerType Type;
-	public int Size;
 }

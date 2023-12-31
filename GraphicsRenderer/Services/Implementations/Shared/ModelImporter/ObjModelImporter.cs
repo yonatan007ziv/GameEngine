@@ -82,13 +82,11 @@ internal class ObjModelImporter
 		IVertexArray va;
 		IVertexBuffer vb = bufferGenerator.GenerateVertexBuffer();
 		IIndexBuffer ib = bufferGenerator.GenerateIndexBuffer();
-		ITextureBuffer tb = bufferGenerator.GenerateTextureBuffer();
 		BoxData boundingBox = new BoxData(left, right, top, bottom, front, back);
 
 		vb.WriteData(vertexBuffer);
 		ib.WriteData(vertexIndexArr);
-		tb.WriteData(textureLoader.LoadTexture(@"D:\Code\VS Community\GraphicsRenderer\GraphicsRenderer\Resources\Textures\BackgroundTest.png"));
-		va = bufferGenerator.GenerateVertexArray(vb, ib, tb);
+		va = bufferGenerator.GenerateVertexArray(vb, ib, new AttributeLayout[] { new AttributeLayout(typeof(float), 3), new AttributeLayout(typeof(float), 2) });
 
 		return new ModelData(va, boundingBox, vertexIndexArr.Length);
 	}
@@ -146,17 +144,6 @@ internal class ObjModelImporter
 			toReturn[3 * i] = (uint)(vectors[i].X + offset);
 			toReturn[3 * i + 1] = (uint)(vectors[i].Y + offset);
 			toReturn[3 * i + 2] = (uint)(vectors[i].Z + offset);
-		}
-		return toReturn;
-	}
-
-	private static float[] VtListToArr(List<Vector2> vt)
-	{
-		float[] toReturn = new float[vt.Count * 2];
-		for (int i = 0; i < vt.Count; i++)
-		{
-			toReturn[2 * i] = vt[i].X;
-			toReturn[2 * i + 1] = vt[i].Y;
 		}
 		return toReturn;
 	}

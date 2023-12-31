@@ -1,5 +1,6 @@
 ﻿using GraphicsRenderer.Components.Shared.Input;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
+using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Input;
 
@@ -14,5 +15,6 @@ internal class OpenGLInputProvider : IInputProvider
 		this.keyboardInputProvider = keyboardInputProvider;
 	}
 
+	public Vector2 MousePosition => mouseInputProvider.MousePosition;
 	public bool IsKeyDown(KeyboardButton keyboardButton) => keyboardInputProvider.IsKeyDown(keyboardButton);
 }
