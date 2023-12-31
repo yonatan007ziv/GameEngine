@@ -1,5 +1,4 @@
 ﻿using GraphicsRenderer.Components.Interfaces;
-using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Components.Shared.Data;
@@ -19,7 +18,7 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	public static OpenGLRenderer Instance; // TEMP!
 
 	private readonly IInputProvider inputProvider;
-	private readonly IFactory<string, ITextureBuffer> textureFactory;
+	private readonly IFactory<string, string, Material> materialFactory;
 	private readonly ILogger logger;
 	private readonly IGameObjectManager gameObjectManager;
 	private readonly IShaderManager shaderManager;
@@ -32,13 +31,13 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	private GameObject trex;
 	private GameObject plane;
 
-	public OpenGLRenderer(IInputProvider inputProvider, IFactory<string, ITextureBuffer> textureFactory, ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IFactory<string, ModelData> modelFactory, ISceneManager sceneManager)
+	public OpenGLRenderer(IInputProvider inputProvider, IFactory<string, string, Material> materialFactory, ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IFactory<string, ModelData> modelFactory, ISceneManager sceneManager)
 		: base(settingsManager)
 	{
 		Instance = this;
 
 		this.inputProvider = inputProvider;
-		this.textureFactory = textureFactory;
+		this.materialFactory = materialFactory;
 		this.logger = logger;
 		this.gameObjectManager = gameObjectManager;
 		this.shaderManager = shaderManager;
@@ -80,11 +79,11 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 
 		trex = gameObjectManager.CreateGameObject();
 		trex.Mesh = new OpenGLMesh(modelFactory.Create("TREX.obj"));
-		trex.Material = new Material(shaderManager.GetShader("Textured"), textureFactory.Create("TrexTexture.png"));
+		trex.Material = materialFactory.Create("Textured", "TrexTexture.png");
 
 		plane = gameObjectManager.CreateGameObject();
 		plane.Mesh = new OpenGLMesh(modelFactory.Create("Plane.obj"));
-		plane.Material = new Material(shaderManager.GetShader("Textured"), textureFactory.Create("BackgroundTest.png"));
+		plane.Material = materialFactory.Create("Textured", "BackgroundTest.png");
 		plane.Transform.Scale = new Vector3(100, 0, 100);
 	}
 

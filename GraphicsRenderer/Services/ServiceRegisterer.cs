@@ -70,6 +70,7 @@ internal class ServiceRegisterer
 		collection.AddSingleton<IResourceManager, ContentResourceManager>(); // EmbeddedResourceManager : Test in the Future
 
 		// Factories
+		collection.AddSingleton<IFactory<string, string, Material>, MaterialFactory>();
 		collection.AddSingleton<IFactory<string, string, IShaderProgram>, ShaderProgramFactory>();
 		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
 		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
