@@ -3,7 +3,7 @@ using GraphicsRenderer.Components.Interfaces.Buffers;
 
 namespace GraphicsRenderer.Components.Shared;
 
-internal class Material
+public class Material
 {
 	public IShaderProgram ShaderProgram { get; }
 	public ITextureBuffer TextureBuffer { get; }

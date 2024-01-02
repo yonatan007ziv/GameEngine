@@ -2,7 +2,8 @@
 
 namespace GraphicsRenderer.Components.Interfaces;
 
-internal interface IMesh
+public interface IMesh
 {
-	public void Render(Transform transform, ICamera camera, Material material);
+	public void Render(ICamera camera, Material material);
+	public void Update(Transform transform);
 }

@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Input;
 
-internal class OpenGLMouseInputProvider : IMouseInputProvider
+public class OpenGLMouseInputProvider : IMouseInputProvider
 {
 	public Vector2 MousePosition => OpenGLRenderer.Instance.MousePosition.ToNumerics();
 }

@@ -1,6 +1,6 @@
 ﻿namespace GraphicsRenderer.Components.Shared.Input;
 
-internal enum KeyboardButton
+public enum KeyboardButton
 {
 	NONE,
 	LSHIFT,

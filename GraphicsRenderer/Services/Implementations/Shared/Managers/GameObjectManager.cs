@@ -4,13 +4,13 @@ using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Managers;
 
-internal class GameObjectManager : IGameObjectManager
+public class GameObjectManager : IGameObjectManager
 {
-	private readonly IFactory<GameObject> gameObjectFactory;
+	private readonly IFactory<IGameObjectManager, GameObject> gameObjectFactory;
 
 	public List<GameObject> GameObjects { get; set; }
 
-	public GameObjectManager(IFactory<GameObject> gameObjectFactory)
+	public GameObjectManager(IFactory<IGameObjectManager, GameObject> gameObjectFactory)
 	{
 		this.gameObjectFactory = gameObjectFactory;
 		GameObjects = new List<GameObject>();
@@ -18,7 +18,7 @@ internal class GameObjectManager : IGameObjectManager
 
 	public GameObject CreateGameObject()
 	{
-		GameObject current = gameObjectFactory.Create();
+		gameObjectFactory.Create(this, out GameObject current);
 		GameObjects.Add(current);
 		return current;
 	}

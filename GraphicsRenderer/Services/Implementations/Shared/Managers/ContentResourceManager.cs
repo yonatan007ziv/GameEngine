@@ -3,7 +3,7 @@ using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Managers;
 
-internal class ContentResourceManager : IResourceManager
+public class ContentResourceManager : IResourceManager
 {
 	private readonly Dictionary<string, string> resourceNamePathDictionary = new Dictionary<string, string>();
 	private readonly IFileReader<string> stringFileReader;
@@ -26,32 +26,49 @@ internal class ContentResourceManager : IResourceManager
 			DiscoverResources(subDirectory, Path.Combine(depth, subDirectory.Name));
 	}
 
-	public FileStream LoadResourceFileStream(string resource)
+	public bool LoadResourceFileStream(string resource, out FileStream result)
 	{
+		result = default!;
+
 		if (!ResourceExists(resource))
-			throw new Exception();
+			return false;
 
 		if (fileStreamFileReader.ReadFile(resourceNamePathDictionary[resource], out FileStream stream))
-			return stream;
+		{
+			result = stream;
+			return true;
+		}
 
-		throw new Exception();
+		return false;
 	}
-	public string LoadResourceString(string resource)
+	public bool LoadResourceString(string resource, out string result)
 	{
+		result = default!;
+
 		if (!ResourceExists(resource))
-			throw new Exception();
+			return false;
 
 		if (stringFileReader.ReadFile(resourceNamePathDictionary[resource], out string file))
-			return file;
+		{
+			result = file;
+			return true;
+		}
 
-		throw new Exception();
+		return false;
 	}
-	public string[] LoadResourceLines(string resource)
+	public bool LoadResourceLines(string resource, out string[] result)
 	{
-		return LoadResourceString(resource).Split('\n');
+		if (LoadResourceString(resource, out string fileStr))
+		{
+			result = fileStr.Split('\n');
+			return true;
+		}
+
+		result = default!;
+		return false;
 	}
 
-	public bool ResourceExists(string resource)
+	private bool ResourceExists(string resource)
 		=> resourceNamePathDictionary.ContainsKey(resource);
 
 }

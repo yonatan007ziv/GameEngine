@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Interfaces.InputProviders;
 
-internal interface IMouseInputProvider
+public interface IMouseInputProvider
 {
 	Vector2 MousePosition { get; }
 }

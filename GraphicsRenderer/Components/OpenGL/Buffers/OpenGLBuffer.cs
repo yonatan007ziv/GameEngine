@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
-internal abstract class OpenGLBuffer : IDisposable
+public abstract class OpenGLBuffer : IDisposable
 {
 	protected int Id { get; private set; }
 	protected BufferTarget Target { get; private set; }

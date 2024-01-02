@@ -1,96 +1,65 @@
 ﻿using GraphicsRenderer.Components.Interfaces;
-using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
-using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using GraphicsRenderer.Services.Interfaces.Renderer;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
 
-internal class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
+public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 {
 	public static OpenGLRenderer Instance; // TEMP!
 
-	private readonly IInputProvider inputProvider;
-	private readonly IFactory<string, string, Material> materialFactory;
 	private readonly ILogger logger;
 	private readonly IGameObjectManager gameObjectManager;
-	private readonly IShaderManager shaderManager;
-	private readonly IFactory<string, ModelData> modelFactory;
-	private readonly ISceneManager sceneManager;
+	private readonly ICamera camera;
 
-	// Temps
-	public ICamera camera;
-	private MovementController movementController;
-	private GameObject trex;
-	private GameObject plane;
-
-	public OpenGLRenderer(IInputProvider inputProvider, IFactory<string, string, Material> materialFactory, ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, ISettingsManager settingsManager, IFactory<string, ModelData> modelFactory, ISceneManager sceneManager)
-		: base(settingsManager)
+	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, IInputProvider inputProvider, IFactory<string, string, string, GameObject> materializedGameObjectFactory)
 	{
 		Instance = this;
 
-		this.inputProvider = inputProvider;
-		this.materialFactory = materialFactory;
 		this.logger = logger;
 		this.gameObjectManager = gameObjectManager;
-		this.shaderManager = shaderManager;
-		this.modelFactory = modelFactory;
-		this.sceneManager = sceneManager;
 
 		LockMouse(true);
+		TurnVSync(true);
+
+		GameObject player = gameObjectManager.CreateGameObject();
+		player.Transform.Position = new Vector3(0, 0, 0);
+		player.Components.Add(camera = new FreeCameraController(inputProvider, player, 10, Width, Height));
+
+		materializedGameObjectFactory.Create("leed.obj", "Textured", "BackgroundTest.png", out GameObject leed);
+		leed.Transform.Position += new Vector3(-50, 0, 0);
+
+		materializedGameObjectFactory.Create("Human1.obj", "Textured", "BackgroundTest.png", out GameObject human);
+		human.Transform.Position += new Vector3(0, 0, 0);
+
+		materializedGameObjectFactory.Create("TREX.obj", "Textured", "TrexTexture.png", out GameObject trex);
+		trex.Transform.Position += new Vector3(50, 0, 0);
 	}
 
-	protected override void RenderFrame(float deltaTime)
+	protected override void RenderFrame()
 	{
-		// sceneManager.CurrentScene.RenderScene(deltaTime);
-
 		foreach (GameObject gameObject in gameObjectManager.GameObjects)
 			gameObject.Render(camera);
 	}
 
 	protected override void UpdateFrame(float deltaTime)
 	{
-		// sceneManager.CurrentScene.UpdateScene(deltaTime);
-
-		trex.Transform.Position = new Vector3((float)OpenTK.Mathematics.MathHelper.Cos(GLFW.GetTime()), 0, (float)OpenTK.Mathematics.MathHelper.Sin(GLFW.GetTime())) * 10;
-		trex.Transform.Scale = new Vector3((float)OpenTK.Mathematics.MathHelper.Sin(GLFW.GetTime()) * 0.5f + 0.75f);
-		movementController.UpdateInput(inputProvider, deltaTime);
-		camera.Update(inputProvider, deltaTime);
+		foreach (GameObject gameObject in gameObjectManager.GameObjects)
+			gameObject.Update(deltaTime);
 	}
 
 	protected override void Load()
 	{
 		logger.LogInformation("Loading Renderer...");
-		shaderManager.RegisterShaders();
-
-		// sceneManager.LoadScene("MainScene.scene");
-
-		GameObject player = gameObjectManager.CreateGameObject();
-		player.Transform.Position = new Vector3(0, 100, 0);
-		camera = new OpenGLCamera(player, 10, Width, Height);
-		movementController = new MovementController(player);
-
-		trex = gameObjectManager.CreateGameObject();
-		trex.Mesh = new OpenGLMesh(modelFactory.Create("TREX.obj"));
-		trex.Material = materialFactory.Create("Textured", "TrexTexture.png");
-
-		plane = gameObjectManager.CreateGameObject();
-		plane.Mesh = new OpenGLMesh(modelFactory.Create("Plane.obj"));
-		plane.Material = materialFactory.Create("Textured", "BackgroundTest.png");
-		plane.Transform.Scale = new Vector3(100, 0, 100);
 	}
 
-	protected override void Unload()
-	{
-		shaderManager.DisposeAll();
-	}
+	protected override void Unload() { }
 
 	protected override void Resize(int width, int height)
 	{

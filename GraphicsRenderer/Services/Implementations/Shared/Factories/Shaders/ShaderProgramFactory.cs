@@ -5,7 +5,7 @@ using GraphicsRenderer.Services.Interfaces.Utils;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Factories.Shaders;
 
-internal class ShaderProgramFactory : IFactory<string, string, IShaderProgram>
+public class ShaderProgramFactory : IFactory<string, string, IShaderProgram>
 {
 	private readonly IFactory<string, ShaderSource> shaderSourceFactory;
 
@@ -14,12 +14,16 @@ internal class ShaderProgramFactory : IFactory<string, string, IShaderProgram>
 		this.shaderSourceFactory = shaderSourceFactory;
 	}
 
-	public IShaderProgram Create(string vertexName, string fragmentName)
+	public bool Create(string vertexName, string fragmentName, out IShaderProgram shader)
 	{
-		ShaderSource s1 = shaderSourceFactory.Create(vertexName);
-		ShaderSource s2 = shaderSourceFactory.Create(fragmentName);
+		shader = default!;
 
-		IShaderProgram shaderProgram = new OpenGLShaderProgram(s1, s2);
-		return shaderProgram;
+		if (!shaderSourceFactory.Create(vertexName, out ShaderSource vertexSource))
+			return false;
+		if (!shaderSourceFactory.Create(fragmentName, out ShaderSource fragmentSource))
+			return false;
+
+		shader = new OpenGLShaderProgram(vertexSource, fragmentSource);
+		return true;
 	}
 }

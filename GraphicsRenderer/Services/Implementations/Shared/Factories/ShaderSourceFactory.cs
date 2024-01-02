@@ -4,7 +4,7 @@ using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Factories;
 
-internal class ShaderSourceFactory : IFactory<string, ShaderSource>
+public class ShaderSourceFactory : IFactory<string, ShaderSource>
 {
 	private readonly IResourceManager resourceManager;
 
@@ -13,8 +13,15 @@ internal class ShaderSourceFactory : IFactory<string, ShaderSource>
 		this.resourceManager = resourceManager;
 	}
 
-	public ShaderSource Create(string shaderName)
+	public bool Create(string shaderName, out ShaderSource shaderSource)
 	{
-		return new ShaderSource(resourceManager.LoadResourceString(shaderName));
+		if (resourceManager.LoadResourceString(shaderName, out string shaderSourceCode))
+		{
+			shaderSource = new ShaderSource(shaderSourceCode);
+			return true;
+		}
+
+		shaderSource = default!;
+		return false;
 	}
 }

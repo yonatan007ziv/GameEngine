@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Interfaces.InputProviders;
 
-internal interface IKeyboardInputProvider
+public interface IKeyboardInputProvider
 {
 	bool IsKeyDown(KeyboardButton keyboardButton);
 }

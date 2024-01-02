@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphicsRenderer;
 
-internal class Program
+public class Program
 {
 	public static void Main()
 	{

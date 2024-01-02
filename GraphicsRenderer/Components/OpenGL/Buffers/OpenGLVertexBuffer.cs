@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
-internal class OpenGLVertexBuffer : OpenGLBuffer, IVertexBuffer
+public class OpenGLVertexBuffer : OpenGLBuffer, IVertexBuffer
 {
 
 	public OpenGLVertexBuffer()

@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Components.Shared.Data;
 
-internal readonly struct ModelData
+public readonly struct ModelData
 {
 	public IVertexArray VertexArray { get; }
 	public BoxData BoundingBox { get; }

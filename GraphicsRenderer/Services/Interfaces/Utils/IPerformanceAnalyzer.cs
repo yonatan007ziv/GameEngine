@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Interfaces.Utils;
 
-internal interface IPerformanceAnalyzer
+public interface IPerformanceAnalyzer
 {
 	public bool Logging { get; set; }
 

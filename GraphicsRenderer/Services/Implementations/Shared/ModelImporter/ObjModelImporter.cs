@@ -5,15 +5,13 @@ using OpenTK.Mathematics;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 
-internal class ObjModelImporter
+public class ObjModelImporter
 {
 	private readonly IBufferGenerator bufferGenerator;
-	private readonly ITextureLoader textureLoader;
 
-	public ObjModelImporter(IBufferGenerator bufferGenerator, ITextureLoader textureLoader)
+	public ObjModelImporter(IBufferGenerator bufferGenerator)
 	{
 		this.bufferGenerator = bufferGenerator;
-		this.textureLoader = textureLoader;
 	}
 
 	public ModelData Import(string[] data)
@@ -57,6 +55,16 @@ internal class ObjModelImporter
 
 		uint[] vertexIndexArr = IndexListToArr(fVertexIndex);
 
+		// Attribute Array
+		List<AttributeLayout> attribList = new List<AttributeLayout>()
+		{
+			// 3 Floats for XYZ
+			new AttributeLayout(typeof(float), 3)
+		};
+
+		if (vt.Count > 0) // 2 Floats for Texture Coordinates
+			attribList.Add(new AttributeLayout(typeof(float), 2));
+
 		// Transform To VertexBuffer
 		int j = 0, k = 0;
 		float[] vertexBuffer = new float[v.Count * 3 + vt.Count * 2];
@@ -71,7 +79,6 @@ internal class ObjModelImporter
 
 			if (vt.Count > 0)
 			{ // Add Texture Coordinates
-
 				vertexBuffer[i++] = vt[k].X;
 				vertexBuffer[i++] = vt[k].Y;
 				k++;
@@ -86,7 +93,7 @@ internal class ObjModelImporter
 
 		vb.WriteData(vertexBuffer);
 		ib.WriteData(vertexIndexArr);
-		va = bufferGenerator.GenerateVertexArray(vb, ib, new AttributeLayout[] { new AttributeLayout(typeof(float), 3), new AttributeLayout(typeof(float), 2) });
+		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());
 
 		return new ModelData(va, boundingBox, vertexIndexArr.Length);
 	}
@@ -154,7 +161,7 @@ internal class ObjModelImporter
 		string[] face2 = data2.Split('/');
 		string[] face3 = data3.Split('/');
 
-		if (face1.Length >= 1 && face1[0] != "") // vt defined
+		if (face1.Length >= 1 && face1[0] != "") // v defined
 			fVertexIndex.Add(StringToVector3i(face1[0], face2[0], face3[0]));
 
 		if (face1.Length >= 2 && face1[1] != "") // vt defined

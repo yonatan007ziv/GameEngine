@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Interfaces.Utils;
 
-internal interface ITextureLoader
+public interface ITextureLoader
 {
-	TextureSource LoadTexture(string path);
+	bool LoadTexture(string path, out TextureSource textureSource);
 }

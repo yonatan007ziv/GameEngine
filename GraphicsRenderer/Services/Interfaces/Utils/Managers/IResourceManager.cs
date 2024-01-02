@@ -1,9 +1,8 @@
 ﻿namespace GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
-internal interface IResourceManager
+public interface IResourceManager
 {
-	bool ResourceExists(string resource);
-	FileStream LoadResourceFileStream(string resource);
-	string[] LoadResourceLines(string resource);
-	string LoadResourceString(string resource);
+	bool LoadResourceFileStream(string resource, out FileStream result);
+	bool LoadResourceLines(string resource, out string[] result);
+	bool LoadResourceString(string resource, out string result);
 }

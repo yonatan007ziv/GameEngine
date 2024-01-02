@@ -1,21 +1,43 @@
 ﻿using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.OpenGL.Buffers;
 using GraphicsRenderer.Components.Shared.Data;
+using GraphicsRenderer.Components.Shared.Exceptions;
 using GraphicsRenderer.Services.Interfaces.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Components.OpenGL;
 
-internal class OpenGLBufferGenerator : IBufferGenerator
+public class OpenGLBufferGenerator : IBufferGenerator
 {
+	private readonly ILogger logger;
+
+	public OpenGLBufferGenerator(ILogger logger)
+	{
+		this.logger = logger;
+	}
+
 	public IIndexBuffer GenerateIndexBuffer()
-		=> new OpenGLIndexBuffer();
+	{
+		try { return new OpenGLIndexBuffer(); }
+		catch { logger.LogCritical("Error Generating OpenGL Buffer"); throw new BufferGeneratorException(); }
+
+	}
 
 	public ITextureBuffer GenerateTextureBuffer()
-		=> new OpenGLTextureBuffer();
+	{
+		try { return new OpenGLTextureBuffer(); }
+		catch { logger.LogCritical("Error Generating OpenGL Buffe!"); throw new BufferGeneratorException(); }
+	}
 
 	public IVertexArray GenerateVertexArray(IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, AttributeLayout[] arrtibutesLayout)
-		=> new OpenGLVertexArray(vertexBuffer, indexBuffer, arrtibutesLayout);
+	{
+		try { return new OpenGLVertexArray(vertexBuffer, indexBuffer, arrtibutesLayout); }
+		catch { logger.LogCritical("Error Generating OpenGL Buffer"); throw new BufferGeneratorException(); }
+	}
 
 	public IVertexBuffer GenerateVertexBuffer()
-		=> new OpenGLVertexBuffer();
+	{
+		try { return new OpenGLVertexBuffer(); }
+		catch { logger.LogCritical("Error Generating OpenGL Buffer"); throw new BufferGeneratorException(); }
+	}
 }

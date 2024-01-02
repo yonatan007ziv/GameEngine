@@ -1,34 +1,43 @@
 ﻿using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
+using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 
-internal class ModelFactory : IFactory<string, ModelData>
+public class ModelFactory : IFactory<string, ModelData>
 {
+	private readonly ILogger logger;
 	private readonly IResourceManager resourceManager;
 	private readonly ObjModelImporter objModelImporter;
 	private readonly FbxModelImporter fbxModelImporter;
 
-	public ModelFactory(IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
+	public ModelFactory(ILogger logger, IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
 	{
+		this.logger = logger;
 		this.resourceManager = resourceManager;
 		this.objModelImporter = objModelImporter;
 		this.fbxModelImporter = fbxModelImporter;
 	}
 
-	public ModelData Create(string model)
+	public bool Create(string model, out ModelData modelData)
 	{
-		if (!resourceManager.ResourceExists(model))
-			throw new Exception();
+		modelData = default!;
 
-		string[] data = resourceManager.LoadResourceLines(model);
+		if (!resourceManager.LoadResourceLines(model, out string[] data))
+		{
+			logger.LogError($"Model \"{model}\" Not Found");
+			return false;
+		}
 
-		string type = model.Split('.')[1];
-		if (type == "obj")
-			return objModelImporter.Import(data);
-		else if (type == "fbx")
-			return fbxModelImporter.Import(data);
-		throw new Exception();
+		string modelType = model.Split('.')[1];
+		if (modelType == "obj")
+			modelData = objModelImporter.Import(data);
+		else if (modelType == "fbx")
+			modelData = fbxModelImporter.Import(data);
+		else
+			return false;
+
+		return true;
 	}
 }

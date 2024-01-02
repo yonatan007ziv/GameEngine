@@ -1,23 +1,33 @@
 ﻿using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
+using Microsoft.Extensions.Logging;
 using StbImageSharp;
 
 namespace GraphicsRenderer.Services.Implementations.Shared;
 
-internal class StbTextureLoader : ITextureLoader
+public class StbTextureLoader : ITextureLoader
 {
+	private readonly ILogger logger;
 	private readonly IResourceManager resourceManager;
 
-	public StbTextureLoader(IResourceManager resourceManager)
+	public StbTextureLoader(ILogger logger, IResourceManager resourceManager)
 	{
+		this.logger = logger;
 		this.resourceManager = resourceManager;
 	}
 
-	public TextureSource LoadTexture(string file)
+	public bool LoadTexture(string textureName, out TextureSource textureSource)
 	{
-		FileStream stream = resourceManager.LoadResourceFileStream(file);
-		ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-		return new TextureSource(image.Data, image.Width, image.Height);
+		if (resourceManager.LoadResourceFileStream(textureName, out FileStream stream))
+		{
+			ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+			textureSource =new TextureSource(image.Data, image.Width, image.Height);
+			return true;
+		}
+
+		logger.LogError("Texture \"{textureName}\" not Found", textureName);
+		textureSource = default!;
+		return false;
 	}
 }

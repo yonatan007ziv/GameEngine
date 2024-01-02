@@ -7,32 +7,23 @@ using OpenTK.Mathematics;
 
 namespace GraphicsRenderer.Components.OpenGL;
 
-internal class OpenGLMesh : IMesh
+public class OpenGLMesh : IMesh
 {
 	private readonly ModelData modelData;
+
+	private Matrix4 modelMatrix;
+	private Matrix4 view;
+	private Matrix4 projection;
 
 	public OpenGLMesh(ModelData modelData)
 	{
 		this.modelData = modelData;
 	}
 
-	public void Render(Transform transform, ICamera camera, Material material)
+	public void Render(ICamera camera, Material material)
 	{
-		Vector3 openTKPosition = transform.Position.ToOpenTK();
-
-		Matrix4 translationBack = Matrix4.CreateTranslation(openTKPosition);
-		Matrix4 translationToOrigin = Matrix4.CreateTranslation(-openTKPosition);
-
-		Matrix4 scaleMatrix = Matrix4.CreateScale(transform.Scale.ToOpenTK());
-
-		Matrix4 rotationMatrix =
-			Matrix4.CreateRotationX(transform.Rotation.X)
-			* Matrix4.CreateRotationY(transform.Rotation.Y)
-			* Matrix4.CreateRotationZ(transform.Rotation.Z);
-
-		Matrix4 modelMatrix = translationBack * (translationToOrigin * rotationMatrix * scaleMatrix) * translationBack;
-		Matrix4 view = camera.ViewMatrix;
-		Matrix4 projection = camera.ProjectionMatrix;
+		view = camera.ViewMatrix.ToOpenTK();
+		projection = camera.ProjectionMatrix.ToOpenTK();
 
 		material.Bind();
 
@@ -49,5 +40,22 @@ internal class OpenGLMesh : IMesh
 		GL.DrawElements(PrimitiveType.Triangles, modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
 		modelData.VertexArray.Unbind();
 		material.Unbind();
+	}
+
+	public void Update(Transform transform)
+	{
+		Vector3 openTKPosition = transform.Position.ToOpenTK();
+
+		Matrix4 translationBack = Matrix4.CreateTranslation(openTKPosition);
+		Matrix4 translationToOrigin = Matrix4.CreateTranslation(-openTKPosition);
+
+		Matrix4 scaleMatrix = Matrix4.CreateScale(transform.Scale.ToOpenTK());
+
+		Matrix4 rotationMatrix =
+			Matrix4.CreateRotationX(transform.Rotation.X)
+			* Matrix4.CreateRotationY(transform.Rotation.Y)
+			* Matrix4.CreateRotationZ(transform.Rotation.Z);
+
+		modelMatrix = translationBack * (translationToOrigin * rotationMatrix * scaleMatrix) * translationBack;
 	}
 }

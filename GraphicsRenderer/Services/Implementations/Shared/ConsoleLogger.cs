@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Implementations.Shared;
 
-internal class ConsoleLogger : ILogger
+public class ConsoleLogger : ILogger
 {
 	private readonly object _lock = new object();
 

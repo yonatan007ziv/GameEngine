@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Services.Implementations.Direct11.Renderer;
 
-internal class Direct11Renderer : IRenderer
+public class Direct11Renderer : IRenderer
 {
 	private readonly ILogger logger;
 
@@ -15,5 +15,15 @@ internal class Direct11Renderer : IRenderer
 	public void Run()
 	{
 		logger.LogInformation("Direct11 Renderer Started");
+	}
+
+	public void LockMouse(bool lockMouse)
+	{
+
+	}
+
+	public void TurnVSync(bool vsync)
+	{
+
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 
-internal class FbxModelImporter
+public class FbxModelImporter
 {
 	// Future Feature (maybe)
 	public ModelData Import(string[] data)

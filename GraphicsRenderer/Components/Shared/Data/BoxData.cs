@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Components.Shared.Data;
 
-internal class BoxData
+public class BoxData
 {
 	// Front
 	public Vector3 TopLeftFront { get; set; }

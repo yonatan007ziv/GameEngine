@@ -7,23 +7,18 @@ using System.Runtime.InteropServices;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
 
-internal abstract class BaseOpenGLRenderer : GameWindow
+public abstract class BaseOpenGLRenderer : GameWindow
 {
-	protected int Width { get; private set; }
-	protected int Height { get; private set; }
+	protected int Width { get; private set; } = 640;
+	protected int Height { get; private set; } = 360;
 
-	public BaseOpenGLRenderer(ISettingsManager settingsManager)
+	public BaseOpenGLRenderer()
 		: base(new GameWindowSettings(), new NativeWindowSettings())
 	{
-		SettingsData settings = settingsManager.LoadSettings();
-		Width = (int)settings.ScreenDimensions.X;
-		Height = (int)settings.ScreenDimensions.Y;
-		TurnVSync(settings.VSync);
-
-		CenterWindow(new OpenTK.Mathematics.Vector2i(Width, Height));
+		CenterWindow();
 	}
 
-	protected void LockMouse(bool lockMouse)
+	public void LockMouse(bool lockMouse)
 	{
 		CursorState = lockMouse ? CursorState.Grabbed : CursorState.Normal;
 	}
@@ -33,7 +28,7 @@ internal abstract class BaseOpenGLRenderer : GameWindow
 		VSync = vsync ? VSyncMode.On : VSyncMode.Off;
 	}
 
-	new protected abstract void RenderFrame(float deltaTime);
+	new protected abstract void RenderFrame();
 	new protected abstract void UpdateFrame(float deltaTime);
 	new protected abstract void Load();
 	new protected abstract void Unload();
@@ -51,7 +46,7 @@ internal abstract class BaseOpenGLRenderer : GameWindow
 		GL.ClearColor(1, 1, 1, 0);
 		GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-		RenderFrame((float)args.Time);
+		RenderFrame();
 
 		Context.SwapBuffers();
 		base.OnRenderFrame(args);

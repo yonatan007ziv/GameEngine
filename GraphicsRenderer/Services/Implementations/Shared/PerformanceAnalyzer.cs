@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace GraphicsRenderer.Services.Implementations.Shared;
 
-internal class PerformanceAnalyzer : IPerformanceAnalyzer
+public class PerformanceAnalyzer : IPerformanceAnalyzer
 {
 	private readonly ILogger logger;
 	private readonly List<Stopwatch> sw;

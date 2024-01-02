@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.FileReaders;
 
-internal class StringFileReader : IFileReader<string>
+public class StringFileReader : IFileReader<string>
 {
 	private readonly ILogger logger;
 

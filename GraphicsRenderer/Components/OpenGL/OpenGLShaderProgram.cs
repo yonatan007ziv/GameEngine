@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace GraphicsRenderer.Components.OpenGL;
 
-internal class OpenGLShaderProgram : IShaderProgram
+public class OpenGLShaderProgram : IShaderProgram
 {
 	public int Id { get; private set; }
 

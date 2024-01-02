@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
-internal class OpenGLVertexArray : IVertexArray, IDisposable
+public class OpenGLVertexArray : IVertexArray, IDisposable
 {
 	public int Id { get; private set; }
 	public VertexAttribPointerType Type { get; private set; }
@@ -78,6 +78,6 @@ internal class OpenGLVertexArray : IVertexArray, IDisposable
 			return VertexAttribPointerType.Double;
 		else if (type == typeof(Half))
 			return VertexAttribPointerType.HalfFloat;
-		throw new ArgumentException("Unsupported type for VertexAttribPointer");
+		throw new ArgumentException("Unsupported Type");
 	}
 }

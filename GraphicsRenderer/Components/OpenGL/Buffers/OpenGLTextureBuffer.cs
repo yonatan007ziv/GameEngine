@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
-internal class OpenGLTextureBuffer : ITextureBuffer
+public class OpenGLTextureBuffer : ITextureBuffer
 {
 	private int Id { get; }
 	private TextureTarget Target { get; }

@@ -5,7 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Input;
 
-internal class OpenGLKeyboardInputProvider : IKeyboardInputProvider
+public class OpenGLKeyboardInputProvider : IKeyboardInputProvider
 {
 	public bool IsKeyDown(KeyboardButton button)
 	{

@@ -1,6 +1,6 @@
 ﻿namespace GraphicsRenderer.Components.Shared;
 
-internal class TextureSource
+public class TextureSource
 {
 	public byte[] Source { get; }
 	public int Width { get; }

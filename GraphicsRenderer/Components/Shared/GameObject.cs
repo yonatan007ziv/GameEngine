@@ -1,26 +1,44 @@
 ﻿using GraphicsRenderer.Components.Interfaces;
+using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Components.Shared;
 
-internal class GameObject
+public class GameObject : IDisposable
 {
+	private readonly IGameObjectManager gameObjectManager;
+
 	public int Id { get; }
 
-	public Material Material { get; set; }
+	public Material? Material { get; set; }
 	public Transform Transform { get; }
-	public IMesh? Mesh;
-	public IMesh? Gizmos;
+	public List<IMesh> Meshes = new List<IMesh>();
+	public List<IComponent> Components = new List<IComponent>();
 
-	public GameObject(Material material, int id)
+	public GameObject(IGameObjectManager gameObjectManager, int id)
 	{
-		Material = material;
+		this.gameObjectManager = gameObjectManager;
 		Id = id;
 		Transform = new Transform();
 	}
 
 	public void Render(ICamera camera)
 	{
-		Mesh?.Render(Transform, camera, Material);
-		Gizmos?.Render(Transform, camera, Material);
+		foreach (IMesh mesh in Meshes)
+			if (Material != null)
+				mesh.Render(camera, Material);
 	}
+
+	public void Update(float deltaTime)
+	{
+		foreach (IMesh mesh in Meshes)
+			mesh.Update(Transform);
+
+		foreach (IComponent component in Components)
+			component.Update(deltaTime);
+	}
+
+	public void Dispose()
+	{
+		gameObjectManager.GameObjects.Remove(this);
+    }
 }

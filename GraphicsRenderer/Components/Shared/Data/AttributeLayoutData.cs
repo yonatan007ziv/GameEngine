@@ -1,6 +1,6 @@
 ﻿namespace GraphicsRenderer.Components.Shared.Data;
 
-internal struct AttributeLayout
+public struct AttributeLayout
 {
 	public AttributeLayout(Type type, int size)
 	{

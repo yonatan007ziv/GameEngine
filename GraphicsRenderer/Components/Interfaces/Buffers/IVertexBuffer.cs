@@ -1,6 +1,6 @@
 ﻿namespace GraphicsRenderer.Components.Interfaces.Buffers;
 
-internal interface IVertexBuffer
+public interface IVertexBuffer
 {
 	void Bind();
 	void Unbind();

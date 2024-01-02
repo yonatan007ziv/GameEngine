@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsRenderer.Components.OpenGL.Buffers;
 
-internal class OpenGLIndexBuffer : OpenGLBuffer, IIndexBuffer
+public class OpenGLIndexBuffer : OpenGLBuffer, IIndexBuffer
 {
 	public OpenGLIndexBuffer()
 		: base(BufferTarget.ElementArrayBuffer)

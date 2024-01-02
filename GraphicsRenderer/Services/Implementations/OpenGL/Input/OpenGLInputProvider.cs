@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Input;
 
-internal class OpenGLInputProvider : IInputProvider
+public class OpenGLInputProvider : IInputProvider
 {
 	private readonly IMouseInputProvider mouseInputProvider;
 	private readonly IKeyboardInputProvider keyboardInputProvider;

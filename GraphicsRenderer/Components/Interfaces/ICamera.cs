@@ -1,16 +1,14 @@
-﻿using GraphicsRenderer.Services.Interfaces.InputProviders;
-using OpenTK.Mathematics;
+﻿using System.Numerics;
 
 namespace GraphicsRenderer.Components.Interfaces;
 
-internal interface ICamera
+public interface ICamera : IComponent
 {
-	int Width { get; set; }
-	int Height { get; set; }
+	float Width { get; set; }
+	float Height { get; set; }
+	int SensitivitySpeed { get; }
+	Matrix4x4 ViewMatrix { get; }
+	Matrix4x4 ProjectionMatrix { get; }
 
-	// TEMP: OPENTK PROPRIETARY
-	Matrix4 ViewMatrix { get; }
-	Matrix4 ProjectionMatrix { get; }
-
-	void Update(IInputProvider inputProvider, float deltaTime);
+	void Update(float deltaTime);
 }

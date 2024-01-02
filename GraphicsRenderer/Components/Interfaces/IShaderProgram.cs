@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Components.Interfaces;
 
-internal interface IShaderProgram : IDisposable
+public interface IShaderProgram : IDisposable
 {
 	public int Id { get; }
 	void Bind();

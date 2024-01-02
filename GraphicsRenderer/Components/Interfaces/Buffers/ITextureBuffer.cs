@@ -2,7 +2,7 @@
 
 namespace GraphicsRenderer.Components.Interfaces.Buffers;
 
-internal interface ITextureBuffer
+public interface ITextureBuffer
 {
 	void Bind();
 	void Unbind();

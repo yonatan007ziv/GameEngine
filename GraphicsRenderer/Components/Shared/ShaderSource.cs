@@ -1,6 +1,6 @@
 ﻿namespace GraphicsRenderer.Components.Shared;
 
-internal class ShaderSource
+public class ShaderSource
 {
 	public string Source { get; private set; }
 

@@ -3,42 +3,30 @@ using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 namespace GraphicsRenderer.Services.Implementations.Shared.Managers;
 
-internal class ShaderManager : IShaderManager
+public class ShaderManager : IShaderManager
 {
-	private readonly List<IShaderProgram> _registeredShaders = new List<IShaderProgram>();
-	private readonly IShaderBank shaderBank;
+	private readonly IFactory<string, string, IShaderProgram> shaderProgramFactory;
+	private readonly Dictionary<string, IShaderProgram> shaders = new Dictionary<string, IShaderProgram>();
 
-	public IShaderProgram ActiveShader { get; private set; }
-
-	public ShaderManager(IShaderBank shaderBank)
+	public ShaderManager(IFactory<string, string,IShaderProgram> shaderProgramFactory)
 	{
-		this.shaderBank = shaderBank;
-		ActiveShader = null!;
+		this.shaderProgramFactory = shaderProgramFactory;
 	}
 
-	public void RegisterShaders()
-		=> shaderBank.RegisterShaders(this);
-
-	public IShaderProgram GetShader(string shaderName) => shaderBank.GetShader(shaderName);
-
-	public void RegisterShader(IShaderProgram shader)
+	public bool GetShader(string shaderName, out IShaderProgram shaderProgram)
 	{
-		if (!IsShaderRegistered(shader))
-			_registeredShaders.Add(shader);
-	}
+		if (shaders.ContainsKey(shaderName))
+		{
+			shaderProgram = shaders[shaderName];
+			return true;
+		}
+		else if (shaderProgramFactory.Create($"{shaderName}Vertex.glsl", $"{shaderName}Fragment.glsl", out shaderProgram))
+		{
+			shaders.Add(shaderName, shaderProgram);
+			return true;
+		}
 
-	public void UnregisterShader(IShaderProgram shader)
-	{
-		if (IsShaderRegistered(shader))
-			_registeredShaders.Remove(shader);
-	}
-
-	private bool IsShaderRegistered(IShaderProgram shader)
-		=> _registeredShaders.Contains(shader);
-
-	public void DisposeAll()
-	{
-		foreach (IShaderProgram sP in _registeredShaders)
-			sP.Dispose();
+		shaderProgram = default!;
+		return false;
 	}
 }
