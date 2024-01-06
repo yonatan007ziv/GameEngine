@@ -10,7 +10,7 @@ internal class OpenGLMeshFactory : IFactory<string, IMesh>
 	private readonly IFactory<string, ModelData> modelImporter;
 
 	public OpenGLMeshFactory(IFactory<string, ModelData> modelImporter)
-    {
+	{
 		this.modelImporter = modelImporter;
 	}
 
@@ -21,7 +21,7 @@ internal class OpenGLMeshFactory : IFactory<string, IMesh>
 			mesh = default!;
 			return false;
 		}
-		
+
 		mesh = new OpenGLMesh(model);
 		return true;
 	}

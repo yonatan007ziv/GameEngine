@@ -17,7 +17,7 @@ public class TextureFactory : IFactory<string, ITextureBuffer>
 
 	public bool Create(string textureName, out ITextureBuffer texture)
 	{
-		if(!textureLoader.LoadTexture(textureName, out TextureSource textureSource))
+		if (!textureLoader.LoadTexture(textureName, out TextureSource textureSource))
 		{
 			texture = default!;
 			return false;

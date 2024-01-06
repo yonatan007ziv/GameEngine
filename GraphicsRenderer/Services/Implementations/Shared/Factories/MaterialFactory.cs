@@ -13,6 +13,9 @@ public class MaterialFactory : IFactory<string, string, Material>
 	private readonly IShaderManager shaderManager;
 	private readonly ITextureManager textureManager;
 
+	// Cached Materials
+	private readonly Dictionary<(string, string), Material> materials = new Dictionary<(string, string), Material>();
+
 	public MaterialFactory(ILogger logger, IShaderManager shaderManager, ITextureManager textureManager)
 	{
 		this.logger = logger;
@@ -22,16 +25,22 @@ public class MaterialFactory : IFactory<string, string, Material>
 
 	public bool Create(string shaderName, string textureName, out Material material)
 	{
+		if (materials.ContainsKey((shaderName, textureName)))
+		{
+			material = materials[(shaderName, textureName)];
+			return true;
+		}
+
 		bool failed = false;
 		if (!shaderManager.GetShader(shaderName, out IShaderProgram shader))
 		{
-			logger.LogError($"Shader \"{shaderName}\" Not Found!");
+			logger.LogError($"Shader \"{shaderName}\" not Found");
 			failed = true;
 		}
 
 		if (!textureManager.GetTexture(textureName, out ITextureBuffer texture))
 		{
-			logger.LogError($"Texture \"{textureName}\" Not Found!");
+			logger.LogError($"Texture \"{textureName}\" not Found");
 			failed = true;
 		}
 
@@ -41,7 +50,8 @@ public class MaterialFactory : IFactory<string, string, Material>
 			return false;
 		}
 
-		material= new Material(shader, texture);
+		material = new Material(shader, texture);
+		materials[(shaderName, textureName)] = material;
 		return true;
 	}
 }

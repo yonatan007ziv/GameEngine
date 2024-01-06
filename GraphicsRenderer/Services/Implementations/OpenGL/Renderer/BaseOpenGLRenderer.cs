@@ -1,6 +1,4 @@
-﻿using GraphicsRenderer.Components.Shared.Data;
-using GraphicsRenderer.Services.Interfaces.Utils.Managers;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System.Runtime.InteropServices;

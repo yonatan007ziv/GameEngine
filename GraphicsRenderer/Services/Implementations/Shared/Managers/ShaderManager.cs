@@ -8,7 +8,7 @@ public class ShaderManager : IShaderManager
 	private readonly IFactory<string, string, IShaderProgram> shaderProgramFactory;
 	private readonly Dictionary<string, IShaderProgram> shaders = new Dictionary<string, IShaderProgram>();
 
-	public ShaderManager(IFactory<string, string,IShaderProgram> shaderProgramFactory)
+	public ShaderManager(IFactory<string, string, IShaderProgram> shaderProgramFactory)
 	{
 		this.shaderProgramFactory = shaderProgramFactory;
 	}

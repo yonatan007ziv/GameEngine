@@ -21,7 +21,7 @@ public class FreeMovementController
 		Vector3 finalVelocityVector = new Vector3();
 
 		Vector3 wasdDirectionVector = new Vector3();
-        if (inputProvider.IsKeyDown(KeyboardButton.W))
+		if (inputProvider.IsKeyDown(KeyboardButton.W))
 			wasdDirectionVector += parentTransform.LocalFront;
 		if (inputProvider.IsKeyDown(KeyboardButton.A))
 			wasdDirectionVector -= parentTransform.LocalRight;

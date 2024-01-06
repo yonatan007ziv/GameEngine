@@ -1,11 +1,10 @@
 ﻿using GraphicsRenderer.Components.Extensions;
-using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using System.Numerics;
 
 namespace GraphicsRenderer.Components.Shared;
 
-public class Camera : ICamera
+public class Camera
 {
 	private IInputProvider inputProvider;
 	private readonly Transform parentTransform;

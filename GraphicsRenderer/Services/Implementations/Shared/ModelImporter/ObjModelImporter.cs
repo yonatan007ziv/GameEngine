@@ -1,7 +1,7 @@
 ﻿using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.Utils;
-using OpenTK.Mathematics;
+using System.Numerics;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 
@@ -17,11 +17,9 @@ public class ObjModelImporter
 	public ModelData Import(string[] data)
 	{
 		List<Vector3> v = new List<Vector3>();
-		List<Vector2> vt = new List<Vector2>();
 		List<Vector3> vn = new List<Vector3>();
-		List<Vector3> fVertexIndex = new List<Vector3>();
-		List<Vector3> fTextureIndex = new List<Vector3>();
-		List<Vector3> fNormalIndex = new List<Vector3>();
+		List<Vector2> vt = new List<Vector2>();
+		List<Vector3> indexes = new List<Vector3>();
 
 		foreach (string currentLine in data)
 		{
@@ -35,55 +33,74 @@ public class ObjModelImporter
 			if (type == "v")
 				v.Add(StringToVector3f(temp[0], temp[1], temp[2]));
 
-			if (type == "vt")
-				vt.Add(StringToVector2f(temp[0], temp[1]));
-
 			if (type == "vn")
 				vn.Add(StringToVector3f(temp[0], temp[1], temp[2]));
 
+			if (type == "vt")
+				vt.Add(StringToVector2f(temp[0], temp[1]));
+
 			if (type == "f")
 				for (int i = 0; i < temp.Length - 2; i++)
-					AddFaceIndexes(fVertexIndex, fTextureIndex, fNormalIndex, temp[0], temp[i + 1], temp[i + 2]);
+					AddFace(indexes, temp[0], temp[i + 1], temp[i + 2]);
 		}
 
 		// Bounding Box Setup
-		FindXExtreme(v, out float right, out float left);
-		FindYExtreme(v, out float top, out float bottom);
-		FindZExtreme(v, out float front, out float back);
-
-		// populate vertices and indexes
-
-		uint[] vertexIndexArr = IndexListToArr(fVertexIndex);
+		FindExtremes(v, out float right, out float left, out float top, out float bottom, out float front, out float back);
 
 		// Attribute Array
-		List<AttributeLayout> attribList = new List<AttributeLayout>()
+		List<AttributeLayout> attribList = new List<AttributeLayout>
 		{
-			// 3 Floats for XYZ
-			new AttributeLayout(typeof(float), 3)
+			new AttributeLayout(typeof(float), 3),	// 3 Floats for XYZ
+			new AttributeLayout(typeof(float), 2),	// 2 Floats for Texture Coordinates
+			new AttributeLayout(typeof(float), 3)	// 3 Floats for Normals
 		};
 
-		if (vt.Count > 0) // 2 Floats for Texture Coordinates
-			attribList.Add(new AttributeLayout(typeof(float), 2));
-
 		// Transform To VertexBuffer
-		int j = 0, k = 0;
-		float[] vertexBuffer = new float[v.Count * 3 + vt.Count * 2];
-		for (int i = 0; i < vertexBuffer.Length;)
+		List<float> vertexBufferList = new List<float>();
+		List<uint> indexBufferList = new List<uint>();
+
+		for (int i = 0; i < indexes.Count; i++)
 		{
-			{ // Add Vertex Position
-				vertexBuffer[i++] = v[j].X;
-				vertexBuffer[i++] = v[j].Y;
-				vertexBuffer[i++] = v[j].Z;
-				j++;
+			int vertexIndex = (int)indexes[i].X;
+			int textureIndex = (int)indexes[i].Y;
+			int normalsIndex = (int)indexes[i].Z;
+
+			// v
+			vertexBufferList.Add(v[vertexIndex - 1].X);
+			vertexBufferList.Add(v[vertexIndex - 1].Y);
+			vertexBufferList.Add(v[vertexIndex - 1].Z);
+
+			// vt
+			if (vt.Count > 0)
+			{
+				vertexBufferList.Add(vt[textureIndex - 1].X);
+				vertexBufferList.Add(vt[textureIndex - 1].Y);
+			}
+			else
+			{
+				vertexBufferList.Add(0);
+				vertexBufferList.Add(0);
 			}
 
-			if (vt.Count > 0)
-			{ // Add Texture Coordinates
-				vertexBuffer[i++] = vt[k].X;
-				vertexBuffer[i++] = vt[k].Y;
-				k++;
+			// vn
+			if (vn.Count > 0)
+			{
+				vertexBufferList.Add(vn[normalsIndex - 1].X);
+				vertexBufferList.Add(vn[normalsIndex - 1].Y);
+				vertexBufferList.Add(vn[normalsIndex - 1].Z);
 			}
+			else
+			{
+				vertexBufferList.Add(0);
+				vertexBufferList.Add(1);
+				vertexBufferList.Add(0);
+			}
+
+			indexBufferList.Add((uint)i);
 		}
+
+		float[] vertexBuffer = vertexBufferList.ToArray();
+		uint[] indexBuffer = indexBufferList.ToArray();
 
 		// transform to proper buffer format
 		IVertexArray va;
@@ -92,83 +109,55 @@ public class ObjModelImporter
 		BoxData boundingBox = new BoxData(left, right, top, bottom, front, back);
 
 		vb.WriteData(vertexBuffer);
-		ib.WriteData(vertexIndexArr);
+		ib.WriteData(indexBuffer);
 		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());
 
-		return new ModelData(va, boundingBox, vertexIndexArr.Length);
+		return new ModelData(va, boundingBox, indexBuffer.Length);
 	}
 
-	private void FindXExtreme(List<Vector3> v, out float right, out float left)
+	private void FindExtremes(List<Vector3> v, out float right, out float left, out float top, out float bottom, out float front, out float back)
 	{
-		float rightMost = float.NegativeInfinity, leftMost = float.PositiveInfinity;
+		float rightMost = float.NegativeInfinity, leftMost = float.PositiveInfinity,
+			topMost = float.NegativeInfinity, bottomMost = float.PositiveInfinity,
+			frontMost = float.NegativeInfinity, backMost = float.PositiveInfinity;
+
 		foreach (Vector3 v2 in v)
 		{
 			if (v2.X < leftMost)
 				leftMost = v2.X;
 			if (v2.X > rightMost)
 				rightMost = v2.X;
-		}
 
-		right = rightMost;
-		left = leftMost;
-	}
-
-	private void FindYExtreme(List<Vector3> v, out float top, out float bottom)
-	{
-		float topMost = float.NegativeInfinity, bottomMost = float.PositiveInfinity;
-		foreach (Vector3 v2 in v)
-		{
 			if (v2.Y < bottomMost)
 				bottomMost = v2.Y;
 			if (v2.Y > topMost)
 				topMost = v2.Y;
-		}
 
-		top = topMost;
-		bottom = bottomMost;
-	}
-
-	private void FindZExtreme(List<Vector3> v, out float front, out float back)
-	{
-		float frontMost = float.NegativeInfinity, backMost = float.PositiveInfinity;
-		foreach (Vector3 v2 in v)
-		{
 			if (v2.Z < backMost)
 				backMost = v2.Z;
 			if (v2.Z > frontMost)
 				frontMost = v2.Z;
 		}
 
+		right = rightMost;
+		left = leftMost;
+
+		top = topMost;
+		bottom = bottomMost;
+
 		front = frontMost;
 		back = backMost;
 	}
 
-	private static uint[] IndexListToArr(List<Vector3> vectors, int offset = -1)
-	{ // offset = -1 : Default Indexing in Wavefront .Obj files starts at 1
-		uint[] toReturn = new uint[vectors.Count * 3];
-		for (int i = 0; i < vectors.Count; i++)
-		{
-			toReturn[3 * i] = (uint)(vectors[i].X + offset);
-			toReturn[3 * i + 1] = (uint)(vectors[i].Y + offset);
-			toReturn[3 * i + 2] = (uint)(vectors[i].Z + offset);
-		}
-		return toReturn;
-	}
-
-	private void AddFaceIndexes(List<Vector3> fVertexIndex, List<Vector3> fTextureIndex, List<Vector3> fNormalIndex, string data1, string data2, string data3)
+	private void AddFace(List<Vector3> faces, string data1, string data2, string data3)
 	{
 		string[] face1 = data1.Split('/');
 		string[] face2 = data2.Split('/');
 		string[] face3 = data3.Split('/');
 
-		if (face1.Length >= 1 && face1[0] != "") // v defined
-			fVertexIndex.Add(StringToVector3i(face1[0], face2[0], face3[0]));
-
-		if (face1.Length >= 2 && face1[1] != "") // vt defined
-			fTextureIndex.Add(StringToVector3i(face1[1], face2[1], face3[1]));
-
-		if (face1.Length >= 3 && face1[2] != "") // vn defined
-			fNormalIndex.Add(StringToVector3i(face1[2], face2[2], face3[2]));
+		faces.Add(StringToVector3Face(face1[0], face1[1], face1[2]));
+		faces.Add(StringToVector3Face(face2[0], face2[1], face2[2]));
+		faces.Add(StringToVector3Face(face3[0], face3[1], face3[2]));
 	}
 
 	private static Vector2 StringToVector2f(string x, string y)
@@ -177,6 +166,6 @@ public class ObjModelImporter
 	private static Vector3 StringToVector3f(string x, string y, string z)
 		=> new Vector3(float.Parse(x), float.Parse(y), float.Parse(z));
 
-	private static Vector3 StringToVector3i(string x, string y, string z)
-		=> new Vector3(int.Parse(x), int.Parse(y), int.Parse(z));
+	private static Vector3 StringToVector3Face(string x, string y, string z)
+		=> new Vector3(int.Parse(x), int.Parse(y == "" ? "0" : y), int.Parse(z == "" ? "0" : z));
 }

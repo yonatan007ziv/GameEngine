@@ -40,5 +40,5 @@ public class GameObject : IDisposable
 	public void Dispose()
 	{
 		gameObjectManager.GameObjects.Remove(this);
-    }
+	}
 }

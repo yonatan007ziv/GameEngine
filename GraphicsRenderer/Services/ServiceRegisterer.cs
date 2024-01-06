@@ -41,7 +41,7 @@ public class ServiceRegisterer
 		collection.AddSingleton<IRenderer, OpenGLRenderer>();
 		collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 		collection.AddSingleton<IFactory<string, IMesh>, OpenGLMeshFactory>();
-		
+
 		collection.AddSingleton<IInputProvider, OpenGLInputProvider>();
 		collection.AddSingleton<IMouseInputProvider, OpenGLMouseInputProvider>();
 		collection.AddSingleton<IKeyboardInputProvider, OpenGLKeyboardInputProvider>();

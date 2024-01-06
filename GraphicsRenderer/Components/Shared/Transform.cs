@@ -14,5 +14,5 @@ public class Transform
 
 	public static Vector3 GlobalRight { get; set; } = Vector3.UnitX;
 	public static Vector3 GlobalUp { get; set; } = Vector3.UnitY;
-	public static Vector3 GlobalFront{ get; set; } = -Vector3.UnitZ;
+	public static Vector3 GlobalFront { get; set; } = -Vector3.UnitZ;
 }

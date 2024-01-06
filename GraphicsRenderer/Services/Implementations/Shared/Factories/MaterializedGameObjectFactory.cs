@@ -25,16 +25,20 @@ internal class MaterializedGameObjectFactory : IFactory<string, string, string, 
 	{
 		if (!meshFactory.Create(model, out IMesh mesh))
 		{
-			logger.LogError("Error Creating Mesh {modelName}", model);
+			logger.LogError("Error Creating Mesh: {modelName}", model);
+
 			// Set Default Mesh
+			if (!meshFactory.Create("MissingModel.obj", out mesh))
+				logger.LogCritical("Error Setting Fallback Mesh");
 		}
 
 		if (!materialFactory.Create(shader, texture, out Material material))
 		{
-			logger.LogError("Error Creating Material {shaderName} {materialName}", shader, texture);
+			logger.LogError("Error Creating Material: {shaderName}, {materialName}", shader, texture);
 
 			// Set Default Material
-			materialFactory.Create("Textured", "MissingTexture.png", out material);
+			if (!materialFactory.Create("Textured", "MissingTexture.png", out material))
+				logger.LogCritical("Error Setting Fallback Material");
 		}
 
 		gameObject = gameObjectManager.CreateGameObject();

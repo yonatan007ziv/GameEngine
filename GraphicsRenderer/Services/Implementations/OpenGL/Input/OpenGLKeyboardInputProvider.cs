@@ -22,7 +22,7 @@ public class OpenGLKeyboardInputProvider : IKeyboardInputProvider
 			return (Keys)buttonABCOffset;
 
 		// Check F1 ... F12
-		int buttonFOffset = (buttonValue + 189);
+		int buttonFOffset = buttonValue + 189;
 		if ((int)Keys.F1 <= buttonFOffset && buttonFOffset <= (int)Keys.F12)
 			return (Keys)buttonFOffset;
 
@@ -39,6 +39,7 @@ public class OpenGLKeyboardInputProvider : IKeyboardInputProvider
 			case KeyboardButton.RSHIFT: return Keys.RightShift;
 			case KeyboardButton.RCTRL: return Keys.RightControl;
 			case KeyboardButton.RALT: return Keys.RightAlt;
+			case KeyboardButton.ESCAPE: return Keys.Escape;
 		}
 
 		return Keys.Unknown;

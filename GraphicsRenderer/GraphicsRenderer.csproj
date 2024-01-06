@@ -12,6 +12,7 @@
     <None Remove="Resources\Models\Human1.obj" />
     <None Remove="Resources\Models\HumanTestNotTriangles.obj" />
     <None Remove="Resources\Models\leed.obj" />
+    <None Remove="Resources\Models\MissingModel.obj" />
     <None Remove="Resources\Models\Plane.obj" />
     <None Remove="Resources\Models\Pyramid.obj" />
     <None Remove="Resources\Models\smaug.obj" />
@@ -33,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Models\MissingModel.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Models\Plane.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

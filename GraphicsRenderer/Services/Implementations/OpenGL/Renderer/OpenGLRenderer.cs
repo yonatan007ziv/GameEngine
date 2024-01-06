@@ -12,13 +12,13 @@ namespace GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
 
 public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 {
-	public static OpenGLRenderer Instance; // TEMP!
+	public static OpenGLRenderer Instance; // TEMP
 
 	private readonly ILogger logger;
 	private readonly IGameObjectManager gameObjectManager;
 	private readonly ICamera camera;
 
-	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IShaderManager shaderManager, IInputProvider inputProvider, IFactory<string, string, string, GameObject> materializedGameObjectFactory)
+	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IInputProvider inputProvider, IFactory<string, string, string, GameObject> materializedGameObjectFactory)
 	{
 		Instance = this;
 
@@ -54,20 +54,14 @@ public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 			gameObject.Update(deltaTime);
 	}
 
-	protected override void Load()
-	{
-		logger.LogInformation("Loading Renderer...");
-	}
+	protected override void Load() { }
 
 	protected override void Unload() { }
 
 	protected override void Resize(int width, int height)
 	{
-		if (camera != null)
-		{
-			camera.Width = width;
-			camera.Height = height;
-		}
+		camera.Width = width;
+		camera.Height = height;
 	}
 
 	protected override void GLDebugCallback(string msg, DebugSeverity severity)
