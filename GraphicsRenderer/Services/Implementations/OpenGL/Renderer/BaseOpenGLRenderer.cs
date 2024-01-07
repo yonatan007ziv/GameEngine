@@ -13,6 +13,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	public BaseOpenGLRenderer()
 		: base(new GameWindowSettings(), new NativeWindowSettings())
 	{
+		Title = "GraphicsRenderer";
 		CenterWindow();
 	}
 

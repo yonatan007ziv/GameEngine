@@ -7,6 +7,8 @@ public class Direct11Renderer : IRenderer
 {
 	private readonly ILogger logger;
 
+	public string Title { get; set; }
+
 	public Direct11Renderer(ILogger logger)
 	{
 		this.logger = logger;

@@ -40,7 +40,7 @@ public class ServiceRegisterer
 	{
 		collection.AddSingleton<IRenderer, OpenGLRenderer>();
 		collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
-		collection.AddSingleton<IFactory<string, IMesh>, OpenGLMeshFactory>();
+		collection.AddSingleton<IFactory<string, string, IMeshRenderer>, OpenGLMeshRendererFactory>();
 
 		collection.AddSingleton<IInputProvider, OpenGLInputProvider>();
 		collection.AddSingleton<IMouseInputProvider, OpenGLMouseInputProvider>();
@@ -70,8 +70,7 @@ public class ServiceRegisterer
 		collection.AddSingleton<ITextureManager, TextureManager>();
 
 		// Factories
-		collection.AddSingleton<IFactory<string, string, string, GameObject>, MaterializedGameObjectFactory>();
-		collection.AddSingleton<IFactory<string, string, Material>, MaterialFactory>();
+		collection.AddSingleton<IFactory<string, Material>, MaterialFactory>();
 		collection.AddSingleton<IFactory<string, string, IShaderProgram>, ShaderProgramFactory>();
 		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
 		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();

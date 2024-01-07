@@ -9,9 +9,8 @@ public class GameObject : IDisposable
 
 	public int Id { get; }
 
-	public Material? Material { get; set; }
 	public Transform Transform { get; }
-	public List<IMesh> Meshes = new List<IMesh>();
+	public List<IMeshRenderer> Meshes = new List<IMeshRenderer>();
 	public List<IComponent> Components = new List<IComponent>();
 
 	public GameObject(IGameObjectManager gameObjectManager, int id)
@@ -23,14 +22,13 @@ public class GameObject : IDisposable
 
 	public void Render(ICamera camera)
 	{
-		foreach (IMesh mesh in Meshes)
-			if (Material != null)
-				mesh.Render(camera, Material);
+		foreach (IMeshRenderer mesh in Meshes)
+			mesh.Render(camera);
 	}
 
 	public void Update(float deltaTime)
 	{
-		foreach (IMesh mesh in Meshes)
+		foreach (IMeshRenderer mesh in Meshes)
 			mesh.Update(Transform);
 
 		foreach (IComponent component in Components)

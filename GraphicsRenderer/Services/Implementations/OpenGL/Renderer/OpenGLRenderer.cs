@@ -18,7 +18,13 @@ public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 	private readonly IGameObjectManager gameObjectManager;
 	private readonly ICamera camera;
 
-	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IInputProvider inputProvider, IFactory<string, string, string, GameObject> materializedGameObjectFactory)
+	public new string Title
+	{
+		get => base.Title;
+		set => base.Title = value;
+	}
+
+	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IInputProvider inputProvider, IFactory<string, string, IMeshRenderer> meshRendererFactory)
 	{
 		Instance = this;
 
@@ -32,14 +38,16 @@ public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 		player.Transform.Position = new Vector3(0, 0, 0);
 		player.Components.Add(camera = new FreeCameraController(inputProvider, player, 10, Width, Height));
 
-		materializedGameObjectFactory.Create("leed.obj", "Textured", "BackgroundTest.png", out GameObject leed);
-		leed.Transform.Position += new Vector3(-50, 0, 0);
+		GameObject leed = gameObjectManager.CreateGameObject();
+		meshRendererFactory.Create("leed.obj", "Textured", out IMeshRenderer meshRendererLeed);
+		leed.Meshes.Add(meshRendererLeed);
+		leed.Transform.Position += new Vector3(0, 0, 10);
 
-		materializedGameObjectFactory.Create("Human1.obj", "Textured", "BackgroundTest.png", out GameObject human);
-		human.Transform.Position += new Vector3(0, 0, 0);
+		//materializedGameObjectFactory.Create("Human1.obj", "Textured", "BackgroundTest.png", out GameObject human);
+		//human.Transform.Position += new Vector3(0, 0, 0);
 
-		materializedGameObjectFactory.Create("TREX.obj", "Textured", "TrexTexture.png", out GameObject trex);
-		trex.Transform.Position += new Vector3(50, 0, 0);
+		//materializedGameObjectFactory.Create("TREX.obj", "Textured", "TrexTexture.png", out GameObject trex);
+		//trex.Transform.Position += new Vector3(50, 0, 0);
 	}
 
 	protected override void RenderFrame()

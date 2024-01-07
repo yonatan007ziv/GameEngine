@@ -49,6 +49,6 @@ public class OpenGLShaderProgram : IShaderProgram
 	public void SetMatrix4Uniform(ref Matrix4 value, string uniformName)
 	{
 		int loc = GL.GetUniformLocation(Id, uniformName);
-		GL.UniformMatrix4(loc, false, ref value);
+		GL.UniformMatrix4(loc, true, ref value);
 	}
 }

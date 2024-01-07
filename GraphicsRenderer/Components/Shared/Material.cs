@@ -1,28 +1,27 @@
 ﻿using GraphicsRenderer.Components.Interfaces;
-using GraphicsRenderer.Components.Interfaces.Buffers;
 
 namespace GraphicsRenderer.Components.Shared;
 
 public class Material
 {
-	public IShaderProgram ShaderProgram { get; }
-	public ITextureBuffer TextureBuffer { get; }
+	public Shader Shader { get; }
+	public Texture Texture { get; }
 
-	public Material(IShaderProgram shaderProgram, ITextureBuffer textureBuffer)
+	public Material(Shader shader, Texture texture)
 	{
-		this.ShaderProgram = shaderProgram;
-		this.TextureBuffer = textureBuffer;
+		Shader = shader;
+		Texture = texture;
 	}
 
 	public void Bind()
 	{
-		ShaderProgram.Bind();
-		TextureBuffer.Bind();
+		Shader.Bind();
+		Texture.Bind();
 	}
 
 	public void Unbind()
 	{
-		ShaderProgram.Unbind();
-		TextureBuffer.Unbind();
+		Shader.Unbind();
+		Texture.Unbind();
 	}
 }

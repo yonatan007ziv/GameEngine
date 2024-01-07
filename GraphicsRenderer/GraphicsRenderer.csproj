@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -34,15 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\Models\MissingModel.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Models\Plane.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Resources\Models\Bugatti1.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -53,6 +44,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Models\leed.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\MissingModel.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\Plane.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Models\Pyramid.obj">
@@ -79,10 +76,10 @@
     <Content Include="Resources\Shaders\GizmosVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\TexturedVertex.glsl">
+    <Content Include="Resources\Shaders\TexturedFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\TexturedFragment.glsl">
+    <Content Include="Resources\Shaders\TexturedVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\BackgroundTest.png">
@@ -110,20 +107,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
-    <PackageReference Include="StbImageSharp" Version="2.27.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\Direct11\" />
-    <Folder Include="Services\Implementations\Shared\Mocks\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\Models\0000003d.obj">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="StbiSharp" Version="1.2.1" />
   </ItemGroup>
 
 </Project>

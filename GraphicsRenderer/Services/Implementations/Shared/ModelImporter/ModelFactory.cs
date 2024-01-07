@@ -12,6 +12,8 @@ public class ModelFactory : IFactory<string, ModelData>
 	private readonly ObjModelImporter objModelImporter;
 	private readonly FbxModelImporter fbxModelImporter;
 
+	private readonly Dictionary<string, ModelData> cachedModels = new Dictionary<string, ModelData>();
+	
 	public ModelFactory(ILogger logger, IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
 	{
 		this.logger = logger;
@@ -22,6 +24,12 @@ public class ModelFactory : IFactory<string, ModelData>
 
 	public bool Create(string model, out ModelData modelData)
 	{
+		if (cachedModels.ContainsKey(model))
+		{
+			modelData = cachedModels[model];
+			return true;
+		}
+
 		modelData = default!;
 
 		if (!resourceManager.LoadResourceLines(model, out string[] data))
@@ -38,6 +46,7 @@ public class ModelFactory : IFactory<string, ModelData>
 		else
 			return false;
 
+		cachedModels[model] = modelData;
 		return true;
 	}
 }

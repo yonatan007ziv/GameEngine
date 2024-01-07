@@ -7,14 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Factories;
 
-public class MaterialFactory : IFactory<string, string, Material>
+public class MaterialFactory : IFactory<string, Material>
 {
 	private readonly ILogger logger;
 	private readonly IShaderManager shaderManager;
 	private readonly ITextureManager textureManager;
-
-	// Cached Materials
-	private readonly Dictionary<(string, string), Material> materials = new Dictionary<(string, string), Material>();
 
 	public MaterialFactory(ILogger logger, IShaderManager shaderManager, ITextureManager textureManager)
 	{
@@ -23,14 +20,8 @@ public class MaterialFactory : IFactory<string, string, Material>
 		this.textureManager = textureManager;
 	}
 
-	public bool Create(string shaderName, string textureName, out Material material)
+	public bool Create(string shaderName, out Material material)
 	{
-		if (materials.ContainsKey((shaderName, textureName)))
-		{
-			material = materials[(shaderName, textureName)];
-			return true;
-		}
-
 		bool failed = false;
 		if (!shaderManager.GetShader(shaderName, out IShaderProgram shader))
 		{
@@ -38,9 +29,9 @@ public class MaterialFactory : IFactory<string, string, Material>
 			failed = true;
 		}
 
-		if (!textureManager.GetTexture(textureName, out ITextureBuffer texture))
+		if (!textureManager.GetTexture("MissingTexture.png", out ITextureBuffer texture))
 		{
-			logger.LogError($"Texture \"{textureName}\" not Found");
+			logger.LogError($"Texture \"MissingTexture.png\" not Found");
 			failed = true;
 		}
 
@@ -50,8 +41,7 @@ public class MaterialFactory : IFactory<string, string, Material>
 			return false;
 		}
 
-		material = new Material(shader, texture);
-		materials[(shaderName, textureName)] = material;
+		material = new Material(new Shader(shader), new Texture(texture));
 		return true;
 	}
 }
