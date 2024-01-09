@@ -1,1 +1,1 @@
-A graphics renderer using C# .NET
+A GameEngine using C# .NET
