@@ -1,4 +1,5 @@
-﻿using GraphicsRenderer.Components.Shared.Input;
+﻿using GameEngine.Core.Components;
+using GameEngine.Core.IPC.Input;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using System.Numerics;
 
@@ -17,7 +18,7 @@ public class FreeMovementController
 
 	public void UpdateInput(float deltaTime)
 	{
-		float movementSpeed = inputProvider.IsKeyDown(KeyboardButton.LSHIFT) ? 25 : 10;
+		float movementSpeed = inputProvider.IsKeyDown(KeyboardButton.LShift) ? 25 : 10;
 		Vector3 finalVelocityVector = new Vector3();
 
 		Vector3 wasdDirectionVector = new Vector3();

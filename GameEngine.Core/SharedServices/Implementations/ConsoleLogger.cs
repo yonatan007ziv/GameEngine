@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace GraphicsRenderer.Services.Implementations.Shared;
+namespace GameEngine.Core.SharedServices.Implementations;
 
 public class ConsoleLogger : ILogger
 {

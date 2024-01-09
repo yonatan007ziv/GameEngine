@@ -1,22 +1,27 @@
-﻿using GraphicsRenderer.Components.Interfaces;
+﻿using GameEngine.Core.API;
+using GameEngine.Core.Components;
+using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Interfaces;
+using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
-using GraphicsRenderer.Services.Interfaces.InputProviders;
-using GraphicsRenderer.Services.Interfaces.Renderer;
-using GraphicsRenderer.Services.Interfaces.Utils;
-using GraphicsRenderer.Services.Interfaces.Utils.Managers;
+using GraphicsRenderer.Components.Shared.Data;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
-using System.Numerics;
+using System;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
 
-public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
+public class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 {
 	public static OpenGLRenderer Instance; // TEMP
 
 	private readonly ILogger logger;
-	private readonly IGameObjectManager gameObjectManager;
-	private readonly ICamera camera;
+	private readonly RendererCamera camera;
+
+	public List<GameObject> RenderingObjects { get; } = new List<GameObject>();
+	public Transform CameraTransform => camera.Transform;
+
+	IMeshRenderer mesh;
 
 	public new string Title
 	{
@@ -24,42 +29,29 @@ public class OpenGLRenderer : BaseOpenGLRenderer, IRenderer
 		set => base.Title = value;
 	}
 
-	public OpenGLRenderer(ILogger logger, IGameObjectManager gameObjectManager, IInputProvider inputProvider, IFactory<string, string, IMeshRenderer> meshRendererFactory)
+	public OpenGLRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory)
 	{
 		Instance = this;
+		camera = new RendererCamera(new Transform(), Width, Height);
 
+		modelFactory.Create("TREX.obj", out ModelData modelData);
+		materialFactory.Create("Textured", out Material material);
+		mesh = new OpenGLMeshRenderer(modelData, material);
 		this.logger = logger;
-		this.gameObjectManager = gameObjectManager;
-
-		LockMouse(true);
-		TurnVSync(true);
-
-		GameObject player = gameObjectManager.CreateGameObject();
-		player.Transform.Position = new Vector3(0, 0, 0);
-		player.Components.Add(camera = new FreeCameraController(inputProvider, player, 10, Width, Height));
-
-		GameObject leed = gameObjectManager.CreateGameObject();
-		meshRendererFactory.Create("leed.obj", "Textured", out IMeshRenderer meshRendererLeed);
-		leed.Meshes.Add(meshRendererLeed);
-		leed.Transform.Position += new Vector3(0, 0, 10);
-
-		//materializedGameObjectFactory.Create("Human1.obj", "Textured", "BackgroundTest.png", out GameObject human);
-		//human.Transform.Position += new Vector3(0, 0, 0);
-
-		//materializedGameObjectFactory.Create("TREX.obj", "Textured", "TrexTexture.png", out GameObject trex);
-		//trex.Transform.Position += new Vector3(50, 0, 0);
+		CameraTransform.Position -= new System.Numerics.Vector3(0, 0, 10);
 	}
 
-	protected override void RenderFrame()
+	public void SyncState()
 	{
-		foreach (GameObject gameObject in gameObjectManager.GameObjects)
-			gameObject.Render(camera);
+
 	}
 
-	protected override void UpdateFrame(float deltaTime)
+	public override void Render()
 	{
-		foreach (GameObject gameObject in gameObjectManager.GameObjects)
-			gameObject.Update(deltaTime);
+		camera.Update();
+		mesh.Render(camera);
+		//foreach (GameObject gameObject in RenderingObjects)
+		//	gameObject.Render(camera);
 	}
 
 	protected override void Load() { }

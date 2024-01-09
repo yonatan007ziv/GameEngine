@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,7 +44,7 @@
     <Content Include="Resources\Models\HumanTestNotTriangles.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Models\leed.obj">
+    <Content Include="Resources\Models\Leed.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Models\MissingModel.obj">
@@ -61,7 +62,7 @@
     <Content Include="Resources\Models\Tree1.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Models\TREX.obj">
+    <Content Include="Resources\Models\Trex.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\DefaultFragment.glsl">
@@ -107,9 +108,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
-    <PackageReference Include="StbiSharp" Version="1.2.1" />
+    <PackageReference Include="StbImageSharp" Version="2.27.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameEngine.Core\GameEngine.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Interfaces\Renderer\" />
   </ItemGroup>
 
 </Project>

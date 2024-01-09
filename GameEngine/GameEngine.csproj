@@ -105,4 +105,14 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GameEngine.Core\GameEngine.Core.csproj" />
+    <ProjectReference Include="..\GraphicsRenderer\GraphicsRenderer.csproj" />
+    <ProjectReference Include="..\PhysicsEngine\PhysicsEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
+
 </Project>

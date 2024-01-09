@@ -1,10 +1,14 @@
-﻿namespace PhysicsEngine
+﻿using GameEngine.Core.Components;
+
+namespace PhysicsEngine
 {
-	internal class Program
+	public class Program
 	{
-		static void Main(string[] args)
+		public static void Main() { }
+
+		public static void ModifyTransform(Transform transform)
 		{
-			Console.WriteLine("Hello, World!");
+			transform.Scale += new System.Numerics.Vector3(1);
 		}
 	}
 }

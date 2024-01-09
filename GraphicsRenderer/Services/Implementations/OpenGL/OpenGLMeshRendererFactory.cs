@@ -1,8 +1,8 @@
-﻿using GraphicsRenderer.Components.Interfaces;
+﻿using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Components.Shared.Data;
-using GraphicsRenderer.Services.Interfaces.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace GraphicsRenderer.Services.Implementations.OpenGL;

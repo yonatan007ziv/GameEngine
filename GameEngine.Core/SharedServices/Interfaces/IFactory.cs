@@ -1,4 +1,4 @@
-﻿namespace GraphicsRenderer.Services.Interfaces.Utils;
+﻿namespace GameEngine.Core.SharedServices.Interfaces;
 
 public interface IFactory<T>
 {

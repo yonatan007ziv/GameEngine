@@ -1,5 +1,5 @@
-﻿using GraphicsRenderer.Components.Shared.Data;
-using GraphicsRenderer.Services.Interfaces.Utils;
+﻿using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +13,7 @@ public class ModelFactory : IFactory<string, ModelData>
 	private readonly FbxModelImporter fbxModelImporter;
 
 	private readonly Dictionary<string, ModelData> cachedModels = new Dictionary<string, ModelData>();
-	
+
 	public ModelFactory(ILogger logger, IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
 	{
 		this.logger = logger;

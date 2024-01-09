@@ -1,6 +1,4 @@
-﻿using GraphicsRenderer.Components.Interfaces;
-
-namespace GraphicsRenderer.Components.Shared;
+﻿namespace GraphicsRenderer.Components.Shared;
 
 public class Material
 {

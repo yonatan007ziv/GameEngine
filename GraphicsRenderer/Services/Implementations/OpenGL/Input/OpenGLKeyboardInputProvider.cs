@@ -1,4 +1,4 @@
-﻿using GraphicsRenderer.Components.Shared.Input;
+﻿using GameEngine.Core.IPC.Input;
 using GraphicsRenderer.Services.Implementations.OpenGL.Renderer;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -33,13 +33,13 @@ public class OpenGLKeyboardInputProvider : IKeyboardInputProvider
 
 		switch (button)
 		{
-			case KeyboardButton.LSHIFT: return Keys.LeftShift;
-			case KeyboardButton.LCTRL: return Keys.LeftControl;
-			case KeyboardButton.LALT: return Keys.LeftAlt;
-			case KeyboardButton.RSHIFT: return Keys.RightShift;
-			case KeyboardButton.RCTRL: return Keys.RightControl;
-			case KeyboardButton.RALT: return Keys.RightAlt;
-			case KeyboardButton.ESCAPE: return Keys.Escape;
+			case KeyboardButton.LShift: return Keys.LeftShift;
+			case KeyboardButton.LCtrl: return Keys.LeftControl;
+			case KeyboardButton.LAlt: return Keys.LeftAlt;
+			case KeyboardButton.RShift: return Keys.RightShift;
+			case KeyboardButton.RCtrl: return Keys.RightControl;
+			case KeyboardButton.RAlt: return Keys.RightAlt;
+			case KeyboardButton.Escape: return Keys.Escape;
 		}
 
 		return Keys.Unknown;

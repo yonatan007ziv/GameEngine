@@ -1,4 +1,5 @@
-﻿using GraphicsRenderer.Components.Interfaces.Buffers;
+﻿using GameEngine.Core.Components;
+using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.Shared.Data;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using System.Numerics;

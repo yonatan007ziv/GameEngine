@@ -1,4 +1,4 @@
-﻿namespace GraphicsRenderer.Components.Extensions;
+﻿namespace GameEngine.Core.Extensions;
 
 public static partial class MathHelper
 {

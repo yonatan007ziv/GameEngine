@@ -1,16 +1,15 @@
-﻿using GraphicsRenderer.Services;
-using GraphicsRenderer.Services.Interfaces.Renderer;
+﻿using GameEngine.Core.API;
+using GraphicsRenderer.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphicsRenderer;
 
 public class GraphicsRenderer
 {
-	public static void Run()
+	public static IGraphicsEngine Start()
 	{
-		new ServiceRegisterer()
-			.BuildProvider()
-			.GetRequiredService<IRenderer>()
-			.Run();
+		IGraphicsEngine renderer = new ServiceRegisterer().BuildProvider().GetRequiredService<IGraphicsEngine>();
+		renderer.Start();
+		return renderer;
 	}
 }

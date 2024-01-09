@@ -1,4 +1,5 @@
-﻿using GraphicsRenderer.Components.Extensions;
+﻿using GameEngine.Core.Components;
+using GraphicsRenderer.Components.Extensions;
 using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Components.Shared.Data;
@@ -22,7 +23,7 @@ public class OpenGLMeshRenderer : IMeshRenderer
 		Material = material;
 	}
 
-	public void Render(ICamera camera)
+	public void Render(RendererCamera camera)
 	{
 		view = camera.ViewMatrix.ToOpenTK();
 		projection = camera.ProjectionMatrix.ToOpenTK();

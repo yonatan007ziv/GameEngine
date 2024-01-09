@@ -17,5 +17,5 @@ public class Shader
 	public void Unbind()
 		=> shaderProgram.Unbind();
 	public void SetMatrix4Uniform(Matrix4 value, string uniformName)
-		=>shaderProgram.SetMatrix4Uniform(ref value, uniformName);
+		=> shaderProgram.SetMatrix4Uniform(ref value, uniformName);
 }

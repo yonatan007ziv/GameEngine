@@ -1,4 +1,4 @@
-﻿using GraphicsRenderer.Components.Shared.Input;
+﻿using GameEngine.Core.IPC.Input;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
 using System.Numerics;
 

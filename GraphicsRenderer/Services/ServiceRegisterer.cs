@@ -1,4 +1,7 @@
-﻿using GraphicsRenderer.Components.Interfaces;
+﻿using GameEngine.Core.API;
+using GameEngine.Core.SharedServices.Implementations;
+using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
@@ -14,7 +17,6 @@ using GraphicsRenderer.Services.Implementations.Shared.FileReaders;
 using GraphicsRenderer.Services.Implementations.Shared.Managers;
 using GraphicsRenderer.Services.Implementations.Shared.ModelImporter;
 using GraphicsRenderer.Services.Interfaces.InputProviders;
-using GraphicsRenderer.Services.Interfaces.Renderer;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,21 +26,34 @@ namespace GraphicsRenderer.Services;
 
 public class ServiceRegisterer
 {
-	private readonly IServiceCollection collection = new ServiceCollection();
+	private readonly IServiceCollection collection;
 
-	public IServiceProvider BuildProvider()
+    public ServiceRegisterer()
+    {
+		collection = new ServiceCollection();
+		RegisterServices();
+	}
+
+    public ServiceRegisterer(IServiceCollection collection)
+    {
+		this.collection = collection;
+		RegisterServices();
+	}
+
+	private void RegisterServices()
 	{
 		RegisterOpenGL();
 		// RegisterDirect11();
 
 		RegisterShared();
-
-		return collection.BuildServiceProvider();
 	}
+
+	public IServiceProvider BuildProvider()
+		=> collection.BuildServiceProvider();
 
 	private void RegisterOpenGL()
 	{
-		collection.AddSingleton<IRenderer, OpenGLRenderer>();
+		collection.AddSingleton<IGraphicsEngine, OpenGLRenderer>();
 		collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 		collection.AddSingleton<IFactory<string, string, IMeshRenderer>, OpenGLMeshRendererFactory>();
 
@@ -49,7 +64,7 @@ public class ServiceRegisterer
 
 	private void RegisterDirect11()
 	{
-		collection.AddSingleton<IRenderer, Direct11Renderer>();
+		collection.AddSingleton<IGraphicsEngine, Direct11Renderer>();
 		// collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 	}
 
@@ -65,7 +80,6 @@ public class ServiceRegisterer
 
 		// Managers
 		collection.AddSingleton<IShaderManager, ShaderManager>();
-		collection.AddSingleton<IGameObjectManager, GameObjectManager>();
 		collection.AddSingleton<IResourceManager, ContentResourceManager>(); // EmbeddedResourceManager : Test in the Future
 		collection.AddSingleton<ITextureManager, TextureManager>();
 
@@ -75,7 +89,6 @@ public class ServiceRegisterer
 		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
 		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
 		collection.AddSingleton<IFactory<string, ModelData>, ModelFactory>();
-		collection.AddSingleton<IFactory<IGameObjectManager, GameObject>, GameObjectFactory>();
 
 		// File Readers
 		collection.AddSingleton<IFileReader<string>, StringFileReader>();

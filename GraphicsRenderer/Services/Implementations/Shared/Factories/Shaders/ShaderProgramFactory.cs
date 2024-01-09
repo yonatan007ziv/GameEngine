@@ -1,7 +1,7 @@
-﻿using GraphicsRenderer.Components.Interfaces;
+﻿using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.OpenGL;
 using GraphicsRenderer.Components.Shared;
-using GraphicsRenderer.Services.Interfaces.Utils;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Factories.Shaders;
 

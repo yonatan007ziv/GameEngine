@@ -1,7 +1,7 @@
 ﻿using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
-using StbiSharp;
+using StbImageSharp;
 
 namespace GraphicsRenderer.Services.Implementations.Shared;
 
@@ -18,8 +18,8 @@ public class StbTextureLoader : ITextureLoader
 	{
 		if (resourceManager.LoadResourceFileStream(textureName, out FileStream stream))
 		{
-			//Image image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-			textureSource =default!;//= new TextureSource(image.Data, image.Width, image.Height);
+			ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+			textureSource = new TextureSource(image.Data, image.Width, image.Height);
 			return true;
 		}
 

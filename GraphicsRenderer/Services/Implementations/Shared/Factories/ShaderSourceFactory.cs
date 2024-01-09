@@ -1,5 +1,5 @@
-﻿using GraphicsRenderer.Components.Shared;
-using GraphicsRenderer.Services.Interfaces.Utils;
+﻿using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Shared;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsRenderer.Services.Implementations.Shared.Factories;

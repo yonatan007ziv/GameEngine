@@ -1,4 +1,4 @@
-﻿using GraphicsRenderer.Components.Shared.Input;
+﻿using GameEngine.Core.IPC.Input;
 
 namespace GraphicsRenderer.Services.Interfaces.InputProviders;
 

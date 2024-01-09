@@ -1,7 +1,7 @@
-﻿using GraphicsRenderer.Components.Interfaces;
+﻿using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsRenderer.Components.Interfaces;
 using GraphicsRenderer.Components.Interfaces.Buffers;
 using GraphicsRenderer.Components.Shared;
-using GraphicsRenderer.Services.Interfaces.Utils;
 using GraphicsRenderer.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,5 @@
-﻿using GraphicsRenderer.Components.Interfaces.Buffers;
+﻿using GameEngine.Core.Components;
+using GraphicsRenderer.Components.Interfaces.Buffers;
 
 namespace GraphicsRenderer.Components.Shared.Data;
 
