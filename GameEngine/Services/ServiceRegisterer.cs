@@ -39,7 +39,7 @@ internal class ServiceRegisterer
 		collection.AddSingleton<GameEngine>();
 
 		// if (openGL)
-		_ = new GraphicsRenderer.Services.ServiceRegisterer(collection);
+		_ = new GraphicsEngine.Services.ServiceRegisterer(collection);
 
 		// Physics Engine
 		// Sound Engine
