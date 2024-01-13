@@ -1,6 +1,6 @@
 ﻿using GameEngine.Core.SharedServices.Interfaces;
+using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
 using GraphicsEngine.Components.Shared;
-using GraphicsEngine.Services.Interfaces.Utils.Managers;
 
 namespace GraphicsEngine.Services.Implementations.Shared.Factories;
 

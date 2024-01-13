@@ -1,6 +1,6 @@
 ﻿namespace GraphicsEngine.Components.Shared;
 
-public class Material
+internal class Material
 {
 	public Shader Shader { get; }
 	public Texture Texture { get; }

@@ -1,4 +1,4 @@
-﻿using GameEngine.Core.Components;
+﻿using GameEngine.Components.GameObjectComponents;
 using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Services.Interfaces.Managers;
 
@@ -7,7 +7,8 @@ namespace GameEngine.Services.Implementations.Managers;
 internal class GameObjectManager : IGameObjectManager
 {
 	private readonly IFactory<int, GameObject> gameObjectFactory;
-	private readonly List<GameObject> gameObjects = new List<GameObject>();
+
+	public List<GameObject> GameObjects { get; } = new List<GameObject>();
 
 	private int currentId;
 
@@ -19,12 +20,12 @@ internal class GameObjectManager : IGameObjectManager
 	public GameObject CreateGameObject()
 	{
 		gameObjectFactory.Create(currentId++, out GameObject gameObject);
-		gameObjects.Add(gameObject);
+		GameObjects.Add(gameObject);
 		return gameObject;
 	}
 
 	public void RemoveGameObject(GameObject gameObject)
 	{
-		gameObjects.Remove(gameObject);
+		GameObjects.Remove(gameObject);
 	}
 }

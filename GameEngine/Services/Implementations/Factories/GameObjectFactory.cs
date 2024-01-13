@@ -1,4 +1,4 @@
-﻿using GameEngine.Core.Components;
+﻿using GameEngine.Components.GameObjectComponents;
 using GameEngine.Core.SharedServices.Interfaces;
 
 namespace GameEngine.Services.Implementations.Factories;

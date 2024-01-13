@@ -4,11 +4,11 @@ using GraphicsEngine.Components.Shared.Data;
 
 namespace GraphicsEngine.Components.Interfaces;
 
-public interface IMeshRenderer
+internal interface IMeshRenderer
 {
 	ModelData Model { get; set; }
 	Material Material { get; set; }
 
-	public void Render(RendererCamera camera);
+	public void Render(RenderedCamera camera);
 	public void Update(Transform transform);
 }

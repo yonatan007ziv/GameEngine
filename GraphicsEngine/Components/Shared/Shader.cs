@@ -5,11 +5,14 @@ namespace GraphicsEngine.Components.Shared;
 
 public class Shader
 {
+	public string ShaderName { get; }
+
 	private readonly IShaderProgram shaderProgram;
 
-	public Shader(IShaderProgram shaderProgram)
+	public Shader(IShaderProgram shaderProgram, string shaderName)
 	{
 		this.shaderProgram = shaderProgram;
+		ShaderName = shaderName;
 	}
 
 	public void Bind()

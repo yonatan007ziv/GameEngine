@@ -1,8 +1,8 @@
-﻿using GraphicsEngine.Components.Interfaces;
+﻿using GraphicsEngine.Components.Shared;
 
 namespace GraphicsEngine.Services.Interfaces.Utils.Managers;
 
 public interface IShaderManager
 {
-	bool GetShader(string shaderName, out IShaderProgram shaderProgram);
+	bool GetShader(string shaderName, out Shader shaderProgram);
 }

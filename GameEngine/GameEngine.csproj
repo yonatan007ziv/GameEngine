@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Materials\Default.mat" />
+    <None Remove="Resources\Materials\Leed.mat" />
+    <None Remove="Resources\Materials\LightLeed.mat" />
+    <None Remove="Resources\Materials\MissingTexture.mat" />
+    <None Remove="Resources\Materials\Trex.mat" />
     <None Remove="Resources\Models\Bugatti1.obj" />
     <None Remove="Resources\Models\Human1.obj" />
     <None Remove="Resources\Models\HumanTestNotTriangles.obj" />
@@ -22,6 +27,8 @@
     <None Remove="Resources\Shaders\DefaultVertex.glsl" />
     <None Remove="Resources\Shaders\GizmosFragment.glsl" />
     <None Remove="Resources\Shaders\GizmosVertex.glsl" />
+    <None Remove="Resources\Shaders\LightTexturedFragment.glsl" />
+    <None Remove="Resources\Shaders\LightTexturedVertex.glsl" />
     <None Remove="Resources\Shaders\TexturedFragment.glsl" />
     <None Remove="Resources\Shaders\TexturedVertex.glsl" />
     <None Remove="Resources\Textures\BackgroundTest.png" />
@@ -34,6 +41,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Materials\Default.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\LightLeed.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\Leed.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\MissingTexture.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\Trex.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Models\Bugatti1.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -43,7 +65,7 @@
     <Content Include="Resources\Models\HumanTestNotTriangles.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Models\leed.obj">
+    <Content Include="Resources\Models\Leed.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Models\MissingModel.obj">
@@ -61,7 +83,7 @@
     <Content Include="Resources\Models\Tree1.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Models\TREX.obj">
+    <Content Include="Resources\Models\Trex.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\DefaultFragment.glsl">
@@ -74,6 +96,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\GizmosVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\LightTexturedFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\LightTexturedVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\TexturedFragment.glsl">
@@ -107,12 +135,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameEngine.Core\GameEngine.Core.csproj" />
-    <ProjectReference Include="..\GraphicsRenderer\GraphicsRenderer.csproj" />
+    <ProjectReference Include="..\GraphicsEngine\GraphicsEngine.csproj" />
     <ProjectReference Include="..\PhysicsEngine\PhysicsEngine.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\" />
+    <ProjectReference Include="..\SoundEngine\SoundEngine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using GameEngine.Core.SharedServices.Interfaces;
+using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
 using GraphicsEngine.Components.Shared.Data;
-using GraphicsEngine.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.Logging;
 
 namespace GraphicsEngine.Services.Implementations.Shared.ModelImporter;
@@ -22,23 +22,23 @@ public class ModelFactory : IFactory<string, ModelData>
 		this.fbxModelImporter = fbxModelImporter;
 	}
 
-	public bool Create(string model, out ModelData modelData)
+	public bool Create(string modelName, out ModelData modelData)
 	{
-		if (cachedModels.ContainsKey(model))
+		if (cachedModels.ContainsKey(modelName))
 		{
-			modelData = cachedModels[model];
+			modelData = cachedModels[modelName];
 			return true;
 		}
 
 		modelData = default!;
 
-		if (!resourceManager.LoadResourceLines(model, out string[] data))
+		if (!resourceManager.LoadResourceLines(modelName, out string[] data))
 		{
-			logger.LogError($"Model \"{model}\" Not Found");
+			logger.LogError("Model {model} Not Found", modelName);
 			return false;
 		}
 
-		string modelType = model.Split('.')[1];
+		string modelType = modelName.Split('.')[1];
 		if (modelType == "obj")
 			modelData = objModelImporter.Import(data);
 		else if (modelType == "fbx")
@@ -46,7 +46,7 @@ public class ModelFactory : IFactory<string, ModelData>
 		else
 			return false;
 
-		cachedModels[model] = modelData;
+		cachedModels[modelName] = modelData;
 		return true;
 	}
 }

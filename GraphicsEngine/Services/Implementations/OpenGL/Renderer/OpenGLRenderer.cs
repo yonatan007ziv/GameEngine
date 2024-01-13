@@ -1,27 +1,24 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.CommunicationComponentsData;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Interfaces;
-using GraphicsEngine.Components.OpenGL;
 using GraphicsEngine.Components.Shared;
-using GraphicsEngine.Components.Shared.Data;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
-using System;
 
 namespace GraphicsEngine.Services.Implementations.OpenGL.Renderer;
 
-public class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
+internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 {
 	public static OpenGLRenderer Instance; // TEMP
 
 	private readonly ILogger logger;
-	private readonly RendererCamera camera;
+	private readonly IFactory<string, string, IMeshRenderer> meshFactory;
+	private readonly RenderedCamera camera;
 
-	public List<GameObject> RenderingObjects { get; } = new List<GameObject>();
+	private readonly List<RenderedGameObject> gameObjects = new List<RenderedGameObject>();
 	public Transform CameraTransform => camera.Transform;
-
-	IMeshRenderer mesh;
 
 	public new string Title
 	{
@@ -29,29 +26,74 @@ public class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 		set => base.Title = value;
 	}
 
-	public OpenGLRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory)
+	public OpenGLRenderer(ILogger logger, IFactory<string, string, IMeshRenderer> meshFactory)
 	{
-		Instance = this;
-		camera = new RendererCamera(new Transform(), Width, Height);
-
-		modelFactory.Create("TREX.obj", out ModelData modelData);
-		materialFactory.Create("Textured", out Material material);
-		mesh = new OpenGLMeshRenderer(modelData, material);
 		this.logger = logger;
-		CameraTransform.Position -= new System.Numerics.Vector3(0, 0, 10);
-	}
+		this.meshFactory = meshFactory;
 
-	public void SyncState()
-	{
-
+		Instance = this;
+		camera = new RenderedCamera(new Transform(), Width, Height);
 	}
 
 	public override void Render()
 	{
+		foreach (RenderedGameObject gameObject in gameObjects)
+			gameObject.Render(camera);
+	}
+
+	public void Update()
+	{
+		foreach (RenderedGameObject gameObject in gameObjects)
+			gameObject.Update();
+
 		camera.Update();
-		mesh.Render(camera);
-		//foreach (GameObject gameObject in RenderingObjects)
-		//	gameObject.Render(camera);
+	}
+
+	public void SetCameraParent(ref GameObjectData gameObjectData)
+	{
+		foreach (var gameObject in gameObjects)
+			if (gameObject.Id == gameObjectData.Id)
+				camera.Transform = gameObject.Transform;
+	}
+
+	public void RegisterGameObject(ref GameObjectData gameObjectData)
+	{
+		IMeshRenderer[] meshRenderers = new IMeshRenderer[gameObjectData.Meshes.Count];
+		for (int i = 0; i < gameObjectData.Meshes.Count; i++)
+		{
+			meshFactory.Create(gameObjectData.Meshes[i].Model, gameObjectData.Meshes[i].Material, out IMeshRenderer renderer);
+			meshRenderers[i] = renderer;
+		}
+
+		gameObjects.Add(new RenderedGameObject(new Transform(gameObjectData.Transform), gameObjectData.Id, meshRenderers));
+	}
+
+	public void UpdateGameObject(ref GameObjectData gameObjectData)
+	{
+		logger.LogInformation("Updating GameObjectId: {id}...", gameObjectData.Id);
+		camera.Update();
+
+		int updateId = gameObjectData.Id;
+		RenderedGameObject? gameObject = gameObjects.Find(obj => obj.Id == updateId);
+
+		if (gameObject is null)
+			logger.LogInformation("Can't find gameobject to update, Id: {id}", gameObjectData.Id);
+		else
+		{
+			// Update Transform
+			if (gameObjectData.TransformDirty)
+				gameObject.Transform.Copy(gameObjectData.Transform);
+
+			// Update Meshes
+			if (gameObjectData.MeshesDirty)
+			{
+				gameObject.Meshes.Clear();
+				foreach (MeshData meshData in gameObjectData.Meshes)
+					if (meshFactory.Create(meshData.Model, meshData.Material, out IMeshRenderer meshRenderer))
+						gameObject.Meshes.Add(meshRenderer);
+			}
+		}
+		// read message queue
 	}
 
 	protected override void Load() { }

@@ -1,4 +1,4 @@
-﻿using GameEngine.Core.Components;
+﻿using GameEngine.Core.Components.CommunicationComponentsData;
 
 namespace PhysicsEngine
 {
@@ -6,7 +6,7 @@ namespace PhysicsEngine
 	{
 		public static void Main() { }
 
-		public static void ModifyTransform(Transform transform)
+		public static void ResolveCollision(ref TransformData transform)
 		{
 			transform.Scale += new System.Numerics.Vector3(1);
 		}

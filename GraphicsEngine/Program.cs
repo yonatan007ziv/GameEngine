@@ -1,13 +1,10 @@
-﻿using GameEngine.Core.API;
-
-namespace GraphicsEngine;
+﻿namespace GraphicsEngine;
 
 public class Program
 {
 	public static void Main()
 	{
-		// Mock IPC Locally
-		var renderer = GraphicsEngine.Start();
+		var renderer = GraphicsEngineProvider.BuildEngine();
 		while (true)
 		{
 			renderer.RenderFrame();

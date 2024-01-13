@@ -1,6 +1,6 @@
-﻿using GraphicsEngine.Components.Shared;
+﻿using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
+using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces.Utils;
-using GraphicsEngine.Services.Interfaces.Utils.Managers;
 using StbImageSharp;
 
 namespace GraphicsEngine.Services.Implementations.Shared;

@@ -1,5 +1,6 @@
-﻿using GameEngine.Core.Components;
-using GameEngine.Core.SharedServices.Implementations;
+﻿using GameEngine.Components.GameObjectComponents;
+using GameEngine.Core.API;
+using GameEngine.Core.SharedServices.Implementations.Loggers;
 using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Services.Implementations.Factories;
 using GameEngine.Services.Implementations.Managers;
@@ -18,6 +19,9 @@ internal class ServiceRegisterer
 		RegisterServices();
 	}
 
+	public IServiceProvider BuildProvider()
+		=> collection.BuildServiceProvider();
+
 	private void RegisterServices()
 	{
 		collection.AddSingleton<ILogger, ConsoleLogger>();
@@ -28,18 +32,12 @@ internal class ServiceRegisterer
 		RegisterManagers();
 	}
 
-	public IServiceProvider BuildProvider()
-		=> collection.BuildServiceProvider();
-
-	// TODO: find a way to register only required services for each engine.
-	// No optional such as ILogger(s) that can be registered in multiple locations.
-	// Avoid service duplication!
 	private void RegisterEngines()
 	{
-		collection.AddSingleton<GameEngine>();
+		collection.AddSingleton<IGameEngine, Implementations.GameEngine>();
 
-		// if (openGL)
-		_ = new GraphicsEngine.Services.ServiceRegisterer(collection);
+		collection.AddSingleton<IGraphicsEngine>(provider => GraphicsEngine.GraphicsEngineProvider.BuildEngine());
+		collection.AddSingleton<IPhysicsEngine>(provider => PhysicsEngine.PhysicsEngineProvider.BuildEngine());
 
 		// Physics Engine
 		// Sound Engine

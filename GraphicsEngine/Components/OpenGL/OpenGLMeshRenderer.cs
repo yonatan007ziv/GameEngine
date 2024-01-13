@@ -8,7 +8,7 @@ using OpenTK.Mathematics;
 
 namespace GraphicsEngine.Components.OpenGL;
 
-public class OpenGLMeshRenderer : IMeshRenderer
+internal class OpenGLMeshRenderer : IMeshRenderer
 {
 	public ModelData Model { get; set; }
 	public Material Material { get; set; }
@@ -17,13 +17,13 @@ public class OpenGLMeshRenderer : IMeshRenderer
 	private Matrix4 view;
 	private Matrix4 projection;
 
-	public OpenGLMeshRenderer(ModelData modelData, Material material)
+	internal OpenGLMeshRenderer(ModelData modelData, Material material)
 	{
 		Model = modelData;
 		Material = material;
 	}
 
-	public void Render(RendererCamera camera)
+	public void Render(RenderedCamera camera)
 	{
 		view = camera.ViewMatrix.ToOpenTK();
 		projection = camera.ProjectionMatrix.ToOpenTK();

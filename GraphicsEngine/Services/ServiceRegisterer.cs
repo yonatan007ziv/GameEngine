@@ -1,19 +1,21 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.SharedServices.Implementations;
+using GameEngine.Core.SharedServices.Implementations.FileReaders;
+using GameEngine.Core.SharedServices.Implementations.Loggers;
+using GameEngine.Core.SharedServices.Implementations.Managers;
 using GameEngine.Core.SharedServices.Interfaces;
+using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
 using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.OpenGL;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
-using GraphicsEngine.Services.Implementations.Direct11.Renderer;
 using GraphicsEngine.Services.Implementations.OpenGL;
 using GraphicsEngine.Services.Implementations.OpenGL.Input;
 using GraphicsEngine.Services.Implementations.OpenGL.Renderer;
 using GraphicsEngine.Services.Implementations.Shared;
 using GraphicsEngine.Services.Implementations.Shared.Factories;
 using GraphicsEngine.Services.Implementations.Shared.Factories.Shaders;
-using GraphicsEngine.Services.Implementations.Shared.FileReaders;
 using GraphicsEngine.Services.Implementations.Shared.Managers;
 using GraphicsEngine.Services.Implementations.Shared.ModelImporter;
 using GraphicsEngine.Services.Interfaces.InputProviders;
@@ -24,21 +26,18 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsEngine.Services;
 
-public class ServiceRegisterer
+internal class ServiceRegisterer
 {
 	private readonly IServiceCollection collection;
 
-    public ServiceRegisterer()
-    {
+	public ServiceRegisterer()
+	{
 		collection = new ServiceCollection();
 		RegisterServices();
 	}
 
-    public ServiceRegisterer(IServiceCollection collection)
-    {
-		this.collection = collection;
-		RegisterServices();
-	}
+	public IServiceProvider BuildProvider()
+		=> collection.BuildServiceProvider();
 
 	private void RegisterServices()
 	{
@@ -47,9 +46,6 @@ public class ServiceRegisterer
 
 		RegisterShared();
 	}
-
-	public IServiceProvider BuildProvider()
-		=> collection.BuildServiceProvider();
 
 	private void RegisterOpenGL()
 	{
@@ -64,7 +60,7 @@ public class ServiceRegisterer
 
 	private void RegisterDirect11()
 	{
-		collection.AddSingleton<IGraphicsEngine, Direct11Renderer>();
+		// collection.AddSingleton<IGraphicsEngine, Direct11Renderer>();
 		// collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 	}
 

@@ -30,6 +30,8 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	public BaseOpenGLRenderer()
 		: base(new GameWindowSettings(), new NativeWindowSettings())
 	{
+		Context.MakeNoneCurrent();
+
 		Title = "GraphicsRenderer";
 		CenterWindow();
 	}
@@ -78,7 +80,6 @@ public abstract class BaseOpenGLRenderer : GameWindow
 		UpdateFrequency = vsync ? 60 : 500;
 	}
 
-	int frameCount = 0;
 	public new void RenderFrame()
 	{
 		updateWatch.Restart();
@@ -100,6 +101,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 			{
 				OnUnload();
 				Close();
+				Environment.Exit(0);
 			}
 		}
 	}
@@ -134,7 +136,8 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	{
 		base.OnLoad();
 
-		GL.DebugMessageCallback(GLDebugCallback, IntPtr.Zero);
+		Console.WriteLine("BaseOpenGLRenderer: OnLoad, register DebugCallback");
+		// GL.DebugMessageCallback(GLDebugCallback, IntPtr.Zero);
 		GL.Enable(EnableCap.DebugOutput);
 		GL.Enable(EnableCap.DepthTest);
 		GL.ActiveTexture(TextureUnit.Texture0);

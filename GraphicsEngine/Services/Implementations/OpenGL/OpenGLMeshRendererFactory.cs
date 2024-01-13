@@ -10,22 +10,22 @@ namespace GraphicsEngine.Services.Implementations.OpenGL;
 internal class OpenGLMeshRendererFactory : IFactory<string, string, IMeshRenderer>
 {
 	private readonly ILogger logger;
-	private readonly IFactory<string, ModelData> modelImporter;
+	private readonly IFactory<string, ModelData> modelFactory;
 	private readonly IFactory<string, Material> materialFactory;
 
-	public OpenGLMeshRendererFactory(ILogger logger, IFactory<string, ModelData> modelImporter, IFactory<string, Material> materialFactory)
+	public OpenGLMeshRendererFactory(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory)
 	{
 		this.logger = logger;
-		this.modelImporter = modelImporter;
+		this.modelFactory = modelFactory;
 		this.materialFactory = materialFactory;
 	}
 
-	public bool Create(string modelName, string shaderName, out IMeshRenderer mesh)
+	public bool Create(string modelName, string materialName, out IMeshRenderer mesh)
 	{
-		if (!modelImporter.Create(modelName, out ModelData model))
+		if (!modelFactory.Create(modelName, out ModelData model))
 		{
-			logger.LogError("Falling Back to Default Model");
-			if (!modelImporter.Create("MissingModel.obj", out model))
+			logger.LogInformation("Falling Back to Default Model");
+			if (!modelFactory.Create("MissingModel.obj", out model))
 			{
 				logger.LogCritical("Error While Falling Back to Default Model");
 				mesh = default!;
@@ -33,10 +33,10 @@ internal class OpenGLMeshRendererFactory : IFactory<string, string, IMeshRendere
 			}
 		}
 
-		if (!materialFactory.Create(shaderName, out Material material))
+		if (!materialFactory.Create(materialName, out Material material))
 		{
 			logger.LogError("Falling Back to Default Material");
-			if (!materialFactory.Create("Default", out material))
+			if (!materialFactory.Create("Default.mat", out material))
 			{
 				logger.LogCritical("Error While Falling Back to Default Material");
 				mesh = default!;
