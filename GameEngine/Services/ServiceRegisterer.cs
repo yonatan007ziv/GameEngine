@@ -38,10 +38,8 @@ internal class ServiceRegisterer
 
 		collection.AddSingleton<IGraphicsEngine>(provider => GraphicsEngine.GraphicsEngineProvider.BuildEngine());
 		collection.AddSingleton<IPhysicsEngine>(provider => PhysicsEngine.PhysicsEngineProvider.BuildEngine());
-
-		// Physics Engine
-		// Sound Engine
-		// Input Engine (maybe)
+		collection.AddSingleton<ISoundEngine>(provider => SoundEngine.SoundEngineProvider.BuildEngine());
+		collection.AddSingleton<IInputEngine>(provider => InputEngine.InputEngineProvider.BuildEngine());
 	}
 
 	private void RegisterFactories()

@@ -25,13 +25,15 @@ internal class MaterialFactory : IFactory<string, Material>
 	{
 		if (!resourceManager.LoadResourceLines(materialName, out string[] mat) || mat.Length < 2)
 		{
-			if (mat == null)
-				logger.LogError("Invalid material {material} data", materialName);
-			else
-				logger.LogError("Material {material} not found", materialName);
+			if (materialName == "Default.mat")
+			{
+				logger.LogError("Failed falling back to default material", materialName);
+				material = default!;
+				return false;
+			}
 
-			material = default!;
-			return false;
+			logger.LogError("Material {material} not found, falling back to default material", materialName);
+			return Create("Default.mat", out material);
 		}
 
 		(string shaderName, string textureName) = (mat[0], mat[1]);

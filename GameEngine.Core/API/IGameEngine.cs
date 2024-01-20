@@ -2,7 +2,11 @@
 
 public interface IGameEngine
 {
-	public float ElapsedMs { get; }
+	public int TickRate { get; set; }
+	public int FpsCap { get; set; }
+
+	public float DeltaTime { get; }
+	public float ElapsedSeconds { get; }
 
 	void Run();
 }

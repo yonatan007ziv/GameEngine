@@ -1,6 +1,5 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.CommunicationComponentsData;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared;
@@ -15,10 +14,9 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 
 	private readonly ILogger logger;
 	private readonly IFactory<string, string, IMeshRenderer> meshFactory;
-	private readonly RenderedCamera camera;
+	private RenderedCamera camera;
 
-	private readonly List<RenderedGameObject> gameObjects = new List<RenderedGameObject>();
-	public Transform CameraTransform => camera.Transform;
+	private readonly List<RenderedObject> renderedObjects = new List<RenderedObject>();
 
 	public new string Title
 	{
@@ -32,68 +30,49 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 		this.meshFactory = meshFactory;
 
 		Instance = this;
-		camera = new RenderedCamera(new Transform(), Width, Height);
 	}
 
 	public override void Render()
 	{
-		foreach (RenderedGameObject gameObject in gameObjects)
-			gameObject.Render(camera);
+		for (int i = 0; i < renderedObjects.Count; i++)
+			renderedObjects[i].Render(camera);
 	}
 
-	public void Update()
+	public void SetCamera(ref GameObjectData gameObjectData)
 	{
-		foreach (RenderedGameObject gameObject in gameObjects)
-			gameObject.Update();
+		if (camera != null)
+			renderedObjects.Remove(camera);
 
-		camera.Update();
-	}
-
-	public void SetCameraParent(ref GameObjectData gameObjectData)
-	{
-		foreach (var gameObject in gameObjects)
-			if (gameObject.Id == gameObjectData.Id)
-				camera.Transform = gameObject.Transform;
-	}
-
-	public void RegisterGameObject(ref GameObjectData gameObjectData)
-	{
-		IMeshRenderer[] meshRenderers = new IMeshRenderer[gameObjectData.Meshes.Count];
-		for (int i = 0; i < gameObjectData.Meshes.Count; i++)
-		{
-			meshFactory.Create(gameObjectData.Meshes[i].Model, gameObjectData.Meshes[i].Material, out IMeshRenderer renderer);
-			meshRenderers[i] = renderer;
-		}
-
-		gameObjects.Add(new RenderedGameObject(new Transform(gameObjectData.Transform), gameObjectData.Id, meshRenderers));
+		camera = new RenderedCamera(gameObjectData.Id, gameObjectData.Transform, Width, Height);
+		renderedObjects.Add(camera);
 	}
 
 	public void UpdateGameObject(ref GameObjectData gameObjectData)
 	{
-		logger.LogInformation("Updating GameObjectId: {id}...", gameObjectData.Id);
-		camera.Update();
-
 		int updateId = gameObjectData.Id;
-		RenderedGameObject? gameObject = gameObjects.Find(obj => obj.Id == updateId);
+		RenderedObject? gameObject = renderedObjects.Find(obj => obj.Id == updateId);
 
 		if (gameObject is null)
-			logger.LogInformation("Can't find gameobject to update, Id: {id}", gameObjectData.Id);
-		else
 		{
-			// Update Transform
-			if (gameObjectData.TransformDirty)
-				gameObject.Transform.Copy(gameObjectData.Transform);
-
-			// Update Meshes
-			if (gameObjectData.MeshesDirty)
+			IMeshRenderer[] meshRenderers = new IMeshRenderer[gameObjectData.Meshes.Count];
+			for (int i = 0; i < gameObjectData.Meshes.Count; i++)
 			{
-				gameObject.Meshes.Clear();
-				foreach (MeshData meshData in gameObjectData.Meshes)
-					if (meshFactory.Create(meshData.Model, meshData.Material, out IMeshRenderer meshRenderer))
-						gameObject.Meshes.Add(meshRenderer);
+				meshFactory.Create(gameObjectData.Meshes[i].Model, gameObjectData.Meshes[i].Material, out IMeshRenderer renderer);
+				meshRenderers[i] = renderer;
 			}
+
+			gameObject = new RenderedObject(gameObjectData.Transform, gameObjectData.Id, meshRenderers);
+			renderedObjects.Add(gameObject);
 		}
-		// read message queue
+		else if (gameObjectData.MeshesDirty)
+		{   // Update Meshes
+			gameObject.Meshes.Clear();
+			for (int i = 0; i < gameObjectData.Meshes.Count; i++)
+				if (meshFactory.Create(gameObjectData.Meshes[i].Model, gameObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
+					gameObject.Meshes.Add(meshRenderer);
+		}
+
+		gameObject.Update();
 	}
 
 	protected override void Load() { }

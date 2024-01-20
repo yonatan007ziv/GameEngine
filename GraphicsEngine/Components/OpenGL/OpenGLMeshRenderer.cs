@@ -17,7 +17,7 @@ internal class OpenGLMeshRenderer : IMeshRenderer
 	private Matrix4 view;
 	private Matrix4 projection;
 
-	internal OpenGLMeshRenderer(ModelData modelData, Material material)
+	public OpenGLMeshRenderer(ModelData modelData, Material material)
 	{
 		Model = modelData;
 		Material = material;
@@ -54,6 +54,6 @@ internal class OpenGLMeshRenderer : IMeshRenderer
 			* Matrix4.CreateRotationY(transform.Rotation.Y)
 			* Matrix4.CreateRotationZ(transform.Rotation.Z);
 
-		modelMatrix = translationBack * (translationToOrigin * rotationMatrix * scaleMatrix) * translationBack;
+		modelMatrix = translationToOrigin * rotationMatrix * scaleMatrix * translationBack;
 	}
 }

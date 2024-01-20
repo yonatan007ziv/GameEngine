@@ -3,14 +3,14 @@ using GraphicsEngine.Components.Interfaces;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderedGameObject
+internal class RenderedObject
 {
 	public int Id { get; }
 
 	public List<IMeshRenderer> Meshes = new List<IMeshRenderer>();
 	public Transform Transform { get; }
 
-	public RenderedGameObject(Transform transform, int id, params IMeshRenderer[] meshRenderers)
+	public RenderedObject(Transform transform, int id, params IMeshRenderer[] meshRenderers)
 	{
 		Id = id;
 		Transform = transform;
@@ -23,7 +23,7 @@ internal class RenderedGameObject
 			meshRenderer.Render(camera);
 	}
 
-	public void Update()
+	public virtual void Update()
 	{
 		foreach (IMeshRenderer meshRenderer in Meshes)
 			meshRenderer.Update(Transform);

@@ -1,5 +1,6 @@
 ﻿using GameEngine.Components.GameObjectComponents;
 using GameEngine.Core.API;
+using GameEngine.Core.Components;
 using GameEngine.Core.Components.CommunicationComponentsData;
 using GameEngine.Services.Interfaces.Managers;
 using Microsoft.Extensions.Logging;
@@ -11,97 +12,132 @@ internal class GameEngine : IGameEngine
 {
 	private readonly ILogger logger;
 	private readonly IGraphicsEngine renderer;
+	private readonly ISoundEngine soundEngine;
+	private readonly IInputEngine inputEngine;
 	private readonly IPhysicsEngine physicsEngine;
 	private readonly IGameObjectManager gameObjectManager;
 
 	private GameObject camera;
 
-	private readonly Stopwatch engineTime;
-	public float ElapsedMs => engineTime.ElapsedMilliseconds;
+	private readonly Stopwatch fpsTime, tickTime, engineTime;
 
-	public GameEngine(ILogger logger, IGraphicsEngine renderer, IPhysicsEngine physicsEngine, IGameObjectManager gameObjectManager)
+	public int TickRate { get; set; } = 128;
+	public int FpsCap { get; set; } = 240;
+
+	public IntPtr WindowHandle => renderer.WindowHandle;
+	public float DeltaTime { get => (float)fpsTime.Elapsed.TotalSeconds; }
+	public float ElapsedSeconds => (float)engineTime.Elapsed.TotalSeconds;
+
+	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine, IGameObjectManager gameObjectManager)
 	{
 		this.logger = logger;
 		this.renderer = renderer;
+		this.soundEngine = soundEngine;
+		this.inputEngine = inputEngine;
 		this.physicsEngine = physicsEngine;
 		this.gameObjectManager = gameObjectManager;
 
+		fpsTime = new Stopwatch();
+		tickTime = new Stopwatch();
 		engineTime = new Stopwatch();
 		engineTime.Start();
 
 		camera = gameObjectManager.CreateGameObject();
-
-		Start();
-	}
-
-	private void Start()
-	{
-		renderer.Start();
-
-		GameObjectData cameraData = camera.TranslateGameObject();
-		renderer.RegisterGameObject(ref cameraData);
-		renderer.SetCameraParent(ref cameraData);
-
-		//EngineGameObject trex = gameObjectManager.CreateGameObject();
-		//EngineGameObject leed = gameObjectManager.CreateGameObject();
-		//
-		//trex.Meshes.Add(new Core.Components.MeshData("Trex.obj", new Core.Components.MaterialData("Textured", "TrexTexture.png")));
-		//SharedGameObject trexData = trex.TranslateGameObject();
-		//renderer.RegisterGameObject(ref trexData);
-		//
-		//leed.Meshes.Add(new Core.Components.MeshData("Leed.obj", new Core.Components.MaterialData("Textured", "Red.png")));
-		//SharedGameObject leedData = leed.TranslateGameObject();
-		//renderer.RegisterGameObject(ref leedData);
-		//
-		//trex.Transform.Scale = new System.Numerics.Vector3(1, 1, 1);
-		//leed.Transform.Scale = new System.Numerics.Vector3(1, 1, 1);
-
-		camera.Transform.Rotation = new System.Numerics.Vector3(-90, 120, 0);
-
-		for (int i = 0; i < MathF.PI * 25 * 4; i++)
-		{
-			GameObject gameObject = gameObjectManager.CreateGameObject();
-			gameObject.Transform.Scale = new System.Numerics.Vector3(1, 1, 1);
-			gameObject.Transform.Position = new System.Numerics.Vector3(MathF.Sin(i / 25f) * 50, 0, MathF.Cos(i / 25f) * 50);
-			gameObject.Transform.Rotation = new System.Numerics.Vector3(MathF.Sin(i / 25f) * 50, 0, MathF.Cos(i / 25f) * 50);
-			gameObject.Meshes.Add(new Core.Components.MeshData("Trex.obj", i % 2 == 0 ? "MissingTexture.mat" : "Trex.mat"));
-			GameObjectData sharedGameObject = gameObject.TranslateGameObject();
-			renderer.RegisterGameObject(ref sharedGameObject);
-		}
 	}
 
 	public void Run()
 	{
-		renderer.TurnVSync(true);
-		renderer.LockMouse(false);
+		camera.Transform.Position = new System.Numerics.Vector3(0, 75, 0);
+		camera.Transform.Rotation = new System.Numerics.Vector3(-90, 0, 0);
+		GameObjectData cameraObj = camera.TranslateGameObject();
+		renderer.SetCamera(ref cameraObj);
+		physicsEngine.UpdateGameObject(ref cameraObj);
+
+		GameObject gameObject = gameObjectManager.CreateGameObject();
+		gameObject.Transform.Scale = new System.Numerics.Vector3(0.5f, 1, 1);
+		gameObject.Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
+
+
+		// Run on a different thread: object ownership issues
+		// UpdateLoop();
+		RenderLoop();
+	}
+
+	//private async void UpdateLoop()
+	//{
+	//	// Thread.CurrentThread.Name = "Update Thread";
+
+	//	while (true)
+	//	{
+	//		tickTime.Restart();
+
+	//		physicsEngine.PhysicsPass(DeltaTime);
+	//		SyncEngines();
+
+	//		// Tick Rate
+	//		int timeToWait = 1000 / TickRate - (int)tickTime.ElapsedMilliseconds;
+	//		await Task.Delay(timeToWait > 0 ? timeToWait : 0);
+	//	}
+	//}
+
+	private void RenderLoop()
+	{
+		soundEngine.AttachWnd(WindowHandle);
+		soundEngine.Test();
+
+		Thread.CurrentThread.Name = "Render Thread";
+
+		renderer.Start();
 
 		while (true)
 		{
-			SyncEngines();
-
-			// bounce bounce 
-			//camera.Transform.Position = new System.Numerics.Vector3(-150, MathF.Sin((float)engineTime.Elapsed.TotalSeconds * 15) / 4, -100);
-			camera.Transform.Position += new System.Numerics.Vector3(0, 0.05f, 0);
+			fpsTime.Restart();
 
 			renderer.RenderFrame();
+
+			// Fps Cap
+			int timeToWait = 1000 / FpsCap - (int)fpsTime.ElapsedMilliseconds;
+			Thread.Sleep(timeToWait > 0 ? timeToWait : 0);
+
+			{   // temp: Move to another thread
+				physicsEngine.PhysicsPass(DeltaTime);
+				SyncEngines();
+			}
+
+			if (DeltaTime != 0)
+				logger.LogInformation("DT {dt}", DeltaTime);
+			logger.LogInformation("POS {dt}", camera.Transform.Position);
 		}
 	}
 
+	private bool first = true;
 	private void SyncEngines()
 	{
-		foreach (GameObject gameObject in gameObjectManager.GameObjects)
+		if (first)
 		{
-			if (!gameObject.IsDirty())
+			GameObjectData cameraData = camera.TranslateGameObject();
+			renderer.SetCamera(ref cameraData);
+			first = false;
+		}
+
+		for (int i = 0; i < gameObjectManager.GameObjects.Count; i++)
+		{
+			GameObject gameObject = gameObjectManager.GameObjects[i];
+			if (!gameObject.Dirty)
 				continue;
 
 			GameObjectData comGameObject = gameObject.TranslateGameObject();
 
-			// Renderer
-			// probably use IGameObjectManager to track changes and or use a message queue for GameObject id
+			// Graphics Engine
 			renderer.UpdateGameObject(ref comGameObject);
 
-			gameObject.ResetDirty();
+			// Physics Engine
+			physicsEngine.UpdateGameObject(ref comGameObject);
+
+			// Sound Engine
+			// TODO: update sound objects
+
+			gameObject.Dirty = false;
 		}
-		renderer.Update();
 	}
 }

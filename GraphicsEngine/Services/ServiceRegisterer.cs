@@ -11,14 +11,12 @@ using GraphicsEngine.Components.OpenGL;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Implementations.OpenGL;
-using GraphicsEngine.Services.Implementations.OpenGL.Input;
 using GraphicsEngine.Services.Implementations.OpenGL.Renderer;
 using GraphicsEngine.Services.Implementations.Shared;
 using GraphicsEngine.Services.Implementations.Shared.Factories;
 using GraphicsEngine.Services.Implementations.Shared.Factories.Shaders;
 using GraphicsEngine.Services.Implementations.Shared.Managers;
 using GraphicsEngine.Services.Implementations.Shared.ModelImporter;
-using GraphicsEngine.Services.Interfaces.InputProviders;
 using GraphicsEngine.Services.Interfaces.Utils;
 using GraphicsEngine.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,10 +50,6 @@ internal class ServiceRegisterer
 		collection.AddSingleton<IGraphicsEngine, OpenGLRenderer>();
 		collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 		collection.AddSingleton<IFactory<string, string, IMeshRenderer>, OpenGLMeshRendererFactory>();
-
-		collection.AddSingleton<IInputProvider, OpenGLInputProvider>();
-		collection.AddSingleton<IMouseInputProvider, OpenGLMouseInputProvider>();
-		collection.AddSingleton<IKeyboardInputProvider, OpenGLKeyboardInputProvider>();
 	}
 
 	private void RegisterDirect11()

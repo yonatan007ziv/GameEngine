@@ -2,5 +2,5 @@
 
 public interface IInputEngine
 {
-
+	void Inject(uint processId);
 }

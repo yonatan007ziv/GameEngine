@@ -1,9 +1,7 @@
-﻿using OpenTK.Core;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Services.Implementations.OpenGL.Renderer;
@@ -22,7 +20,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	[DllImport("winmm")]
 	private static extern uint timeEndPeriod(uint uPeriod);
 
-	private readonly Stopwatch updateWatch = new Stopwatch();
+	public IntPtr WindowHandle { get { unsafe { return GLFW.GetWin32Window(WindowPtr); }; } }
 
 	protected int Width { get; private set; } = 640;
 	protected int Height { get; private set; } = 360;
@@ -65,8 +63,6 @@ public abstract class BaseOpenGLRenderer : GameWindow
 
 		OnLoad();
 		OnResize(new ResizeEventArgs(ClientSize));
-
-		updateWatch.Start();
 	}
 
 	public void LockMouse(bool lockMouse)
@@ -74,26 +70,11 @@ public abstract class BaseOpenGLRenderer : GameWindow
 		CursorState = lockMouse ? CursorState.Grabbed : CursorState.Normal;
 	}
 
-	public void TurnVSync(bool vsync)
-	{
-		VSync = vsync ? VSyncMode.On : VSyncMode.Off;
-		UpdateFrequency = vsync ? 60 : 500;
-	}
-
 	public new void RenderFrame()
 	{
-		updateWatch.Restart();
-
-		NewInputFrame();
 		ProcessWindowEvents(false);
 
 		RenderInternal();
-
-		double timeBetweenFrames = UpdateFrequency == 0 ? 0 : (1.0 / UpdateFrequency);
-		double timeToWait = timeBetweenFrames - updateWatch.Elapsed.TotalSeconds;
-
-		if (timeToWait > 0)
-			Utils.AccurateSleep(timeToWait, ExpectedSchedulerPeriod);
 
 		unsafe
 		{
@@ -132,10 +113,8 @@ public abstract class BaseOpenGLRenderer : GameWindow
 		Height = e.Height;
 	}
 
-	protected override void OnLoad()
+	private new void OnLoad()
 	{
-		base.OnLoad();
-
 		Console.WriteLine("BaseOpenGLRenderer: OnLoad, register DebugCallback");
 		// GL.DebugMessageCallback(GLDebugCallback, IntPtr.Zero);
 		GL.Enable(EnableCap.DebugOutput);
@@ -144,9 +123,16 @@ public abstract class BaseOpenGLRenderer : GameWindow
 		Load();
 	}
 
-	protected override void OnUnload()
+	private new void OnUnload()
 	{
-		base.OnUnload();
 		Unload();
+	}
+
+	public void SetKeyboardCallback(Action<char> action)
+	{
+		unsafe
+		{
+			// GLFW.SetKeyCallback(WindowPtr, (wnd, key, scanCode, act, mods) => action(key.ToString()[0]));
+		}
 	}
 }

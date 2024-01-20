@@ -1,6 +1,5 @@
 ﻿using GameEngine.Core.API;
 using Microsoft.Extensions.DependencyInjection;
-using PhysicsEngine.Services.Implementations;
 
 namespace PhysicsEngine.Services;
 
@@ -19,6 +18,6 @@ internal class ServiceRegisterer
 
 	private void RegisterServices()
 	{
-		collection.AddSingleton<IPhysicsEngine, SimplePhysicsEngine>();
+		collection.AddSingleton<IPhysicsEngine, Implementations.PhysicsEngine>();
 	}
 }

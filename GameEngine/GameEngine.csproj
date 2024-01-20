@@ -136,8 +136,13 @@
   <ItemGroup>
     <ProjectReference Include="..\GameEngine.Core\GameEngine.Core.csproj" />
     <ProjectReference Include="..\GraphicsEngine\GraphicsEngine.csproj" />
+    <ProjectReference Include="..\InputEngine\InputEngine.csproj" />
     <ProjectReference Include="..\PhysicsEngine\PhysicsEngine.csproj" />
     <ProjectReference Include="..\SoundEngine\SoundEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\Sounds\" />
   </ItemGroup>
 
 </Project>

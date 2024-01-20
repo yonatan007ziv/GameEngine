@@ -1613,6 +1613,20 @@
           "bin/placeholder/GraphicsEngine.dll": {}
         }
       },
+      "InputEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "GameEngine.Core": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection": "8.0.0"
+        },
+        "compile": {
+          "bin/placeholder/InputEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/InputEngine.dll": {}
+        }
+      },
       "PhysicsEngine/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
@@ -1631,6 +1645,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "GameEngine.Core": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection": "8.0.0",
           "SharpDX.DirectSound": "4.2.0"
         },
         "compile": {
@@ -5314,6 +5330,11 @@
       "path": "../GraphicsEngine/GraphicsEngine.csproj",
       "msbuildProject": "../GraphicsEngine/GraphicsEngine.csproj"
     },
+    "InputEngine/1.0.0": {
+      "type": "project",
+      "path": "../InputEngine/InputEngine.csproj",
+      "msbuildProject": "../InputEngine/InputEngine.csproj"
+    },
     "PhysicsEngine/1.0.0": {
       "type": "project",
       "path": "../PhysicsEngine/PhysicsEngine.csproj",
@@ -5329,6 +5350,7 @@
     "net6.0": [
       "GameEngine.Core >= 1.0.0",
       "GraphicsEngine >= 1.0.0",
+      "InputEngine >= 1.0.0",
       "PhysicsEngine >= 1.0.0",
       "SoundEngine >= 1.0.0"
     ]
@@ -5371,6 +5393,9 @@
             },
             "D:\\Code\\VS Community\\GameEngine\\GraphicsEngine\\GraphicsEngine.csproj": {
               "projectPath": "D:\\Code\\VS Community\\GameEngine\\GraphicsEngine\\GraphicsEngine.csproj"
+            },
+            "D:\\Code\\VS Community\\GameEngine\\InputEngine\\InputEngine.csproj": {
+              "projectPath": "D:\\Code\\VS Community\\GameEngine\\InputEngine\\InputEngine.csproj"
             },
             "D:\\Code\\VS Community\\GameEngine\\PhysicsEngine\\PhysicsEngine.csproj": {
               "projectPath": "D:\\Code\\VS Community\\GameEngine\\PhysicsEngine\\PhysicsEngine.csproj"

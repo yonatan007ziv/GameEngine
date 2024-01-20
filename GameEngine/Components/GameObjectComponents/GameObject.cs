@@ -6,9 +6,17 @@ namespace GameEngine.Components.GameObjectComponents;
 internal class GameObject
 {
 	public int Id { get; }
+	public bool Dirty
+	{
+		get => Transform.TransformDirty || MeshesDirty;
+		set
+		{
+			Transform.TransformDirty = value;
+			MeshesDirty = value;
+		}
+	}
 
-	public bool TransformDirty { get; private set; }
-	public Transform Transform { get; }
+	public Transform Transform { get; set; }
 
 	public bool MeshesDirty { get; private set; }
 	public ObservableCollection<MeshData> Meshes;
@@ -17,21 +25,11 @@ internal class GameObject
 	{
 		Id = id;
 
-		Transform = new Transform(TransformChanged);
+		Transform = new Transform();
 
 		Meshes = new ObservableCollection<MeshData>();
-		Meshes.CollectionChanged += (s, e) => MeshesChanged();
+		Meshes.CollectionChanged += (s, e) => MeshesDirty = true;
+
+		Dirty = true;
 	}
-
-	public bool IsDirty()
-		=> TransformDirty || MeshesDirty;
-
-	public void ResetDirty()
-	{
-		TransformDirty = false;
-		MeshesDirty = false;
-	}
-
-	private void TransformChanged() => TransformDirty = true;
-	private void MeshesChanged() => MeshesDirty = true;
 }

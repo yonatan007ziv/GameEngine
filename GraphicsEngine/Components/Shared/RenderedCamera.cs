@@ -4,15 +4,18 @@ using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderedCamera
+internal class RenderedCamera : RenderedObject
 {
+	private const float FOV = 60;
+
 	public Transform Transform { get; set; }
 	public float Width { get; set; }
 	public float Height { get; set; }
 	public Matrix4x4 ViewMatrix { get; private set; }
 	public Matrix4x4 ProjectionMatrix { get; private set; }
 
-	public RenderedCamera(Transform parentTransform, int width, int height)
+	public RenderedCamera(int id, Transform parentTransform, int width, int height)
+		: base(parentTransform, id)
 	{
 		Width = width;
 		Height = height;
@@ -23,9 +26,9 @@ internal class RenderedCamera
 	private void UpdateVectors()
 	{
 		ViewMatrix = Matrix4x4.CreateLookAt(Transform.Position, Transform.Position + Transform.LocalFront, Transform.LocalUp);
-		ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegToRad(90), Width / Height, 0.1f, 10000);
+		ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegToRad(FOV), Width / Height, 0.1f, 10000);
 	}
 
-	public void Update()
+	public override void Update()
 		=> UpdateVectors();
 }

@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Core.IPC.Input;
+﻿namespace GameEngine.Core.Input;
 
 public enum MouseButton
 {
