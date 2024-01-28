@@ -1,10 +1,12 @@
 ﻿using GameEngine.Components.GameObjectComponents;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.CommunicationComponentsData;
+using GameEngine.Core.Components.Physics;
+using GameEngine.Extensions;
 using GameEngine.Services.Interfaces.Managers;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace GameEngine.Services.Implementations;
 
@@ -17,15 +19,15 @@ internal class GameEngine : IGameEngine
 	private readonly IPhysicsEngine physicsEngine;
 	private readonly IGameObjectManager gameObjectManager;
 
-	private GameObject camera;
-
-	private readonly Stopwatch fpsTime, tickTime, engineTime;
+	private readonly GameObject camera, uiCamera;
+	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 
 	public int TickRate { get; set; } = 128;
 	public int FpsCap { get; set; } = 240;
 
 	public IntPtr WindowHandle => renderer.WindowHandle;
-	public float DeltaTime { get => (float)fpsTime.Elapsed.TotalSeconds; }
+	public float FpsDeltaTime => (float)renderStopwatch.Elapsed.TotalSeconds;
+	public float TickDeltaTime => (float)updateStopwatch.Elapsed.TotalSeconds;
 	public float ElapsedSeconds => (float)engineTime.Elapsed.TotalSeconds;
 
 	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine, IGameObjectManager gameObjectManager)
@@ -37,107 +39,146 @@ internal class GameEngine : IGameEngine
 		this.physicsEngine = physicsEngine;
 		this.gameObjectManager = gameObjectManager;
 
-		fpsTime = new Stopwatch();
-		tickTime = new Stopwatch();
+		renderStopwatch = new Stopwatch();
+		updateStopwatch = new Stopwatch();
 		engineTime = new Stopwatch();
 		engineTime.Start();
 
 		camera = gameObjectManager.CreateGameObject();
+		uiCamera = gameObjectManager.CreateGameObject();
+	}
+
+	private void SetScene()
+	{
+		camera.Transform.Position = new Vector3(0, 0, -1);
+		camera.Meshes.Add(new MeshData("Camera.obj", ""));
+		GameObjectData cameraData = camera.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref cameraData, new ViewPort(0.5f, 0.65f, 1, 0.5f));
+
+		GameObject secondCamera = gameObjectManager.CreateGameObject();
+		secondCamera.Transform.Position = new Vector3(0, 5, -10);
+		GameObjectData secondCameraData = secondCamera.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref secondCameraData, new ViewPort(0.5f, 0.25f, 1, 0.5f));
+
+		uiCamera.UI = true;
+		uiCamera.Transform.Position = new Vector3(0, 0, -1);
+		GameObjectData uiCameraData = uiCamera.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref uiCameraData, new ViewPort(0.5f, 0.5f, 1, 1));
 	}
 
 	public void Run()
 	{
-		camera.Transform.Position = new System.Numerics.Vector3(0, 75, 0);
-		camera.Transform.Rotation = new System.Numerics.Vector3(-90, 0, 0);
-		GameObjectData cameraObj = camera.TranslateGameObject();
-		renderer.SetCamera(ref cameraObj);
-		physicsEngine.UpdateGameObject(ref cameraObj);
+		SetScene();
 
-		GameObject gameObject = gameObjectManager.CreateGameObject();
-		gameObject.Transform.Scale = new System.Numerics.Vector3(0.5f, 1, 1);
-		gameObject.Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
-
-
-		// Run on a different thread: object ownership issues
-		// UpdateLoop();
-		RenderLoop();
+		new Thread(UpdateLoop).Start(); // Update Thread
+		RenderLoop(); // Render Thread
 	}
 
-	//private async void UpdateLoop()
-	//{
-	//	// Thread.CurrentThread.Name = "Update Thread";
-
-	//	while (true)
-	//	{
-	//		tickTime.Restart();
-
-	//		physicsEngine.PhysicsPass(DeltaTime);
-	//		SyncEngines();
-
-	//		// Tick Rate
-	//		int timeToWait = 1000 / TickRate - (int)tickTime.ElapsedMilliseconds;
-	//		await Task.Delay(timeToWait > 0 ? timeToWait : 0);
-	//	}
-	//}
-
-	private void RenderLoop()
+	private void UpdateLoop()
 	{
-		soundEngine.AttachWnd(WindowHandle);
-		soundEngine.Test();
-
-		Thread.CurrentThread.Name = "Render Thread";
-
-		renderer.Start();
+		Thread.CurrentThread.Name = "Update Thread";
 
 		while (true)
 		{
-			fpsTime.Restart();
+			updateStopwatch.Restart();
 
-			renderer.RenderFrame();
-
-			// Fps Cap
-			int timeToWait = 1000 / FpsCap - (int)fpsTime.ElapsedMilliseconds;
+			// Tick Limit
+			int timeToWait = 1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds;
 			Thread.Sleep(timeToWait > 0 ? timeToWait : 0);
 
-			{   // temp: Move to another thread
-				physicsEngine.PhysicsPass(DeltaTime);
-				SyncEngines();
-			}
+			ApplyPhysicsUpdates(physicsEngine.PhysicsPass(TickDeltaTime));
+			SyncPhysicsSoundEngines();
 
-			if (DeltaTime != 0)
-				logger.LogInformation("DT {dt}", DeltaTime);
-			logger.LogInformation("POS {dt}", camera.Transform.Position);
+			// camera.Transform.Rotation += new Vector3(0, 22.5f *TickDeltaTime, 0);
 		}
 	}
 
-	private bool first = true;
-	private void SyncEngines()
+	private void RenderLoop()
 	{
-		if (first)
-		{
-			GameObjectData cameraData = camera.TranslateGameObject();
-			renderer.SetCamera(ref cameraData);
-			first = false;
-		}
+		Thread.CurrentThread.Name = "Render Thread";
 
+		renderer.Start();
+		while (true)
+		{
+			renderStopwatch.Restart();
+
+			renderer.RenderFrame();
+
+			// Fps Limit
+			int timeToWait = 1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds;
+			Thread.Sleep(timeToWait > 0 ? timeToWait : 0);
+
+			SyncRenderEngine();
+		}
+	}
+
+	private void ApplyPhysicsUpdates(List<PhysicsGameObjectUpdateData> physicsUpdates)
+	{
+		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
+		{
+			GameObject? match = gameObjectManager.GameObjects.Find((gameObject) => gameObject.Id == physicsUpdate.Id);
+			match?.Transform.CopyFrom(physicsUpdate.Transform);
+		}
+	}
+
+	private void SyncPhysicsSoundEngines()
+	{
 		for (int i = 0; i < gameObjectManager.GameObjects.Count; i++)
 		{
 			GameObject gameObject = gameObjectManager.GameObjects[i];
-			if (!gameObject.Dirty)
+			if (!gameObject.SyncGraphics)
+				continue;
+
+			GameObjectData comGameObject = gameObject.TranslateGameObject();
+
+			// Physics Engine
+			if (gameObject.SyncPhysics)
+			{
+				if (!gameObject.RegisteredPhysics)
+				{
+					physicsEngine.RegisterPhysicsObject(ref comGameObject);
+					gameObject.RegisteredPhysics = true;
+				}
+				physicsEngine.UpdatePhysicsObjectForces(ref comGameObject);
+			}
+
+			// Sound Engine
+			if (gameObject.SyncSound)
+			{
+				if (!gameObject.RegisteredSound)
+				{
+					// TODO: update sound objects
+					// soundEngine.RegisterSoundObject(ref comGameObject);
+					gameObject.RegisteredSound = true;
+				}
+			}
+
+			gameObject.SyncPhysics = false;
+			gameObject.SyncSound = false;
+			gameObject.TransformDirty = true;
+		}
+	}
+
+	private void SyncRenderEngine()
+	{
+		for (int i = 0; i < gameObjectManager.GameObjects.Count; i++)
+		{
+			GameObject gameObject = gameObjectManager.GameObjects[i];
+			if (!gameObject.SyncGraphics)
 				continue;
 
 			GameObjectData comGameObject = gameObject.TranslateGameObject();
 
 			// Graphics Engine
-			renderer.UpdateGameObject(ref comGameObject);
+			if (!gameObject.RegisteredGraphics)
+			{
+				renderer.RegisterObject(ref comGameObject);
+				gameObject.RegisteredGraphics = true;
+			}
 
-			// Physics Engine
-			physicsEngine.UpdateGameObject(ref comGameObject);
+			renderer.UpdateObject(ref comGameObject);
 
-			// Sound Engine
-			// TODO: update sound objects
-
-			gameObject.Dirty = false;
+			gameObject.SyncGraphics = false;
 		}
 	}
 }

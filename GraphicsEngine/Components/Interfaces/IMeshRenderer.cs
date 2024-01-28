@@ -9,6 +9,6 @@ internal interface IMeshRenderer
 	ModelData Model { get; set; }
 	Material Material { get; set; }
 
-	public void Render(RenderedCamera camera);
+	public void Render(Camera camera);
 	public void Update(Transform transform);
 }

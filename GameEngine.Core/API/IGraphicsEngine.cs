@@ -11,9 +11,10 @@ public interface IGraphicsEngine
 
 	void RenderFrame();
 
-	void UpdateGameObject(ref GameObjectData gameObject);
+	void RegisterObject(ref GameObjectData gameObject);
+	void UpdateObject(ref GameObjectData gameObject);
 
-	void SetCamera(ref GameObjectData gameObjectData);
+	void RegisterCameraGameObject(ref GameObjectData gameObjectData, Core.Components.ViewPort viewPort);
 	void LockMouse(bool lockMouse);
 
 	// maybe temp?

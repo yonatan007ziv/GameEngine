@@ -9,9 +9,9 @@ out vec4 FragColor;
 
 void main()
 {
-    vec3 lightDir =  vec3(-1, 0, 1);
-    float diffuse = max(dot(Normal, lightDir), 0.0) * 2;
-    vec3 diffuseColor = vec3(0.5, 0.5, 0.5) * diffuse;
+    vec3 lightDir =  vec3(1, 1, 1);
+    float diffuse = max(dot(Normal, lightDir), 0.0);
+    vec3 diffuseColor = vec3(1, 1, 1) * diffuse;
     vec4 textureColor = texture(_texture, TexCoord);
     vec4 finalColor = textureColor * vec4(diffuseColor, 1.0);
     FragColor = finalColor;

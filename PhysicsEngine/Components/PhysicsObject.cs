@@ -7,16 +7,19 @@ internal class PhysicsObject
 {
 	public int Id { get; }
 	public Transform Transform { get; set; }
-	public float Gravity { get; set; }
-
 	public Vector3 Velocity { get; set; }
+	public Vector3 NetForce { get; set; }
 
-	public PhysicsObject(int id, Transform transform, float gravity)
+	public PhysicsObject(int id, Transform transform)
 	{
 		Id = id;
 		Transform = transform;
-		Gravity = gravity;
 
 		Velocity = Vector3.Zero;
+	}
+
+	public void AddForce(Vector3 force)
+	{
+		NetForce += force;
 	}
 }

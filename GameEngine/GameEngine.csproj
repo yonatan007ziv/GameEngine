@@ -9,11 +9,14 @@
 
   <ItemGroup>
     <None Remove="Resources\Materials\Default.mat" />
+    <None Remove="Resources\Materials\Hamama.mat" />
     <None Remove="Resources\Materials\Leed.mat" />
     <None Remove="Resources\Materials\LightLeed.mat" />
     <None Remove="Resources\Materials\MissingTexture.mat" />
+    <None Remove="Resources\Materials\Sade.mat" />
     <None Remove="Resources\Materials\Trex.mat" />
     <None Remove="Resources\Models\Bugatti1.obj" />
+    <None Remove="Resources\Models\Camera.obj" />
     <None Remove="Resources\Models\Human1.obj" />
     <None Remove="Resources\Models\HumanTestNotTriangles.obj" />
     <None Remove="Resources\Models\leed.obj" />
@@ -23,6 +26,7 @@
     <None Remove="Resources\Models\smaug.obj" />
     <None Remove="Resources\Models\Tree1.obj" />
     <None Remove="Resources\Models\TREX.obj" />
+    <None Remove="Resources\Models\UIPlane.obj" />
     <None Remove="Resources\Shaders\DefaultFragment.glsl" />
     <None Remove="Resources\Shaders\DefaultVertex.glsl" />
     <None Remove="Resources\Shaders\GizmosFragment.glsl" />
@@ -35,9 +39,21 @@
     <None Remove="Resources\Textures\Blue.png" />
     <None Remove="Resources\Textures\Dirt.png" />
     <None Remove="Resources\Textures\Green.png" />
+    <None Remove="Resources\Textures\Hamama.png" />
+    <None Remove="Resources\Textures\HamamaTrex.png" />
     <None Remove="Resources\Textures\MissingTexture.png" />
     <None Remove="Resources\Textures\Red.png" />
+    <None Remove="Resources\Textures\Sade.png" />
     <None Remove="Resources\Textures\TrexTexture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Materials\Hamama.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\Sade.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -86,28 +102,31 @@
     <Content Include="Resources\Models\Trex.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\DefaultFragment.glsl">
+    <Content Include="Resources\Models\UIPlane.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\DefaultVertex.glsl">
+    <Content Include="Resources\Shaders\GLSL\DefaultFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\GizmosFragment.glsl">
+    <Content Include="Resources\Shaders\GLSL\DefaultVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\GizmosVertex.glsl">
+    <Content Include="Resources\Shaders\GLSL\GizmosFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\LightTexturedFragment.glsl">
+    <Content Include="Resources\Shaders\GLSL\GizmosVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\LightTexturedVertex.glsl">
+    <Content Include="Resources\Shaders\GLSL\LightTexturedFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\TexturedFragment.glsl">
+    <Content Include="Resources\Shaders\GLSL\LightTexturedVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Shaders\TexturedVertex.glsl">
+    <Content Include="Resources\Shaders\GLSL\TexturedFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\GLSL\TexturedVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\BackgroundTest.png">
@@ -122,10 +141,19 @@
     <Content Include="Resources\Textures\Green.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\Hamama.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\HamamaTrex.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\MissingTexture.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\Sade.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\TrexTexture.png">
@@ -143,6 +171,12 @@
 
   <ItemGroup>
     <Folder Include="Resources\Sounds\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Models\Camera.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

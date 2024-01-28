@@ -8,18 +8,6 @@ namespace GraphicsEngine.Services.Implementations.OpenGL.Renderer;
 
 public abstract class BaseOpenGLRenderer : GameWindow
 {
-	[DllImport("kernel32")]
-	private static extern IntPtr SetThreadAffinityMask(IntPtr hThread, IntPtr dwThreadAffinityMask);
-
-	[DllImport("kernel32")]
-	private static extern IntPtr GetCurrentThread();
-
-	[DllImport("winmm")]
-	private static extern uint timeBeginPeriod(uint uPeriod);
-
-	[DllImport("winmm")]
-	private static extern uint timeEndPeriod(uint uPeriod);
-
 	public IntPtr WindowHandle { get { unsafe { return GLFW.GetWin32Window(WindowPtr); }; } }
 
 	protected int Width { get; private set; } = 640;
@@ -43,23 +31,6 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	public void Start()
 	{
 		Context.MakeCurrent();
-
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-		{
-			SetThreadAffinityMask(GetCurrentThread(), new IntPtr(1));
-			_ = timeBeginPeriod(8u);
-			ExpectedSchedulerPeriod = 8;
-		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
-		{
-			_ = timeBeginPeriod(1u);
-			ExpectedSchedulerPeriod = 1;
-		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-		{
-			_ = timeBeginPeriod(1u);
-			ExpectedSchedulerPeriod = 1;
-		}
 
 		OnLoad();
 		OnResize(new ResizeEventArgs(ClientSize));
@@ -96,7 +67,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 		Context.SwapBuffers();
 	}
 
-	private void GLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+	private void GLDebugCallback(DebugSeverity severity, int length, IntPtr message)
 	{
 		string msg = Marshal.PtrToStringAnsi(message, length);
 		GLDebugCallback(msg, severity);
@@ -105,9 +76,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	protected override void OnResize(ResizeEventArgs e)
 	{
 		base.OnResize(e);
-
 		Resize(e.Width, e.Height);
-		GL.Viewport(0, 0, e.Width, e.Height);
 
 		Width = e.Width;
 		Height = e.Height;
@@ -116,9 +85,8 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	private new void OnLoad()
 	{
 		Console.WriteLine("BaseOpenGLRenderer: OnLoad, register DebugCallback");
-		// GL.DebugMessageCallback(GLDebugCallback, IntPtr.Zero);
+		// GL.DebugMessageCallback((DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam) => GLDebugCallback(severity, length, message), IntPtr.Zero);
 		GL.Enable(EnableCap.DebugOutput);
-		GL.Enable(EnableCap.DepthTest);
 		GL.ActiveTexture(TextureUnit.Texture0);
 		Load();
 	}
@@ -132,7 +100,7 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	{
 		unsafe
 		{
-			// GLFW.SetKeyCallback(WindowPtr, (wnd, key, scanCode, act, mods) => action(key.ToString()[0]));
+			GLFW.SetKeyCallback(WindowPtr, (wnd, key, scanCode, act, mods) => action(key.ToString()[0]));
 		}
 	}
 }

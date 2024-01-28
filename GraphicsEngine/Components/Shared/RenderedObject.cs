@@ -3,27 +3,27 @@ using GraphicsEngine.Components.Interfaces;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderedObject
+internal class RenderedObject : IObject
 {
 	public int Id { get; }
 
-	public List<IMeshRenderer> Meshes = new List<IMeshRenderer>();
+	public List<IMeshRenderer> Meshes { get; } = new List<IMeshRenderer>();
 	public Transform Transform { get; }
 
-	public RenderedObject(Transform transform, int id, params IMeshRenderer[] meshRenderers)
+	public RenderedObject(int id, Transform transform, params IMeshRenderer[] meshRenderers)
 	{
 		Id = id;
 		Transform = transform;
 		Meshes.AddRange(meshRenderers);
 	}
 
-	public void Render(RenderedCamera camera)
+	public void Render(Camera camera)
 	{
 		foreach (IMeshRenderer meshRenderer in Meshes)
 			meshRenderer.Render(camera);
 	}
 
-	public virtual void Update()
+	public void Update()
 	{
 		foreach (IMeshRenderer meshRenderer in Meshes)
 			meshRenderer.Update(Transform);

@@ -38,10 +38,13 @@ internal class DirectSoundEngine : ISoundEngine
 		var secondaryBufferDesc = new SoundBufferDescription();
 		secondaryBufferDesc.BufferBytes = waveFormat.ConvertLatencyToByteSize(60000);
 		secondaryBufferDesc.Format = waveFormat;
-		secondaryBufferDesc.Flags = BufferFlags.GetCurrentPosition2 | BufferFlags.ControlPositionNotify | BufferFlags.GlobalFocus |
-									BufferFlags.ControlVolume | BufferFlags.StickyFocus;
+		// secondaryBufferDesc.Flags = BufferFlags.Control3D;
 		secondaryBufferDesc.AlgorithmFor3D = Guid.Empty;
 		var secondarySoundBuffer = new SecondarySoundBuffer(directSound, secondaryBufferDesc);
+
+		// secondarySoundBuffer.QueryInterface(typeof(SoundListener3D).GUID, out IntPtr listener3d);
+		// SoundListener3D soundListener3D = (SoundListener3D)listener3d;
+		// soundListener3D.Position = new SharpDX.Mathematics.Interop.RawVector3(10, 10, 0);
 
 		// Get Capabilties from secondary sound buffer
 		var capabilities = secondarySoundBuffer.Capabilities;

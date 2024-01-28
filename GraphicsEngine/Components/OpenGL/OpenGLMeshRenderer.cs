@@ -23,7 +23,7 @@ internal class OpenGLMeshRenderer : IMeshRenderer
 		Material = material;
 	}
 
-	public void Render(RenderedCamera camera)
+	public void Render(Camera camera)
 	{
 		view = camera.ViewMatrix.ToOpenTK();
 		projection = camera.ProjectionMatrix.ToOpenTK();
@@ -43,17 +43,13 @@ internal class OpenGLMeshRenderer : IMeshRenderer
 	public void Update(Transform transform)
 	{
 		Vector3 openTKPosition = transform.Position.ToOpenTK();
-
-		Matrix4 translationBack = Matrix4.CreateTranslation(openTKPosition);
-		Matrix4 translationToOrigin = Matrix4.CreateTranslation(-openTKPosition);
-
 		Matrix4 scaleMatrix = Matrix4.CreateScale(transform.Scale.ToOpenTK());
 
 		Matrix4 rotationMatrix =
-			Matrix4.CreateRotationX(transform.Rotation.X)
-			* Matrix4.CreateRotationY(transform.Rotation.Y)
-			* Matrix4.CreateRotationZ(transform.Rotation.Z);
+			Matrix4.CreateRotationX(MathHelper.DegreesToRadians(transform.Rotation.X))
+			* Matrix4.CreateRotationY(MathHelper.DegreesToRadians(transform.Rotation.Y))
+			* Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(transform.Rotation.Z));
 
-		modelMatrix = translationToOrigin * rotationMatrix * scaleMatrix * translationBack;
+		modelMatrix = rotationMatrix * scaleMatrix * Matrix4.CreateTranslation(openTKPosition);
 	}
 }

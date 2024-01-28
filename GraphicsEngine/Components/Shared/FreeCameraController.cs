@@ -5,7 +5,7 @@ namespace GraphicsEngine.Components.Shared;
 
 public class FreeCameraController
 {
-	private readonly RenderedCamera camera;
+	private readonly Camera camera;
 	// private readonly FreeMovementController movementController;
 
 	public float Width { get => camera.Width; set { camera.Width = value; } }
@@ -15,7 +15,7 @@ public class FreeCameraController
 
 	public FreeCameraController(GameObjectData parent, int width, int height)
 	{
-		camera = new RenderedCamera(-1, parent.Transform, width, height);
+		// camera = new Camera(-1, parent.Transform, width, height);
 		// movementController = new FreeMovementController(new Transform(parent.Transform), inputProvider);
 	}
 

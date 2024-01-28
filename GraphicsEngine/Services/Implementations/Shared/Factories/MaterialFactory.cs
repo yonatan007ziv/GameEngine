@@ -32,14 +32,14 @@ internal class MaterialFactory : IFactory<string, Material>
 				return false;
 			}
 
-			logger.LogError("Material {material} not found, falling back to default material", materialName);
+			logger.LogError("Material \"{material}\" not found, falling back to default material", materialName);
 			return Create("Default.mat", out material);
 		}
 
 		(string shaderName, string textureName) = (mat[0], mat[1]);
 		if (!shaderManager.GetShader(shaderName, out Shader shader))
 		{
-			logger.LogError("Shader {shader} not found, falling back to default shader", shaderName);
+			logger.LogError("Shader \"{shader}\" not found, falling back to default shader", shaderName);
 			if (!shaderManager.GetShader(shaderName, out shader))
 			{
 				logger.LogCritical("Failed falling back to default shader", shaderName);
@@ -50,7 +50,7 @@ internal class MaterialFactory : IFactory<string, Material>
 
 		if (!textureManager.GetTexture(textureName, out Texture texture))
 		{
-			logger.LogError("Texture {texture} not found, falling back to default texture", textureName);
+			logger.LogError("Texture \"{texture}\" not found, falling back to default texture", textureName);
 			if (!textureManager.GetTexture("Default.png", out texture))
 			{
 				logger.LogCritical("Failed falling back to default texture", textureName);

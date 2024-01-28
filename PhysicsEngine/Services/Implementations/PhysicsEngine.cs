@@ -1,6 +1,9 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Physics;
+using GameEngine.Core.Extensions;
 using PhysicsEngine.Components;
+using System.Numerics;
 
 namespace PhysicsEngine.Services.Implementations;
 
@@ -8,31 +11,44 @@ internal class PhysicsEngine : IPhysicsEngine
 {
 	private readonly List<PhysicsObject> physicsObjects = new List<PhysicsObject>();
 
-	bool first = true;
-	public void PhysicsPass(float deltaTime)
+	public List<PhysicsGameObjectUpdateData> PhysicsPass(float deltaTime)
 	{
+		List<PhysicsGameObjectUpdateData> updates = new List<PhysicsGameObjectUpdateData>();
 		for (int i = 0; i < physicsObjects.Count; i++)
 		{
 			PhysicsObject physicsObject = physicsObjects[i];
-			physicsObject.Velocity += new System.Numerics.Vector3(0, physicsObject.Gravity * deltaTime, 0);
-			physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;
-
-			if (first)
+			if (physicsObject.NetForce != Vector3.Zero)
 			{
-				physicsObject.Velocity = new System.Numerics.Vector3(5, 25, 0);
-				first = false;
+				physicsObject.Velocity += physicsObject.NetForce * deltaTime;
+				physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;
+				updates.Add(new PhysicsGameObjectUpdateData(physicsObject.Id, physicsObject.Transform.TranslateTransform()));
 			}
 		}
+		return updates;
 	}
 
-	public void UpdateGameObject(ref GameObjectData gameObjectData)
+	public void RegisterPhysicsObject(ref GameObjectData gameObjectData)
 	{
 		int updateId = gameObjectData.Id;
 		PhysicsObject? gameObject = physicsObjects.Find(obj => obj.Id == updateId);
 
 		if (gameObject is null) // Register object
-			physicsObjects.Add(new PhysicsObject(gameObjectData.Id, gameObjectData.Transform, -10));
-		else if (gameObjectData.TransformDirty) // Update object
-			gameObject.Transform = gameObjectData.Transform;
+			physicsObjects.Add(new PhysicsObject(gameObjectData.Id, gameObjectData.Transform.TranslateTransform()));
+	}
+
+	public void UpdatePhysicsObjectForces(ref GameObjectData gameObjectData)
+	{
+		int updateId = gameObjectData.Id;
+		PhysicsObject? physicsObject = physicsObjects.Find(obj => obj.Id == updateId);
+
+		if (physicsObject is not null)
+		{
+			if (gameObjectData.ForcesDirty)
+			{
+				physicsObject.NetForce = Vector3.Zero;
+				foreach (Vector3 force in gameObjectData.Forces)
+					physicsObject.AddForce(force);
+			}
+		}
 	}
 }
