@@ -1,6 +1,7 @@
 ﻿using GameEngine.Components.GameObjectComponents;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Input;
 using GameEngine.Core.Components.Physics;
 using GameEngine.Extensions;
 using GameEngine.Services.Interfaces.Managers;
@@ -22,8 +23,8 @@ internal class GameEngine : IGameEngine
 	private readonly GameObject camera, uiCamera;
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 
-	public int TickRate { get; set; } = 128;
-	public int FpsCap { get; set; } = 240;
+	public int TickRate { get; set; } = 240;
+	public int FpsCap { get; set; } = 120;
 
 	public IntPtr WindowHandle => renderer.WindowHandle;
 	public float FpsDeltaTime => (float)renderStopwatch.Elapsed.TotalSeconds;
@@ -39,26 +40,35 @@ internal class GameEngine : IGameEngine
 		this.physicsEngine = physicsEngine;
 		this.gameObjectManager = gameObjectManager;
 
+		renderer.Title = "GameEngine";
+
 		renderStopwatch = new Stopwatch();
 		updateStopwatch = new Stopwatch();
 		engineTime = new Stopwatch();
 		engineTime.Start();
 
+		AttachInput();
+
 		camera = gameObjectManager.CreateGameObject();
 		uiCamera = gameObjectManager.CreateGameObject();
 	}
 
+	private void AttachInput()
+	{
+		renderer.MousePositionEvent += inputEngine.OnMousePositionEvent;
+		renderer.MouseButtonEvent += inputEngine.OnMouseButtonEvent;
+		renderer.KeyboardButtonEvent += inputEngine.OnKeyboardButtonEvent;
+	}
+
 	private void SetScene()
 	{
-		camera.Transform.Position = new Vector3(0, 0, -1);
-		camera.Meshes.Add(new MeshData("Camera.obj", ""));
-		GameObjectData cameraData = camera.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref cameraData, new ViewPort(0.5f, 0.65f, 1, 0.5f));
+		camera.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
+		GameObjectData cameraData1 = camera.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.5f, 1,1));
 
-		GameObject secondCamera = gameObjectManager.CreateGameObject();
-		secondCamera.Transform.Position = new Vector3(0, 5, -10);
-		GameObjectData secondCameraData = secondCamera.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref secondCameraData, new ViewPort(0.5f, 0.25f, 1, 0.5f));
+		GameObject gameObject = gameObjectManager.CreateGameObject();
+		gameObject.Transform.Scale /= 5;
+		gameObject.Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
 
 		uiCamera.UI = true;
 		uiCamera.Transform.Position = new Vector3(0, 0, -1);
@@ -89,7 +99,11 @@ internal class GameEngine : IGameEngine
 			ApplyPhysicsUpdates(physicsEngine.PhysicsPass(TickDeltaTime));
 			SyncPhysicsSoundEngines();
 
-			// camera.Transform.Rotation += new Vector3(0, 22.5f *TickDeltaTime, 0);
+			int speedFactor = inputEngine.IsKeyboardButtonDown(KeyboardButton.LShift) ? 15 : 10;
+
+			Vector3 temp = inputEngine.GetMovementVector(KeyboardButton.D, KeyboardButton.A, KeyboardButton.W, KeyboardButton.S);
+			camera.Transform.Position += (-temp.X * camera.Transform.LocalRight + temp.Z * camera.Transform.LocalFront) * TickDeltaTime * speedFactor;
+			logger.LogInformation(camera.Transform.Position.ToString());
 		}
 	}
 

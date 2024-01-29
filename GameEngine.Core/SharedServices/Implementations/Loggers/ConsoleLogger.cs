@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace GameEngine.Core.SharedServices.Implementations.Loggers;
 
@@ -50,14 +49,10 @@ public class ConsoleLogger : ILogger
 				break;
 		}
 
-		StackTrace stackTrace = new StackTrace();
-		StackFrame callingFrame = stackTrace.GetFrame(4)!; // Skip the logger's internal frame
-		string className = callingFrame.GetMethod()!.DeclaringType!.Name;
-
 		lock (_lock)
 		{
 			Console.ForegroundColor = clr;
-			Console.Write("{0} [{1}]: ", logLevel.ToString(), className);
+			Console.Write("{0}: ", logLevel.ToString());
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine("{0}", message);
 		}

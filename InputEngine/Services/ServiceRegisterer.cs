@@ -18,6 +18,6 @@ internal class ServiceRegisterer
 
 	private void RegisterServices()
 	{
-		collection.AddSingleton<IInputEngine, Implementations.WindowsInputEngine>();
+		collection.AddSingleton<IInputEngine, Implementations.InputEngine>();
 	}
 }

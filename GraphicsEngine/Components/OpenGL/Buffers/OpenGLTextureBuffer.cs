@@ -29,8 +29,8 @@ public class OpenGLTextureBuffer : ITextureBuffer
 	{
 		Bind();
 
-		GL.TextureParameterI(Id, TextureParameterName.TextureMinFilter, new int[] { (int)TextureMinFilter.Nearest });
-		GL.TextureParameterI(Id, TextureParameterName.TextureMagFilter, new int[] { (int)TextureMagFilter.Nearest });
+		GL.TexParameterI(Target, TextureParameterName.TextureMinFilter, new int[] { (int)TextureMinFilter.Nearest });
+		GL.TexParameterI(Target, TextureParameterName.TextureMagFilter, new int[] { (int)TextureMagFilter.Nearest });
 
 		GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, textureSrc.Width, textureSrc.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, textureSrc.Source);
 

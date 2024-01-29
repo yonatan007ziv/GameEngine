@@ -8,11 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Materials\Colors\Blue.mat" />
+    <None Remove="Resources\Materials\Colors\Green.mat" />
     <None Remove="Resources\Materials\Default.mat" />
     <None Remove="Resources\Materials\Hamama.mat" />
     <None Remove="Resources\Materials\Leed.mat" />
     <None Remove="Resources\Materials\LightLeed.mat" />
     <None Remove="Resources\Materials\MissingTexture.mat" />
+    <None Remove="Resources\Materials\Red.mat" />
     <None Remove="Resources\Materials\Sade.mat" />
     <None Remove="Resources\Materials\Trex.mat" />
     <None Remove="Resources\Models\Bugatti1.obj" />
@@ -48,6 +51,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Materials\Colors\Red.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Materials\Colors\Blue.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\Colors\Green.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Materials\Hamama.mat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

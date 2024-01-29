@@ -1,11 +1,16 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Input;
 using GameEngine.Core.Extensions;
 using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsEngine.Components.Extensions;
 using GraphicsEngine.Components.Interfaces;
+using GraphicsEngine.Components.OpenGL;
 using GraphicsEngine.Components.Shared;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
+using System.Numerics;
+using static GameEngine.Core.Components.Delegates;
 
 namespace GraphicsEngine.Services.Implementations.OpenGL.Renderer;
 
@@ -21,6 +26,13 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 	private readonly List<RenderedObject> renderedObjects = new List<RenderedObject>();
 	private readonly List<RenderedObject> uiObjects = new List<RenderedObject>();
 
+	public event Action<Vector2>? MousePositionEvent;
+	public event RefAction<MouseEvent>? MouseButtonEvent;
+	public event RefAction<KeyboardEvent>? KeyboardButtonEvent;
+
+	private MouseEvent mouseEvent;
+	private KeyboardEvent keyboardEvent;
+
 	public new string Title
 	{
 		get => base.Title;
@@ -31,6 +43,30 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 	{
 		this.logger = logger;
 		this.meshFactory = meshFactory;
+
+		MouseDown += (mouseButtonArgs) =>
+		{
+			mouseEvent.Set(mouseButtonArgs.Button.Translate(), true);
+			MouseButtonEvent?.Invoke(ref mouseEvent);
+		};
+		MouseUp += (mouseButtonArgs) =>
+		{
+			mouseEvent.Set(mouseButtonArgs.Button.Translate(), false);
+			MouseButtonEvent?.Invoke(ref mouseEvent);
+		};
+
+		KeyDown += (keyboardButtonArgs) =>
+		{
+			keyboardEvent.Set(keyboardButtonArgs.Key.Translate(), true);
+			KeyboardButtonEvent?.Invoke(ref keyboardEvent);
+		};
+		KeyUp += (keyboardButtonArgs) =>
+		{
+			keyboardEvent.Set(keyboardButtonArgs.Key.Translate(), false);
+			KeyboardButtonEvent?.Invoke(ref keyboardEvent);
+		};
+
+		MouseMove += (mouseMoveArgs) => MousePositionEvent?.Invoke(mouseMoveArgs.Position.ToNumerics());
 	}
 
 	public override void Render()
