@@ -8,6 +8,7 @@ using GameEngine.Services.Interfaces.Managers;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace GameEngine.Services.Implementations;
 
@@ -20,11 +21,15 @@ internal class GameEngine : IGameEngine
 	private readonly IPhysicsEngine physicsEngine;
 	private readonly IGameObjectManager gameObjectManager;
 
-	private readonly GameObject camera, uiCamera;
+	private readonly GameObject camera1, camera2, uiCamera;
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
+	private readonly int ExpectedTaskSchedulerPeriod;
 
-	public int TickRate { get; set; } = 240;
-	public int FpsCap { get; set; } = 120;
+	public int TickRate { get; set; } = 128;
+	public int FpsCap { get; set; } = 144;
+
+	private bool _mouseLocked;
+	public bool MouseLocked { get => _mouseLocked; set { _mouseLocked = value; renderer.LockMouse(value); } }
 
 	public IntPtr WindowHandle => renderer.WindowHandle;
 	public float FpsDeltaTime => (float)renderStopwatch.Elapsed.TotalSeconds;
@@ -42,6 +47,13 @@ internal class GameEngine : IGameEngine
 
 		renderer.Title = "GameEngine";
 
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			ExpectedTaskSchedulerPeriod = 8;
+		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+			ExpectedTaskSchedulerPeriod = 1;
+		else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+			ExpectedTaskSchedulerPeriod = 1;
+
 		renderStopwatch = new Stopwatch();
 		updateStopwatch = new Stopwatch();
 		engineTime = new Stopwatch();
@@ -49,7 +61,8 @@ internal class GameEngine : IGameEngine
 
 		AttachInput();
 
-		camera = gameObjectManager.CreateGameObject();
+		camera1 = gameObjectManager.CreateGameObject();
+		camera2 = gameObjectManager.CreateGameObject();
 		uiCamera = gameObjectManager.CreateGameObject();
 	}
 
@@ -60,15 +73,11 @@ internal class GameEngine : IGameEngine
 		renderer.KeyboardButtonEvent += inputEngine.OnKeyboardButtonEvent;
 	}
 
-	private void SetScene()
+	private void LoadCamera()
 	{
-		camera.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
-		GameObjectData cameraData1 = camera.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.5f, 1,1));
-
-		GameObject gameObject = gameObjectManager.CreateGameObject();
-		gameObject.Transform.Scale /= 5;
-		gameObject.Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
+		camera1.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
+		GameObjectData cameraData1 = camera1.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.5f, 1, 1));
 
 		uiCamera.UI = true;
 		uiCamera.Transform.Position = new Vector3(0, 0, -1);
@@ -76,11 +85,43 @@ internal class GameEngine : IGameEngine
 		renderer.RegisterCameraGameObject(ref uiCameraData, new ViewPort(0.5f, 0.5f, 1, 1));
 	}
 
+	private void Load2Cameras()
+	{
+		camera1.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
+		GameObjectData cameraData1 = camera1.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.75f, 1, 0.5f));
+		
+		camera2.Meshes.Add(new MeshData("Camera.obj", "Green.mat"));
+		GameObjectData cameraData2 = camera2.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref cameraData2, new ViewPort(0.5f, 0.25f, 1, 0.5f));
+		
+		uiCamera.UI = true;
+		uiCamera.Transform.Position = new Vector3(0, 0, -1);
+		GameObjectData uiCameraData = uiCamera.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref uiCameraData, new ViewPort(0.5f, 0.5f, 1, 1));
+	}
+
+	private void SetScene()
+	{
+		GameObject ground = gameObjectManager.CreateGameObject();
+		ground.Transform.Scale *= 25;
+		ground.Transform.Rotation += Vector3.UnitX * 90;
+		ground.Meshes.Add(new MeshData("UIPlane.obj", "Leed.mat"));
+
+		GameObject trex = gameObjectManager.CreateGameObject();
+		trex.Transform.Scale /= 5;
+		trex.Meshes.Add(new MeshData("Trex.obj", "Hamama.mat"));
+	}
+
 	public void Run()
 	{
+		MouseLocked = true;
+		// LoadCamera();
+		Load2Cameras();
+
 		SetScene();
 
-		new Thread(UpdateLoop).Start(); // Update Thread
+		new Thread(UpdateLoop).Start(); // Update Thread;
 		RenderLoop(); // Render Thread
 	}
 
@@ -88,22 +129,39 @@ internal class GameEngine : IGameEngine
 	{
 		Thread.CurrentThread.Name = "Update Thread";
 
+		float TickDeltaTime = TickRate / 1000f;
 		while (true)
 		{
 			updateStopwatch.Restart();
 
-			// Tick Limit
-			int timeToWait = 1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds;
-			Thread.Sleep(timeToWait > 0 ? timeToWait : 0);
-
 			ApplyPhysicsUpdates(physicsEngine.PhysicsPass(TickDeltaTime));
 			SyncPhysicsSoundEngines();
 
-			int speedFactor = inputEngine.IsKeyboardButtonDown(KeyboardButton.LShift) ? 15 : 10;
+			int speedFactor = inputEngine.IsKeyboardButtonPressed(KeyboardButton.LShift) ? 5 : 3;
 
 			Vector3 temp = inputEngine.GetMovementVector(KeyboardButton.D, KeyboardButton.A, KeyboardButton.W, KeyboardButton.S);
-			camera.Transform.Position += (-temp.X * camera.Transform.LocalRight + temp.Z * camera.Transform.LocalFront) * TickDeltaTime * speedFactor;
-			logger.LogInformation(camera.Transform.Position.ToString());
+			camera1.Transform.Position += (-temp.X * camera1.Transform.LocalRight + temp.Z * camera1.Transform.LocalFront) * TickDeltaTime * speedFactor;
+
+			temp = inputEngine.GetMovementVector(KeyboardButton.RightArrow, KeyboardButton.LeftArrow, KeyboardButton.UpArrow, KeyboardButton.DownArrow);
+			camera2.Transform.Position += (-temp.X * camera2.Transform.LocalRight + temp.Z * camera2.Transform.LocalFront) * TickDeltaTime * speedFactor;
+
+			Vector2 vec = inputEngine.GetMouseVector();
+			camera1.Transform.Rotation += new Vector3(vec.Y, -vec.X, 0) * TickDeltaTime * 45;
+			
+			camera2.Transform.Rotation += Vector3.UnitY * TickDeltaTime * 45;
+
+			// Tick Limit
+			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
+			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
+
+			TickDeltaTime = this.TickDeltaTime;
+
+			if (inputEngine.IsKeyboardButtonDown(KeyboardButton.One))
+				MouseLocked = !MouseLocked;
+			
+			inputEngine.Update();
+
+			logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
 		}
 	}
 
@@ -112,17 +170,21 @@ internal class GameEngine : IGameEngine
 		Thread.CurrentThread.Name = "Render Thread";
 
 		renderer.Start();
+		float FpsDeltaTime = FpsCap / 1000f;
 		while (true)
 		{
 			renderStopwatch.Restart();
 
+			SyncRenderEngine();
 			renderer.RenderFrame();
 
 			// Fps Limit
-			int timeToWait = 1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds;
-			Thread.Sleep(timeToWait > 0 ? timeToWait : 0);
+			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
+			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
-			SyncRenderEngine();
+			FpsDeltaTime = this.FpsDeltaTime;
+
+			logger.LogInformation("Frame update second: {fps}", 1 / FpsDeltaTime);
 		}
 	}
 
@@ -169,7 +231,7 @@ internal class GameEngine : IGameEngine
 
 			gameObject.SyncPhysics = false;
 			gameObject.SyncSound = false;
-			gameObject.TransformDirty = true;
+			gameObject.TransformDirty = false;
 		}
 	}
 
@@ -194,5 +256,20 @@ internal class GameEngine : IGameEngine
 
 			gameObject.SyncGraphics = false;
 		}
+	}
+
+	public static void AccurateSleep(double seconds, int expectedSchedulerPeriod)
+	{
+		if (seconds <= 0)
+			return;
+
+		long num = Stopwatch.GetTimestamp() + (long)(seconds * Stopwatch.Frequency);
+		int num2 = (int)((seconds * 1000.0 - expectedSchedulerPeriod * 0.02) / expectedSchedulerPeriod);
+		
+		if (num2 > 0)
+			Thread.Sleep(num2 * expectedSchedulerPeriod);
+
+		while (Stopwatch.GetTimestamp() < num)
+			Thread.Yield();
 	}
 }

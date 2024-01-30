@@ -110,6 +110,7 @@ public class ObjModelImporter
 		IIndexBuffer ib = bufferGenerator.GenerateIndexBuffer();
 		BoxData boundingBox = new BoxData(left, right, top, bottom, front, back);
 
+		// "Fatal error while logging another fatal error." ?
 		vb.WriteData(vertexBuffer);
 		ib.WriteData(indexBuffer);
 		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());

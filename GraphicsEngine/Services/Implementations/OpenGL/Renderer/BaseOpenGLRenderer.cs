@@ -13,6 +13,8 @@ public abstract class BaseOpenGLRenderer : GameWindow
 	protected int Width { get; private set; } = 640;
 	protected int Height { get; private set; } = 360;
 
+	private bool mouseLocked, mouseLockedUpdate;
+
 	public BaseOpenGLRenderer()
 		: base(new GameWindowSettings(), new NativeWindowSettings())
 	{
@@ -38,12 +40,19 @@ public abstract class BaseOpenGLRenderer : GameWindow
 
 	public void LockMouse(bool lockMouse)
 	{
-		CursorState = lockMouse ? CursorState.Grabbed : CursorState.Normal;
+		mouseLocked = lockMouse;
+		mouseLockedUpdate = true;
 	}
 
 	public new void RenderFrame()
 	{
 		ProcessWindowEvents(false);
+
+		if (mouseLockedUpdate)
+		{
+			CursorState = mouseLocked ? CursorState.Grabbed : CursorState.Normal;
+			mouseLockedUpdate = false;
+		}
 
 		RenderInternal();
 

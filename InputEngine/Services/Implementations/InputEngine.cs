@@ -8,7 +8,14 @@ internal class InputEngine : IInputEngine
 {
 	private readonly List<MouseButton> mouseButtons = new List<MouseButton>();
 	private readonly List<KeyboardButton> keyboardButtons = new List<KeyboardButton>();
+	private readonly List<KeyboardButton> keyboardButtonsDownMask = new List<KeyboardButton>();
+
 	private Vector2 mousePosition, lastMousePosition;
+
+	public void Update()
+	{
+		keyboardButtonsDownMask.Clear();
+	}
 
 	public Vector2 GetMouseVector()
 	{
@@ -32,11 +39,17 @@ internal class InputEngine : IInputEngine
 		return movement;
 	}
 
-	public bool IsMouseButtonDown(MouseButton mouseButton)
+	public bool IsMouseButtonPressed(MouseButton mouseButton)
 		=> mouseButtons.Contains(mouseButton);
 
-	public bool IsKeyboardButtonDown(KeyboardButton keyboardButton)
+	public bool IsMouseButtonDown(MouseButton mouseButton)
+	=> mouseButtons.Contains(mouseButton);
+
+	public bool IsKeyboardButtonPressed(KeyboardButton keyboardButton)
 		=> keyboardButtons.Contains(keyboardButton);
+
+	public bool IsKeyboardButtonDown(KeyboardButton keyboardButton)
+		=> keyboardButtonsDownMask.Contains(keyboardButton) && keyboardButtons.Contains(keyboardButton);
 
 	public Vector2 GetMousePos()
 		=> mousePosition;
@@ -60,7 +73,10 @@ internal class InputEngine : IInputEngine
 		if (keyboardEvent.Pressed)
 		{
 			if (!keyboardButtons.Contains(keyboardEvent.KeyboardButton))
+			{
 				keyboardButtons.Add(keyboardEvent.KeyboardButton);
+				keyboardButtonsDownMask.Add(keyboardEvent.KeyboardButton);
+			}
 		}
 		else
 		{

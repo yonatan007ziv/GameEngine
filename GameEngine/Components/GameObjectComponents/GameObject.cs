@@ -20,7 +20,6 @@ internal class GameObject
 		}
 	}
 
-
 	public bool RegisteredPhysics { get; set; }
 	public bool SyncPhysics
 	{
@@ -46,7 +45,7 @@ internal class GameObject
 	public bool UiDirty { get; private set; }
 	public bool UI { get => ui; set { ui = value; UiDirty = true; } }
 
-	public bool TransformDirty { get => Transform.Dirty; set { Transform.Dirty = value; } }
+	public bool TransformDirty { get => Transform.Dirty; set => Transform.Dirty = value; }
 	public Transform Transform { get; set; }
 
 	public bool MeshesDirty { get; private set; }
