@@ -25,6 +25,7 @@ public class Transform
 		Position = transform.position;
 		Rotation = transform.rotation;
 		Scale = transform.scale;
+		Dirty = true;
 		return this;
 	}
 

@@ -33,12 +33,6 @@ internal class OpenGLRenderer : BaseOpenGLRenderer, IGraphicsEngine
 	private MouseEvent mouseEvent;
 	private KeyboardEvent keyboardEvent;
 
-	public new string Title
-	{
-		get => base.Title;
-		set => base.Title = value;
-	}
-
 	public OpenGLRenderer(ILogger logger, IFactory<string, string, IMeshRenderer> meshFactory)
 	{
 		this.logger = logger;

@@ -6,6 +6,7 @@ using GameEngine.Core.Components.Physics;
 using GameEngine.Extensions;
 using GameEngine.Services.Interfaces.Managers;
 using Microsoft.Extensions.Logging;
+using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -21,7 +22,7 @@ internal class GameEngine : IGameEngine
 	private readonly IPhysicsEngine physicsEngine;
 	private readonly IGameObjectManager gameObjectManager;
 
-	private readonly GameObject camera1, camera2, uiCamera;
+	private readonly GameObject camera1, camera2, uiCamera1, uiCamera2;
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
 
@@ -63,7 +64,8 @@ internal class GameEngine : IGameEngine
 
 		camera1 = gameObjectManager.CreateGameObject();
 		camera2 = gameObjectManager.CreateGameObject();
-		uiCamera = gameObjectManager.CreateGameObject();
+		uiCamera1 = gameObjectManager.CreateGameObject();
+		uiCamera2 = gameObjectManager.CreateGameObject();
 	}
 
 	private void AttachInput()
@@ -79,10 +81,10 @@ internal class GameEngine : IGameEngine
 		GameObjectData cameraData1 = camera1.TranslateGameObject();
 		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.5f, 1, 1));
 
-		uiCamera.UI = true;
-		uiCamera.Transform.Position = new Vector3(0, 0, -1);
-		GameObjectData uiCameraData = uiCamera.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref uiCameraData, new ViewPort(0.5f, 0.5f, 1, 1));
+		uiCamera1.UI = true;
+		uiCamera1.Transform.Position = new Vector3(0, 0, -1);
+		GameObjectData uiCameraData1 = uiCamera1.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref uiCameraData1, new ViewPort(0.5f, 0.5f, 1, 1));
 	}
 
 	private void Load2Cameras()
@@ -90,15 +92,20 @@ internal class GameEngine : IGameEngine
 		camera1.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
 		GameObjectData cameraData1 = camera1.TranslateGameObject();
 		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.75f, 1, 0.5f));
-		
+
 		camera2.Meshes.Add(new MeshData("Camera.obj", "Green.mat"));
 		GameObjectData cameraData2 = camera2.TranslateGameObject();
 		renderer.RegisterCameraGameObject(ref cameraData2, new ViewPort(0.5f, 0.25f, 1, 0.5f));
-		
-		uiCamera.UI = true;
-		uiCamera.Transform.Position = new Vector3(0, 0, -1);
-		GameObjectData uiCameraData = uiCamera.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref uiCameraData, new ViewPort(0.5f, 0.5f, 1, 1));
+
+		uiCamera1.UI = true;
+		uiCamera1.Transform.Position = new Vector3(0, 0, -1);
+		GameObjectData uiCameraData1 = uiCamera1.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref uiCameraData1, new ViewPort(0.5f, 0.75f, 1, 0.5f));
+
+		uiCamera2.UI = true;
+		uiCamera2.Transform.Position = new Vector3(0, 0, -1);
+		GameObjectData uiCameraData2 = uiCamera2.TranslateGameObject();
+		renderer.RegisterCameraGameObject(ref uiCameraData2, new ViewPort(0.5f, 0.25f, 1, 0.5f));
 	}
 
 	private void SetScene()
@@ -111,6 +118,12 @@ internal class GameEngine : IGameEngine
 		GameObject trex = gameObjectManager.CreateGameObject();
 		trex.Transform.Scale /= 5;
 		trex.Meshes.Add(new MeshData("Trex.obj", "Hamama.mat"));
+		trex.Forces.Add(new Vector3(0, -1, 0));
+
+		// GameObject ui = gameObjectManager.CreateGameObject();
+		// ui.Transform.Scale /= 2;
+		// ui.UI = true;
+		// ui.Meshes.Add(new MeshData("UIPlane.obj", "Hamama.mat"));
 	}
 
 	public void Run()
@@ -147,8 +160,6 @@ internal class GameEngine : IGameEngine
 
 			Vector2 vec = inputEngine.GetMouseVector();
 			camera1.Transform.Rotation += new Vector3(vec.Y, -vec.X, 0) * TickDeltaTime * 45;
-			
-			camera2.Transform.Rotation += Vector3.UnitY * TickDeltaTime * 45;
 
 			// Tick Limit
 			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
@@ -156,10 +167,10 @@ internal class GameEngine : IGameEngine
 
 			TickDeltaTime = this.TickDeltaTime;
 
+			inputEngine.Update();
+
 			if (inputEngine.IsKeyboardButtonDown(KeyboardButton.One))
 				MouseLocked = !MouseLocked;
-			
-			inputEngine.Update();
 
 			logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
 		}
@@ -193,7 +204,8 @@ internal class GameEngine : IGameEngine
 		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
 		{
 			GameObject? match = gameObjectManager.GameObjects.Find((gameObject) => gameObject.Id == physicsUpdate.Id);
-			match?.Transform.CopyFrom(physicsUpdate.Transform);
+			if (match is not null)
+				match.Transform.Position = physicsUpdate.Transform.position;
 		}
 	}
 
@@ -231,7 +243,7 @@ internal class GameEngine : IGameEngine
 
 			gameObject.SyncPhysics = false;
 			gameObject.SyncSound = false;
-			gameObject.TransformDirty = false;
+			gameObject.TransformDirty = true;
 		}
 	}
 
