@@ -16,10 +16,14 @@ public readonly struct GameObjectData
 	public bool ForcesDirty { get; }
 	public List<Vector3> Forces { get; }
 
+	public bool ImpulseVelocitiesDirty { get; }
+	public List<Vector3> ImpulseVelocities { get; }
+
 	public GameObjectData(int id, bool isUI,
 		TransformData transform, bool transformDirty,
 		List<MeshData> meshes, bool meshesDirty,
-		List<Vector3> forces, bool forcesDirty)
+		List<Vector3> forces, bool forcesDirty,
+		List<Vector3> impulseVelocities, bool impulseVelocitiesDirty)
 	{
 		Id = id;
 
@@ -33,5 +37,8 @@ public readonly struct GameObjectData
 
 		Forces = forces;
 		ForcesDirty = forcesDirty;
+
+		ImpulseVelocities = impulseVelocities;
+		ImpulseVelocitiesDirty = impulseVelocitiesDirty;
 	}
 }

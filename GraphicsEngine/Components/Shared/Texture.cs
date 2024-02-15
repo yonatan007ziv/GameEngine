@@ -2,7 +2,7 @@
 
 namespace GraphicsEngine.Components.Shared;
 
-public class Texture
+internal class Texture
 {
 	public string TextureName { get; }
 

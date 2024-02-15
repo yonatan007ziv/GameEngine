@@ -8,5 +8,5 @@ public static class TransformExtensions
 		=> new TransformData(transform.Position, transform.Rotation, transform.Scale);
 
 	public static Transform TranslateTransform(this TransformData transformData)
-		=> new Transform().CopyFrom(transformData);
+		=> new Transform(transformData);
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsEngine.Services.Implementations.Shared.ModelImporter;
 
-public class ModelFactory : IFactory<string, ModelData>
+internal class ModelFactory : IFactory<string, ModelData>
 {
 	private readonly ILogger logger;
 	private readonly IResourceManager resourceManager;

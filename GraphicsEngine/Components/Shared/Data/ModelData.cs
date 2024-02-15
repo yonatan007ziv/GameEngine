@@ -3,13 +3,13 @@ using GraphicsEngine.Components.Interfaces.Buffers;
 
 namespace GraphicsEngine.Components.Shared.Data;
 
-public readonly struct ModelData
+internal readonly struct ModelData
 {
 	public IVertexArray VertexArray { get; }
 	public BoxData BoundingBox { get; }
-	public int IndicesCount { get; }
+	public uint IndicesCount { get; }
 
-	public ModelData(IVertexArray vertexArray, BoxData boundingBox, int indicesCount)
+	public ModelData(IVertexArray vertexArray, BoxData boundingBox, uint indicesCount)
 	{
 		VertexArray = vertexArray;
 		BoundingBox = boundingBox;

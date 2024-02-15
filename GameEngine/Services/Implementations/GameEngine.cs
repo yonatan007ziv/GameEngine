@@ -1,52 +1,71 @@
-﻿using GameEngine.Components.GameObjectComponents;
+﻿using GameEngine.Components;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Input;
+using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Physics;
 using GameEngine.Extensions;
-using GameEngine.Services.Interfaces.Managers;
+using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
-using System.Numerics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace GameEngine.Services.Implementations;
 
 internal class GameEngine : IGameEngine
 {
-	private readonly ILogger logger;
-	private readonly IGraphicsEngine renderer;
-	private readonly ISoundEngine soundEngine;
-	private readonly IInputEngine inputEngine;
-	private readonly IPhysicsEngine physicsEngine;
-	private readonly IGameObjectManager gameObjectManager;
+	public static IGameEngine EngineContext { get; private set; } = null!;
 
-	private readonly GameObject camera1, camera2, uiCamera1, uiCamera2;
+	private readonly ILogger logger;
+
+	public IGraphicsEngine Renderer { get; }
+	public ISoundEngine SoundEngine { get; }
+	public IInputEngine InputEngine { get; }
+	public IPhysicsEngine PhysicsEngine { get; }
+
+	private readonly Dictionary<int, GameObject> allObjects = new Dictionary<int, GameObject>();
+
+	private readonly Dictionary<int, GameObject> worldObjects = new Dictionary<int, GameObject>();
+	private readonly Dictionary<int, GameObject> uiObjects = new Dictionary<int, GameObject>();
+
+	private readonly Dictionary<int, GameObject> worldCameras = new Dictionary<int, GameObject>();
+	private readonly Dictionary<int, GameObject> uiCameras = new Dictionary<int, GameObject>();
+
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
+
+	public string Title { get => Renderer.Title; set => Renderer.Title = value; }
+
+	public bool LogRenderingLogs { get => Renderer.LogRenderingMessages; set => Renderer.LogRenderingMessages = value; }
+	public bool LogInputs { get => InputEngine.LogInputs; set => InputEngine.LogInputs = value; }
+	public bool LogFps { get; set; }
+	public bool LogTps { get; set; }
 
 	public int TickRate { get; set; } = 128;
 	public int FpsCap { get; set; } = 144;
 
-	private bool _mouseLocked;
-	public bool MouseLocked { get => _mouseLocked; set { _mouseLocked = value; renderer.LockMouse(value); } }
+	private bool _mouseLocked, _updateMouseLocked;
+	public bool MouseLocked { get => _mouseLocked; set { _mouseLocked = value; _updateMouseLocked = true; } }
 
-	public IntPtr WindowHandle => renderer.WindowHandle;
-	public float FpsDeltaTime => (float)renderStopwatch.Elapsed.TotalSeconds;
-	public float TickDeltaTime => (float)updateStopwatch.Elapsed.TotalSeconds;
+	public IntPtr WindowHandle => Renderer.WindowHandle;
+	public float FpsDeltaTimeStopper => (float)renderStopwatch.Elapsed.TotalSeconds;
+	public float TickDeltaTimeStopper => (float)updateStopwatch.Elapsed.TotalSeconds;
 	public float ElapsedSeconds => (float)engineTime.Elapsed.TotalSeconds;
 
-	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine, IGameObjectManager gameObjectManager)
+	public TaskCompletionSource EngineLoadingTask { get; }
+
+	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine)
 	{
 		this.logger = logger;
-		this.renderer = renderer;
-		this.soundEngine = soundEngine;
-		this.inputEngine = inputEngine;
-		this.physicsEngine = physicsEngine;
-		this.gameObjectManager = gameObjectManager;
+		Renderer = renderer;
+		SoundEngine = soundEngine;
+		InputEngine = inputEngine;
+		PhysicsEngine = physicsEngine;
 
-		renderer.Title = "GameEngine";
+		EngineContext = this;
+
+		EngineLoadingTask = new TaskCompletionSource();
+		Renderer.Load += EngineLoadingTask.SetResult;
 
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			ExpectedTaskSchedulerPeriod = 8;
@@ -61,81 +80,110 @@ internal class GameEngine : IGameEngine
 		engineTime.Start();
 
 		AttachInput();
-
-		camera1 = gameObjectManager.CreateGameObject();
-		camera2 = gameObjectManager.CreateGameObject();
-		uiCamera1 = gameObjectManager.CreateGameObject();
-		uiCamera2 = gameObjectManager.CreateGameObject();
-	}
-
-	private void AttachInput()
-	{
-		renderer.MousePositionEvent += inputEngine.OnMousePositionEvent;
-		renderer.MouseButtonEvent += inputEngine.OnMouseButtonEvent;
-		renderer.KeyboardButtonEvent += inputEngine.OnKeyboardButtonEvent;
-	}
-
-	private void LoadCamera()
-	{
-		camera1.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
-		GameObjectData cameraData1 = camera1.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.5f, 1, 1));
-
-		uiCamera1.UI = true;
-		uiCamera1.Transform.Position = new Vector3(0, 0, -1);
-		GameObjectData uiCameraData1 = uiCamera1.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref uiCameraData1, new ViewPort(0.5f, 0.5f, 1, 1));
-	}
-
-	private void Load2Cameras()
-	{
-		camera1.Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
-		GameObjectData cameraData1 = camera1.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref cameraData1, new ViewPort(0.5f, 0.75f, 1, 0.5f));
-
-		camera2.Meshes.Add(new MeshData("Camera.obj", "Green.mat"));
-		GameObjectData cameraData2 = camera2.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref cameraData2, new ViewPort(0.5f, 0.25f, 1, 0.5f));
-
-		uiCamera1.UI = true;
-		uiCamera1.Transform.Position = new Vector3(0, 0, -1);
-		GameObjectData uiCameraData1 = uiCamera1.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref uiCameraData1, new ViewPort(0.5f, 0.75f, 1, 0.5f));
-
-		uiCamera2.UI = true;
-		uiCamera2.Transform.Position = new Vector3(0, 0, -1);
-		GameObjectData uiCameraData2 = uiCamera2.TranslateGameObject();
-		renderer.RegisterCameraGameObject(ref uiCameraData2, new ViewPort(0.5f, 0.25f, 1, 0.5f));
-	}
-
-	private void SetScene()
-	{
-		GameObject ground = gameObjectManager.CreateGameObject();
-		ground.Transform.Scale *= 25;
-		ground.Transform.Rotation += Vector3.UnitX * 90;
-		ground.Meshes.Add(new MeshData("UIPlane.obj", "Leed.mat"));
-
-		GameObject trex = gameObjectManager.CreateGameObject();
-		trex.Transform.Scale /= 5;
-		trex.Meshes.Add(new MeshData("Trex.obj", "Hamama.mat"));
-		trex.Forces.Add(new Vector3(0, -1, 0));
-
-		// GameObject ui = gameObjectManager.CreateGameObject();
-		// ui.Transform.Scale /= 2;
-		// ui.UI = true;
-		// ui.Meshes.Add(new MeshData("UIPlane.obj", "Hamama.mat"));
 	}
 
 	public void Run()
 	{
-		MouseLocked = true;
-		// LoadCamera();
-		Load2Cameras();
-
-		SetScene();
-
 		new Thread(UpdateLoop).Start(); // Update Thread;
 		RenderLoop(); // Render Thread
+	}
+
+	public void SetBackgroundColor(Color color)
+		=> Renderer.SetBackgroundColor(color);
+
+	public void AddCamera(GameObject gameObject, ViewPort viewport)
+	{
+		if (allObjects.ContainsKey(gameObject.Id))
+		{
+			logger.LogError("GameEngine. Object id exists");
+			return;
+		}
+
+		allObjects.Add(gameObject.Id, gameObject);
+		if (!gameObject.IsUI)
+			worldCameras.Add(gameObject.Id, gameObject);
+		else
+			uiCameras.Add(gameObject.Id, gameObject);
+
+		GameObjectData comGameObject = gameObject.TranslateGameObject();
+		PhysicsEngine.AddPhysicsObject(ref comGameObject);
+		Renderer.AddCamera(ref comGameObject, viewport);
+	}
+
+	public void RemoveCamera(GameObject gameObject)
+	{
+		if (!allObjects.ContainsKey(gameObject.Id))
+		{
+			logger.LogError("GameEngine. Camera id doesn't exist");
+			return;
+		}
+
+		allObjects.Remove(gameObject.Id);
+		if (gameObject.IsUI)
+			uiCameras.Remove(gameObject.Id);
+		else
+			worldCameras.Remove(gameObject.Id);
+
+		GameObjectData comGameObject = gameObject.TranslateGameObject();
+		PhysicsEngine.RemovePhysicsObject(ref comGameObject);
+		Renderer.RemoveCamera(ref comGameObject);
+	}
+
+	public void AddGameObject(GameObject gameObject)
+	{
+		if (allObjects.ContainsKey(gameObject.Id))
+		{
+			logger.LogError("GameEngine. Object id is taken");
+			return;
+		}
+
+		if (!gameObject.IsUI)
+			worldObjects.Add(gameObject.Id, gameObject);
+		else
+			uiObjects.Add(gameObject.Id, gameObject);
+		allObjects.Add(gameObject.Id, gameObject);
+
+		GameObjectData comGameObject = gameObject.TranslateGameObject();
+		PhysicsEngine.AddPhysicsObject(ref comGameObject);
+		Renderer.AddGameObject(ref comGameObject);
+	}
+
+	public void RemoveGameObject(GameObject gameObject)
+	{
+		if (!allObjects.ContainsKey(gameObject.Id))
+		{
+			logger.LogError("GameEngine: Object id not found");
+			return;
+		}
+
+		if (gameObject.IsUI)
+			uiObjects.Remove(gameObject.Id);
+		else
+			worldObjects.Remove(gameObject.Id);
+		allObjects.Remove(gameObject.Id);
+
+		GameObjectData comGameObject = gameObject.TranslateGameObject();
+		PhysicsEngine.RemovePhysicsObject(ref comGameObject);
+		Renderer.RemoveGameObject(ref comGameObject);
+	}
+
+	public bool IsMouseButtonPressed(MouseButton mouseButton)
+		=> InputEngine.GetMouseButtonPressed(mouseButton);
+
+	public bool IsMouseButtonDown(MouseButton mouseButton)
+		=> InputEngine.GetMouseButtonDown(mouseButton);
+
+	public bool IsKeyboardButtonPressed(KeyboardButton keyboardButton)
+		=> InputEngine.GetKeyboardButtonPressed(keyboardButton);
+
+	public bool IsKeyboardButtonDown(KeyboardButton keyboardButton)
+		=> InputEngine.GetKeyboardButtonDown(keyboardButton);
+
+	private void AttachInput()
+	{
+		Renderer.MouseEvent += InputEngine.OnMouseEvent;
+		Renderer.KeyboardEvent += InputEngine.OnKeyboardEvent;
+		Renderer.GamepadEvent += InputEngine.OnGamepadEvent;
 	}
 
 	private void UpdateLoop()
@@ -147,32 +195,30 @@ internal class GameEngine : IGameEngine
 		{
 			updateStopwatch.Restart();
 
-			ApplyPhysicsUpdates(physicsEngine.PhysicsPass(TickDeltaTime));
 			SyncPhysicsSoundEngines();
+			ApplyPhysicsUpdates(PhysicsEngine.PhysicsPass(TickDeltaTime));
 
-			int speedFactor = inputEngine.IsKeyboardButtonPressed(KeyboardButton.LShift) ? 5 : 3;
-
-			Vector3 temp = inputEngine.GetMovementVector(KeyboardButton.D, KeyboardButton.A, KeyboardButton.W, KeyboardButton.S);
-			camera1.Transform.Position += (-temp.X * camera1.Transform.LocalRight + temp.Z * camera1.Transform.LocalFront) * TickDeltaTime * speedFactor;
-
-			temp = inputEngine.GetMovementVector(KeyboardButton.RightArrow, KeyboardButton.LeftArrow, KeyboardButton.UpArrow, KeyboardButton.DownArrow);
-			camera2.Transform.Position += (-temp.X * camera2.Transform.LocalRight + temp.Z * camera2.Transform.LocalFront) * TickDeltaTime * speedFactor;
-
-			Vector2 vec = inputEngine.GetMouseVector();
-			camera1.Transform.Rotation += new Vector3(vec.Y, -vec.X, 0) * TickDeltaTime * 45;
-
-			// Tick Limit
+			// Tps Limit
 			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
-			TickDeltaTime = this.TickDeltaTime;
+			TickDeltaTime = TickDeltaTimeStopper;
 
-			inputEngine.Update();
+			// Checking for input after limiting TPS
+			GameObject[] gameObjects = allObjects.Values.ToArray();
+			foreach (GameObject gameObject in gameObjects)
+			{
+				if (gameObject.ImpulseVelocitiesDirty)
+					gameObject.ImpulseVelocities.Clear(); // Reset impulse velocities
 
-			if (inputEngine.IsKeyboardButtonDown(KeyboardButton.One))
-				MouseLocked = !MouseLocked;
+				if (gameObject is ScriptableGameObject scriptableObject)
+					scriptableObject.Update(TickDeltaTime); // Poll scripting code from objects
+			}
 
-			logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
+			InputEngine.InputTickPass();
+
+			if (LogTps)
+				logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
 		}
 	}
 
@@ -180,22 +226,23 @@ internal class GameEngine : IGameEngine
 	{
 		Thread.CurrentThread.Name = "Render Thread";
 
-		renderer.Start();
+		Renderer.Start();
 		float FpsDeltaTime = FpsCap / 1000f;
 		while (true)
 		{
 			renderStopwatch.Restart();
 
 			SyncRenderEngine();
-			renderer.RenderFrame();
+			Renderer.RenderFrame();
 
 			// Fps Limit
 			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
-			FpsDeltaTime = this.FpsDeltaTime;
+			FpsDeltaTime = this.FpsDeltaTimeStopper;
 
-			logger.LogInformation("Frame update second: {fps}", 1 / FpsDeltaTime);
+			if (LogFps)
+				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);
 		}
 	}
 
@@ -203,7 +250,7 @@ internal class GameEngine : IGameEngine
 	{
 		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
 		{
-			GameObject? match = gameObjectManager.GameObjects.Find((gameObject) => gameObject.Id == physicsUpdate.Id);
+			GameObject? match = allObjects.ContainsKey(physicsUpdate.Id) ? allObjects[physicsUpdate.Id] : null;
 			if (match is not null)
 				match.Transform.Position = physicsUpdate.Transform.position;
 		}
@@ -211,73 +258,56 @@ internal class GameEngine : IGameEngine
 
 	private void SyncPhysicsSoundEngines()
 	{
-		for (int i = 0; i < gameObjectManager.GameObjects.Count; i++)
+		GameObject[] gameObjects = allObjects.Values.ToArray();
+		foreach (GameObject gameObject in gameObjects)
 		{
-			GameObject gameObject = gameObjectManager.GameObjects[i];
-			if (!gameObject.SyncGraphics)
+			if (!gameObject.SyncPhysics && !gameObject.SyncSound)
 				continue;
 
 			GameObjectData comGameObject = gameObject.TranslateGameObject();
 
 			// Physics Engine
 			if (gameObject.SyncPhysics)
-			{
-				if (!gameObject.RegisteredPhysics)
-				{
-					physicsEngine.RegisterPhysicsObject(ref comGameObject);
-					gameObject.RegisteredPhysics = true;
-				}
-				physicsEngine.UpdatePhysicsObjectForces(ref comGameObject);
-			}
+				PhysicsEngine.UpdatePhysicsObject(ref comGameObject);
 
 			// Sound Engine
 			if (gameObject.SyncSound)
-			{
-				if (!gameObject.RegisteredSound)
-				{
-					// TODO: update sound objects
-					// soundEngine.RegisterSoundObject(ref comGameObject);
-					gameObject.RegisteredSound = true;
-				}
-			}
+			{ }
 
-			gameObject.SyncPhysics = false;
-			gameObject.SyncSound = false;
-			gameObject.TransformDirty = true;
+			gameObject.ResetPhysicsSoundDirty();
 		}
 	}
 
 	private void SyncRenderEngine()
 	{
-		for (int i = 0; i < gameObjectManager.GameObjects.Count; i++)
+		if (_updateMouseLocked)
 		{
-			GameObject gameObject = gameObjectManager.GameObjects[i];
+			Renderer.LockMouse(_mouseLocked);
+			_updateMouseLocked = false;
+		}
+
+		foreach (GameObject gameObject in allObjects.Values)
+		{
 			if (!gameObject.SyncGraphics)
 				continue;
 
 			GameObjectData comGameObject = gameObject.TranslateGameObject();
 
 			// Graphics Engine
-			if (!gameObject.RegisteredGraphics)
-			{
-				renderer.RegisterObject(ref comGameObject);
-				gameObject.RegisteredGraphics = true;
-			}
-
-			renderer.UpdateObject(ref comGameObject);
+			Renderer.UpdateObject(ref comGameObject);
 
 			gameObject.SyncGraphics = false;
 		}
 	}
 
-	public static void AccurateSleep(double seconds, int expectedSchedulerPeriod)
+	private static void AccurateSleep(double seconds, int expectedSchedulerPeriod)
 	{
 		if (seconds <= 0)
 			return;
 
 		long num = Stopwatch.GetTimestamp() + (long)(seconds * Stopwatch.Frequency);
 		int num2 = (int)((seconds * 1000.0 - expectedSchedulerPeriod * 0.02) / expectedSchedulerPeriod);
-		
+
 		if (num2 > 0)
 			Thread.Sleep(num2 * expectedSchedulerPeriod);
 

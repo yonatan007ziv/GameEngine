@@ -5,7 +5,9 @@ namespace GameEngine.Core.API;
 
 public interface IPhysicsEngine
 {
-	void RegisterPhysicsObject(ref GameObjectData gameObject);
-	void UpdatePhysicsObjectForces(ref GameObjectData gameObject);
+	void AddPhysicsObject(ref GameObjectData gameObject);
+	void RemovePhysicsObject(ref GameObjectData gameObject);
+
+	void UpdatePhysicsObject(ref GameObjectData gameObject);
 	List<PhysicsGameObjectUpdateData> PhysicsPass(float deltaTime);
 }

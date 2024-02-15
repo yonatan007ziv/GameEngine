@@ -9,37 +9,42 @@ namespace PhysicsEngine.Services.Implementations;
 
 internal class PhysicsEngine : IPhysicsEngine
 {
-	private readonly List<PhysicsObject> physicsObjects = new List<PhysicsObject>();
+	private readonly Dictionary<int, PhysicsObject> physicsObjects = new Dictionary<int, PhysicsObject>();
 
 	public List<PhysicsGameObjectUpdateData> PhysicsPass(float deltaTime)
 	{
 		List<PhysicsGameObjectUpdateData> updates = new List<PhysicsGameObjectUpdateData>();
-		for (int i = 0; i < physicsObjects.Count; i++)
+
+		PhysicsObject[] physicsObjectsArr = physicsObjects.Values.ToArray();
+		for (int i = 0; i < physicsObjectsArr.Length; i++)
 		{
-			PhysicsObject physicsObject = physicsObjects[i];
+			PhysicsObject physicsObject = physicsObjectsArr[i];
 			if (physicsObject.NetForce != Vector3.Zero)
 			{
 				physicsObject.Velocity += physicsObject.NetForce * deltaTime;
 				physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;
-				updates.Add(new PhysicsGameObjectUpdateData(physicsObject.Id, physicsObject.Transform.TranslateTransform()));
+				updates.Add(new PhysicsGameObjectUpdateData(physicsObject.Id, physicsObject.Transform.TranslateTransform(), physicsObject.Velocity));
 			}
 		}
 		return updates;
 	}
 
-	public void RegisterPhysicsObject(ref GameObjectData gameObjectData)
+	public void AddPhysicsObject(ref GameObjectData gameObjectData)
 	{
-		int updateId = gameObjectData.Id;
-		PhysicsObject? gameObject = physicsObjects.Find(obj => obj.Id == updateId);
-
-		if (gameObject is null) // Register object
-			physicsObjects.Add(new PhysicsObject(gameObjectData.Id, gameObjectData.Transform.TranslateTransform()));
+		if (!physicsObjects.ContainsKey(gameObjectData.Id))
+			physicsObjects.Add(gameObjectData.Id, new PhysicsObject(gameObjectData.Id, gameObjectData.Transform.TranslateTransform()));
 	}
 
-	public void UpdatePhysicsObjectForces(ref GameObjectData gameObjectData)
+	public void RemovePhysicsObject(ref GameObjectData gameObjectData)
+	{
+		if (physicsObjects.ContainsKey(gameObjectData.Id))
+			physicsObjects.Remove(gameObjectData.Id);
+	}
+
+	public void UpdatePhysicsObject(ref GameObjectData gameObjectData)
 	{
 		int updateId = gameObjectData.Id;
-		PhysicsObject? physicsObject = physicsObjects.Find(obj => obj.Id == updateId);
+		PhysicsObject? physicsObject = physicsObjects.ContainsKey(updateId) ? physicsObjects[updateId] : null;
 
 		if (physicsObject is not null)
 		{
@@ -49,6 +54,18 @@ internal class PhysicsEngine : IPhysicsEngine
 				foreach (Vector3 force in gameObjectData.Forces)
 					physicsObject.AddForce(force);
 			}
+
+			if (gameObjectData.ImpulseVelocitiesDirty)
+			{
+				Vector3 sum = Vector3.Zero;
+				foreach (Vector3 vel in gameObjectData.ImpulseVelocities)
+					sum += vel;
+				physicsObject.Velocity = sum;
+			}
+
+			// In physics calculations only position matters
+			if (gameObjectData.TransformDirty)
+				physicsObject.Transform.Position = gameObjectData.Transform.position;
 		}
 	}
 }

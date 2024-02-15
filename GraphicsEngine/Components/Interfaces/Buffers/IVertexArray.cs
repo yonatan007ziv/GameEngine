@@ -1,6 +1,6 @@
 ﻿namespace GraphicsEngine.Components.Interfaces.Buffers;
 
-public interface IVertexArray
+internal interface IVertexArray
 {
 	void Bind();
 	void Unbind();

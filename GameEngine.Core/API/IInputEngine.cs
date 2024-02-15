@@ -1,22 +1,41 @@
-﻿using GameEngine.Core.Components.Input;
+﻿using GameEngine.Core.Components.Input.Buttons;
+using GameEngine.Core.Components.Input.Events;
 using System.Numerics;
 
 namespace GameEngine.Core.API;
 
 public interface IInputEngine
 {
-	void Update();
+	bool LogInputs { get; set; }
 
-	Vector2 GetMouseVector();
-	Vector3 GetMovementVector(KeyboardButton right, KeyboardButton left, KeyboardButton up, KeyboardButton down);
+	void InputTickPass();
+	Vector2 GetMousePos();
 
-	bool IsMouseButtonPressed(MouseButton mouseButton);
-	bool IsMouseButtonDown(MouseButton mouseButton);
+	float GetAxis(string axis);
+	float GetAxisRaw(string axis);
 
-	bool IsKeyboardButtonPressed(KeyboardButton keyboardButton);
-	bool IsKeyboardButtonDown(KeyboardButton keyboardButton);
+	bool GetButtonPressed(string buttonName);
+	bool GetButtonDown(string buttonName);
 
-	void OnMouseButtonEvent(ref MouseEvent mouseEvent);
-	void OnKeyboardButtonEvent(ref KeyboardEvent keyboardEvent);
-	void OnMousePositionEvent(Vector2 vector);
+	bool GetMouseButtonPressed(MouseButton mouseButton);
+	bool GetMouseButtonDown(MouseButton mouseButton);
+
+	bool GetKeyboardButtonPressed(KeyboardButton keyboardButton);
+	bool GetKeyboardButtonDown(KeyboardButton keyboardButton);
+
+	bool GetGamepadButtonPressed(GamepadButton gamepadButton);
+	bool GetGamepadButtonDown(GamepadButton gamepadButton);
+
+	void OnMouseEvent(MouseEventData mouseEvent);
+	void OnKeyboardEvent(KeyboardEventData keyboardEvent);
+	void OnGamepadEvent(GamepadEventData gamepadEvent);
+
+	// Input mapper
+	void MapMouseButton(string buttonName, MouseButton mouseButton);
+	void MapKeyboardButton(string buttonName, KeyboardButton keyboardButton);
+	void MapGamepadButton(string buttonName, GamepadButton gamepadButton);
+
+	void MapMouseAxis(string axis, MouseAxis movementType, float multiplier, float offset);
+	void MapKeyboardAxis(string axis, KeyboardButton positive, KeyboardButton negative, float multiplier, float offset);
+	void MapGamepadAxis(string axis, GamepadAxis analog, float multiplier, float offset);
 }

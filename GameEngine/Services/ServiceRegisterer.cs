@@ -1,10 +1,7 @@
-﻿using GameEngine.Components.GameObjectComponents;
-using GameEngine.Core.API;
+﻿using GameEngine.Core.API;
+using GameEngine.Core.Enums;
 using GameEngine.Core.SharedServices.Implementations.Loggers;
-using GameEngine.Core.SharedServices.Interfaces;
-using GameEngine.Services.Implementations.Factories;
-using GameEngine.Services.Implementations.Managers;
-using GameEngine.Services.Interfaces.Managers;
+using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -14,41 +11,28 @@ internal class ServiceRegisterer
 {
 	private readonly IServiceCollection collection = new ServiceCollection();
 
-	public ServiceRegisterer()
+	public ServiceRegisterer(GraphicsApi graphicsApi)
 	{
-		RegisterServices();
+		RegisterServices(graphicsApi);
 	}
 
 	public IServiceProvider BuildProvider()
 		=> collection.BuildServiceProvider();
 
-	private void RegisterServices()
+	private void RegisterServices(GraphicsApi graphicsApi)
 	{
 		collection.AddSingleton<ILogger, ConsoleLogger>();
 
-		RegisterEngines();
-
-		RegisterFactories();
-		RegisterManagers();
+		RegisterEngines(graphicsApi);
 	}
 
-	private void RegisterEngines()
+	private void RegisterEngines(GraphicsApi graphicsApi)
 	{
 		collection.AddSingleton<IGameEngine, Implementations.GameEngine>();
 
-		collection.AddSingleton<IGraphicsEngine>(provider => GraphicsEngine.GraphicsEngineProvider.BuildEngine());
+		collection.AddSingleton<IGraphicsEngine>(provider => GraphicsEngine.GraphicsEngineProvider.BuildEngine(graphicsApi));
 		collection.AddSingleton<IPhysicsEngine>(provider => PhysicsEngine.PhysicsEngineProvider.BuildEngine());
 		collection.AddSingleton<ISoundEngine>(provider => SoundEngine.SoundEngineProvider.BuildEngine());
 		collection.AddSingleton<IInputEngine>(provider => InputEngine.InputEngineProvider.BuildEngine());
-	}
-
-	private void RegisterFactories()
-	{
-		collection.AddSingleton<IFactory<int, GameObject>, GameObjectFactory>();
-	}
-
-	private void RegisterManagers()
-	{
-		collection.AddSingleton<IGameObjectManager, GameObjectManager>();
 	}
 }

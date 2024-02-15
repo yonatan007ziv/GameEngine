@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace GraphicsEngine.Services.Implementations.Shared.ModelImporter;
 
-public class ObjModelImporter
+internal class ObjModelImporter
 {
 	private readonly IBufferGenerator bufferGenerator;
 
@@ -115,7 +115,7 @@ public class ObjModelImporter
 		ib.WriteData(indexBuffer);
 		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());
 
-		return new ModelData(va, boundingBox, indexBuffer.Length);
+		return new ModelData(va, boundingBox, (uint)indexBuffer.Length);
 	}
 
 	private void FindExtremes(List<Vector3> v, out float right, out float left, out float top, out float bottom, out float front, out float back)

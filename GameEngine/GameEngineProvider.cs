@@ -1,11 +1,12 @@
-﻿using GameEngine.Core.API;
+﻿using GameEngine.Core.Enums;
 using GameEngine.Services;
+using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameEngine;
 
 public class GameEngineProvider
 {
-	public static IGameEngine BuildEngine()
-		=> new ServiceRegisterer().BuildProvider().GetRequiredService<IGameEngine>();
+	public static IGameEngine BuildEngine(GraphicsApi graphicsApi)
+		=> new ServiceRegisterer(graphicsApi).BuildProvider().GetRequiredService<IGameEngine>();
 }

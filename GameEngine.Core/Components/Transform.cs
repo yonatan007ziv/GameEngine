@@ -1,32 +1,42 @@
 ﻿using GameEngine.Core.Extensions;
+using System.ComponentModel;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace GameEngine.Core.Components;
 
-public class Transform
+public class Transform : INotifyPropertyChanged
 {
 	public static Vector3 GlobalRight { get; set; } = Vector3.UnitX;
 	public static Vector3 GlobalUp { get; set; } = Vector3.UnitY;
 	public static Vector3 GlobalFront { get; set; } = Vector3.UnitZ;
 
-	public bool Dirty { get; set; }
 
 	private Vector3 _position, _rotation, _scale = Vector3.One;
-	public Vector3 Position { get => _position; set { _position = value; Dirty = true; } }
-	public Vector3 Rotation { get => _rotation; set { _rotation = value; Dirty = true; CalculateLocalVectors(); } }
-	public Vector3 Scale { get => _scale; set { _scale = value; Dirty = true; } }
+
+	public Vector3 Position { get => _position; set { _position = value; OnPropertyChanged(); } }
+	public Vector3 Rotation { get => _rotation; set { _rotation = value; CalculateLocalVectors(); OnPropertyChanged(); } }
+	public Vector3 Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
 
 	public Vector3 LocalRight { get; private set; } = GlobalRight;
 	public Vector3 LocalUp { get; private set; } = GlobalUp;
 	public Vector3 LocalFront { get; private set; } = GlobalFront;
 
-	public Transform CopyFrom(TransformData transform)
+	public Transform() { }
+	public Transform(TransformData transformData)
+		=> CopyFrom(transformData);
+
+	public void CopyFrom(TransformData transform)
 	{
 		Position = transform.position;
 		Rotation = transform.rotation;
 		Scale = transform.scale;
-		Dirty = true;
-		return this;
+	}
+
+	public event PropertyChangedEventHandler? PropertyChanged;
+	private void OnPropertyChanged([CallerMemberName] string propertyName = "")
+	{
+		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
 
 	private void CalculateLocalVectors()

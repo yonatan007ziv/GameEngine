@@ -3,7 +3,7 @@ using GraphicsEngine.Components.Shared.Data;
 
 namespace GraphicsEngine.Services.Interfaces.Utils;
 
-public interface IBufferGenerator
+internal interface IBufferGenerator
 {
 	IVertexArray GenerateVertexArray(IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, AttributeLayout[] attributesLayouts);
 	IVertexBuffer GenerateVertexBuffer();

@@ -1,4 +1,4 @@
-﻿using GameEngine.Components.GameObjectComponents;
+﻿using GameEngine.Components;
 using GameEngine.Core.SharedServices.Interfaces;
 
 namespace GameEngine.Services.Implementations.Factories;
@@ -7,7 +7,7 @@ internal class GameObjectFactory : IFactory<int, GameObject>
 {
 	public bool Create(int id, out GameObject gameObject)
 	{
-		gameObject = new GameObject(id);
+		gameObject = new GameObject();
 		return true;
 	}
 }

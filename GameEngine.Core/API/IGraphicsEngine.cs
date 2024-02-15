@@ -1,26 +1,33 @@
 ﻿using GameEngine.Core.Components;
-using GameEngine.Core.Components.Input;
-using System.Numerics;
-using static GameEngine.Core.Components.Delegates;
+using GameEngine.Core.Components.Input.Events;
+using System.Drawing;
 
 namespace GameEngine.Core.API;
 
 public interface IGraphicsEngine
 {
-	public event Action<Vector2>? MousePositionEvent;
-	public event RefAction<MouseEvent>? MouseButtonEvent;
-	public event RefAction<KeyboardEvent>? KeyboardButtonEvent;
+	event Action Load;
+
+	event Action<MouseEventData>? MouseEvent;
+	event Action<KeyboardEventData>? KeyboardEvent;
+	event Action<GamepadEventData>? GamepadEvent;
 
 	string Title { get; set; }
 	IntPtr WindowHandle { get; }
+	bool LogRenderingMessages { get; set; }
 
 	void Start();
 
-	void RenderFrame();
+	void SetBackgroundColor(Color color);
 
-	void RegisterObject(ref GameObjectData gameObject);
+	void RenderFrame();
 	void UpdateObject(ref GameObjectData gameObject);
 
-	void RegisterCameraGameObject(ref GameObjectData gameObjectData, ViewPort viewPort);
+	void AddCamera(ref GameObjectData gameObjectData, ViewPort viewPort);
+	void RemoveCamera(ref GameObjectData gameObjectData);
+
+	void AddGameObject(ref GameObjectData gameObject);
+	void RemoveGameObject(ref GameObjectData gameObjectData);
+
 	void LockMouse(bool lockMouse);
 }

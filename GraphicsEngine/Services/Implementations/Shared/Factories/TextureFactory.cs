@@ -5,7 +5,7 @@ using GraphicsEngine.Services.Interfaces.Utils;
 
 namespace GraphicsEngine.Services.Implementations.Shared.Factories;
 
-public class TextureFactory : IFactory<string, ITextureBuffer>
+internal class TextureFactory : IFactory<string, ITextureBuffer>
 {
 	private readonly ITextureLoader textureLoader;
 	private readonly IBufferGenerator bufferGenerator;

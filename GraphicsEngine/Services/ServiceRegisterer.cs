@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.API;
+using GameEngine.Core.Enums;
 using GameEngine.Core.SharedServices.Implementations;
 using GameEngine.Core.SharedServices.Implementations.FileReaders;
 using GameEngine.Core.SharedServices.Implementations.Loggers;
@@ -7,16 +8,20 @@ using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
 using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
-using GraphicsEngine.Components.OpenGL;
+using GraphicsEngine.Components.RendererSpecific.OpenTK;
+using GraphicsEngine.Components.RendererSpecific.SilkOpenGL;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
-using GraphicsEngine.Services.Implementations.OpenGL;
-using GraphicsEngine.Services.Implementations.OpenGL.Renderer;
+using GraphicsEngine.Services.Implementations.OpenTK;
+using GraphicsEngine.Services.Implementations.OpenTK.Renderer;
 using GraphicsEngine.Services.Implementations.Shared;
 using GraphicsEngine.Services.Implementations.Shared.Factories;
 using GraphicsEngine.Services.Implementations.Shared.Factories.Shaders;
 using GraphicsEngine.Services.Implementations.Shared.Managers;
 using GraphicsEngine.Services.Implementations.Shared.ModelImporter;
+using GraphicsEngine.Services.Implementations.SilkOpenGL;
+using GraphicsEngine.Services.Implementations.SilkOpenGL.Renderer;
+using GraphicsEngine.Services.Interfaces;
 using GraphicsEngine.Services.Interfaces.Utils;
 using GraphicsEngine.Services.Interfaces.Utils.Managers;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,38 +33,69 @@ internal class ServiceRegisterer
 {
 	private readonly IServiceCollection collection;
 
-	public ServiceRegisterer()
+	public ServiceRegisterer(GraphicsApi graphicsApi)
 	{
 		collection = new ServiceCollection();
-		RegisterServices();
+		RegisterServices(graphicsApi);
 	}
 
 	public IServiceProvider BuildProvider()
 		=> collection.BuildServiceProvider();
 
-	private void RegisterServices()
+	private void RegisterServices(GraphicsApi graphicsApi)
 	{
-		RegisterOpenGL();
-		// RegisterDirect11();
+		switch (graphicsApi)
+		{
+			case GraphicsApi.OpenTK:
+				RegisterOpenTK();
+				break;
+			case GraphicsApi.SilkOpenGL:
+				RegisterSilkOpenGL();
+				break;
+			case GraphicsApi.SilkDirect11:
+				RegisterSilkDirect11();
+				break;
+			case GraphicsApi.SilkDirect12:
+				RegisterSilkDirect12();
+				break;
+		}
 
 		RegisterShared();
 	}
 
-	private void RegisterOpenGL()
+	private void RegisterSilkOpenGL()
 	{
-		collection.AddSingleton<IGraphicsEngine, OpenGLRenderer>();
-		collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
-		collection.AddSingleton<IFactory<string, string, IMeshRenderer>, OpenGLMeshRendererFactory>();
+		collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
+		collection.AddSingleton<IBufferGenerator, SilkOpenGLBufferGenerator>();
+		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
+
+		collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
 	}
 
-	private void RegisterDirect11()
+	private void RegisterOpenTK()
 	{
-		// collection.AddSingleton<IGraphicsEngine, Direct11Renderer>();
+		collection.AddSingleton<IInternalGraphicsRenderer, OpenTKRenderer>();
+		collection.AddSingleton<IBufferGenerator, OpenTKBufferGenerator>();
+		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, OpenTKShaderProgramFactory>();
+
+		collection.AddSingleton<IDrawingCall, OpenTKDrawingCall>();
+	}
+
+	private void RegisterSilkDirect11()
+	{
+		// collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
+		// collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
+	}
+	private void RegisterSilkDirect12()
+	{
+		// collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
 		// collection.AddSingleton<IBufferGenerator, OpenGLBufferGenerator>();
 	}
 
 	private void RegisterShared()
 	{
+		collection.AddSingleton<IGraphicsEngine, Implementations.Shared.GraphicsEngine>();
+
 		collection.AddSingleton<ILogger, ConsoleLogger>();
 
 		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
