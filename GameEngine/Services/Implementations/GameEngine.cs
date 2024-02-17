@@ -1,4 +1,5 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
+using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
@@ -24,13 +25,13 @@ internal class GameEngine : IGameEngine
 	public IPhysicsEngine PhysicsEngine { get; }
 
 
-	private readonly Dictionary<int, GameObject> allObjects = new Dictionary<int, GameObject>();
-	private readonly Dictionary<int, GameObject> worldObjects = new Dictionary<int, GameObject>();
-	private readonly Dictionary<int, GameObject> uiObjects = new Dictionary<int, GameObject>();
+	private readonly List<int> allObjectIds = new List<int>();
 
-	private readonly Dictionary<int, GameComponent> allCameras = new Dictionary<int, GameComponent>();
-	private readonly Dictionary<int, GameComponent> worldCameras = new Dictionary<int, GameComponent>();
-	private readonly Dictionary<int, GameComponent> uiCameras = new Dictionary<int, GameComponent>();
+	private readonly Dictionary<int, WorldObject> worldObjects = new Dictionary<int, WorldObject>();
+	private readonly Dictionary<int, UIObject> uiObjects = new Dictionary<int, UIObject>();
+
+	private readonly Dictionary<int, WorldComponent> worldCameras = new Dictionary<int, WorldComponent>();
+	private readonly Dictionary<int, UIComponent> uiCameras = new Dictionary<int, UIComponent>();
 
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
@@ -92,79 +93,122 @@ internal class GameEngine : IGameEngine
 	public void SetBackgroundColor(Color color)
 		=> Renderer.SetBackgroundColor(color);
 
-	public void AddCamera(GameComponent gameComponent, ViewPort viewport)
+	#region Object management
+	public void AddWorldObject(WorldObject worldObject)
 	{
-		if (allCameras.ContainsKey(gameComponent.Id))
+		if (allObjectIds.Contains(worldObject.Id))
 		{
-			logger.LogError("GameEngine. Object id exists");
+			logger.LogError("Object id exists");
 			return;
 		}
 
-		if (!gameComponent.IsUI)
-			worldCameras.Add(gameComponent.Id, gameComponent);
-		else
-			uiCameras.Add(gameComponent.Id, gameComponent);
-		allCameras.Add(gameComponent.Id, gameComponent);
+		worldObjects.Add(worldObject.Id, worldObject);
+		allObjectIds.Add(worldObject.Id);
 
-		GameComponentData comGameObject = gameComponent.TranslateGameComponent();
-		Renderer.AddCamera(ref comGameObject, viewport);
+		WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
+		PhysicsEngine.AddPhysicsObject(ref worldObjectData);
+		Renderer.AddWorldObject(ref worldObjectData);
 	}
-
-	public void RemoveCamera(GameComponent gameComponent)
+	public void AddWorldCamera(WorldComponent worldCamera, ViewPort viewport)
 	{
-		if (!allCameras.ContainsKey(gameComponent.Id))
+		if (allObjectIds.Contains(worldCamera.Id))
 		{
-			logger.LogError("GameEngine. Camera id doesn't exist");
+			logger.LogError("Object id exists");
 			return;
 		}
 
-		if (gameComponent.IsUI)
-			uiCameras.Remove(gameComponent.Id);
-		else
-			worldCameras.Remove(gameComponent.Id);
-		allCameras.Remove(gameComponent.Id);
+        worldCameras.Add(worldCamera.Id, worldCamera);
+		allObjectIds.Add(worldCamera.Id);
 
-		GameComponentData comGameObject = gameComponent.TranslateGameComponent();
-		Renderer.RemoveCamera(ref comGameObject);
+		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
+		Renderer.AddWorldCamera(ref worldCameraData, viewport);
 	}
-
-	public void AddGameObject(GameObject gameObject)
+	public void AddUIObject(UIObject uiObject)
 	{
-		if (allObjects.ContainsKey(gameObject.Id))
+		if (allObjectIds.Contains(uiObject.Id))
 		{
-			logger.LogError("GameEngine. Object id is taken");
+			logger.LogError("Object id exists");
 			return;
 		}
 
-		if (!gameObject.IsUI)
-			worldObjects.Add(gameObject.Id, gameObject);
-		else
-			uiObjects.Add(gameObject.Id, gameObject);
-		allObjects.Add(gameObject.Id, gameObject);
+		uiObjects.Add(uiObject.Id, uiObject);
+		allObjectIds.Add(uiObject.Id);
 
-		GameObjectData comGameObject = gameObject.TranslateGameObject();
-		PhysicsEngine.AddPhysicsObject(ref comGameObject);
-		Renderer.AddGameObject(ref comGameObject);
+		UIObjectData uiObjectData = uiObject.TranslateUIObject();
+		Renderer.AddUIObject(ref uiObjectData);
 	}
-
-	public void RemoveGameObject(GameObject gameObject)
+	public void AddUICamera(UIComponent uiCamera, ViewPort viewport)
 	{
-		if (!allObjects.ContainsKey(gameObject.Id))
+		if (allObjectIds.Contains(uiCamera.Id))
 		{
-			logger.LogError("GameEngine: Object id not found");
+			logger.LogError("Object id exists");
 			return;
 		}
 
-		if (gameObject.IsUI)
-			uiObjects.Remove(gameObject.Id);
-		else
-			worldObjects.Remove(gameObject.Id);
-		allObjects.Remove(gameObject.Id);
+		uiCameras.Add(uiCamera.Id, uiCamera);
+		allObjectIds.Add(uiCamera.Id);
 
-		GameObjectData comGameObject = gameObject.TranslateGameObject();
-		PhysicsEngine.RemovePhysicsObject(ref comGameObject);
-		Renderer.RemoveGameObject(ref comGameObject);
+		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
+		Renderer.AddUICamera(ref uiCameraData, viewport);
 	}
+
+	public void RemoveWorldObject(WorldObject worldObject)
+	{
+		if (!allObjectIds.Contains(worldObject.Id))
+		{
+			logger.LogError("Object id not found");
+			return;
+		}
+
+		worldObjects.Remove(worldObject.Id);
+		allObjectIds.Remove(worldObject.Id);
+
+		WorldObjectData worldCameraData = worldObject.TranslateWorldObject();
+		Renderer.RemoveWorldObject(ref worldCameraData);
+	}
+	public void RemoveWorldCamera(WorldComponent worldCamera)
+	{
+		if (!allObjectIds.Contains(worldCamera.Id))
+		{
+			logger.LogError("Object id not found");
+			return;
+		}
+
+		worldCameras.Remove(worldCamera.Id);
+		allObjectIds.Remove(worldCamera.Id);
+
+		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
+		Renderer.RemoveWorldCamera(ref worldCameraData);
+	}
+	public void RemoveUIObject(UIObject uiObject)
+	{
+		if (!allObjectIds.Contains(uiObject.Id))
+		{
+			logger.LogError("Object id not found");
+			return;
+		}
+
+		uiObjects.Remove(uiObject.Id);
+		allObjectIds.Remove(uiObject.Id);
+
+		UIObjectData worldCameraData = uiObject.TranslateUIObject();
+		Renderer.RemoveUIObject(ref worldCameraData);
+	}
+	public void RemoveUICamera(UIComponent uiCamera)
+	{
+		if (!allObjectIds.Contains(uiCamera.Id))
+		{
+			logger.LogError("Object id not found");
+			return;
+		}
+
+		uiCameras.Remove(uiCamera.Id);
+		allObjectIds.Remove(uiCamera.Id);
+
+		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
+		Renderer.RemoveUICamera(ref uiCameraData);
+	}
+	#endregion
 
 	public bool IsMouseButtonPressed(MouseButton mouseButton)
 		=> InputEngine.GetMouseButtonPressed(mouseButton);
@@ -204,19 +248,19 @@ internal class GameEngine : IGameEngine
 			TickDeltaTime = TickDeltaTimeStopper;
 
 			// Checking for input after limiting TPS
-			GameObject[] gameObjects = allObjects.Values.ToArray();
-			foreach (GameObject gameObject in gameObjects)
+			WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
+			foreach (WorldObject gameObject in worldObjects)
 			{
 				if (gameObject.ImpulseVelocitiesDirty)
 					gameObject.ImpulseVelocities.Clear(); // Reset impulse velocities
 
 				// Poll scripting code from components
-				foreach (GameComponent gameComponent in gameObject.gameComponents)
-					if (gameComponent is ScriptableGameComponent scriptableComponent)
+				foreach (WorldComponent gameComponent in gameObject.components)
+					if (gameComponent is ScriptableWorldComponent scriptableComponent)
 						scriptableComponent.Update(TickDeltaTime);
 
 				// Poll scripting code from object
-				if (gameObject is ScriptableGameObject scriptableObject)
+				if (gameObject is ScriptableWorldObject scriptableObject)
 					scriptableObject.Update(TickDeltaTime);
 			}
 
@@ -255,31 +299,34 @@ internal class GameEngine : IGameEngine
 	{
 		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
 		{
-			GameObject? match = allObjects.ContainsKey(physicsUpdate.Id) ? allObjects[physicsUpdate.Id] : null;
-			if (match is not null)
-				match.Transform.Position = physicsUpdate.Transform.position;
+			if (!allObjectIds.Contains(physicsUpdate.Id))
+				continue;
+
+			WorldObject worldObject = worldObjects[physicsUpdate.Id];
+			if (worldObject is not null)
+				worldObject.Transform.Position = physicsUpdate.Transform.position;
 		}
 	}
 
 	private void SyncPhysicsSoundEngines()
 	{
-		GameObject[] gameObjects = allObjects.Values.ToArray();
-		foreach (GameObject gameObject in gameObjects)
+		WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
+		foreach (WorldObject worldObject in worldObjects)
 		{
-			if (!gameObject.SyncPhysics && !gameObject.SyncSound)
+			if (!worldObject.SyncPhysics && !worldObject.SyncSound)
 				continue;
-
-			GameObjectData comGameObject = gameObject.TranslateGameObject();
+			
+			WorldObjectData comGameObject = worldObject.TranslateWorldObject();
 
 			// Physics Engine
-			if (gameObject.SyncPhysics)
+			if (worldObject.SyncPhysics)
 				PhysicsEngine.UpdatePhysicsObject(ref comGameObject);
 
 			// Sound Engine
-			if (gameObject.SyncSound)
+			if (worldObject.SyncSound)
 			{ }
 
-			gameObject.ResetPhysicsSoundDirty();
+			worldObject.ResetPhysicsSoundDirty();
 		}
 	}
 
@@ -291,17 +338,32 @@ internal class GameEngine : IGameEngine
 			_updateMouseLocked = false;
 		}
 
-		foreach (GameObject gameObject in allObjects.Values)
+		WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
+		foreach (WorldObject worldObject in worldObjects)
 		{
-			if (!gameObject.SyncGraphics)
+			if (!worldObject.SyncGraphics)
 				continue;
 
-			GameObjectData comGameObject = gameObject.TranslateGameObject();
+			WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
 
 			// Graphics Engine
-			Renderer.UpdateObject(ref comGameObject);
+			Renderer.UpdateWorldObject(ref worldObjectData);
 
-			gameObject.SyncGraphics = false;
+			worldObject.SyncGraphics = false;
+		}
+
+		UIObject[] uiObjects = this.uiObjects.Values.ToArray();
+		foreach (UIObject uiObject in uiObjects)
+		{
+			if (!uiObject.SyncGraphics)
+				continue;
+
+			UIObjectData uiObjectData = uiObject.TranslateUIObject();
+
+			// Graphics Engine
+			Renderer.UpdateUIObject(ref uiObjectData);
+
+			uiObject.SyncGraphics = false;
 		}
 	}
 

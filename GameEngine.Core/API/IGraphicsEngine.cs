@@ -21,13 +21,18 @@ public interface IGraphicsEngine
 	void SetBackgroundColor(Color color);
 
 	void RenderFrame();
-	void UpdateObject(ref GameObjectData gameObject);
+	void UpdateWorldObject(ref WorldObjectData worldObjectData);
+	void UpdateUIObject(ref UIObjectData uiObjectData);
 
-	void AddCamera(ref GameComponentData gameObjectData, ViewPort viewPort);
-	void RemoveCamera(ref GameComponentData gameObjectData);
+	void AddWorldCamera(ref GameComponentData worldCameraData, ViewPort viewPort);
+	void AddUICamera(ref GameComponentData uiCameraData, ViewPort viewPort);
+	void RemoveWorldCamera(ref GameComponentData worldCameraData);
+	void RemoveUICamera(ref GameComponentData uiCameraData);
 
-	void AddGameObject(ref GameObjectData gameObject);
-	void RemoveGameObject(ref GameObjectData gameObjectData);
+	void AddWorldObject(ref WorldObjectData worldObjectData);
+	void AddUIObject(ref UIObjectData uiObjectData);
+	void RemoveWorldObject(ref WorldObjectData worldObjectData);
+	void RemoveUIObject(ref UIObjectData uiObjectData);
 
 	void LockMouse(bool lockMouse);
 }

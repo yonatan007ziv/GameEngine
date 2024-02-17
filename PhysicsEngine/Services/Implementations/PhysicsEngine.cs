@@ -29,19 +29,19 @@ internal class PhysicsEngine : IPhysicsEngine
 		return updates;
 	}
 
-	public void AddPhysicsObject(ref GameObjectData gameObjectData)
+	public void AddPhysicsObject(ref WorldObjectData gameObjectData)
 	{
 		if (!physicsObjects.ContainsKey(gameObjectData.Id))
 			physicsObjects.Add(gameObjectData.Id, new PhysicsObject(gameObjectData.Id, gameObjectData.Transform.TranslateTransform()));
 	}
 
-	public void RemovePhysicsObject(ref GameObjectData gameObjectData)
+	public void RemovePhysicsObject(ref WorldObjectData gameObjectData)
 	{
 		if (physicsObjects.ContainsKey(gameObjectData.Id))
 			physicsObjects.Remove(gameObjectData.Id);
 	}
 
-	public void UpdatePhysicsObject(ref GameObjectData gameObjectData)
+	public void UpdatePhysicsObject(ref WorldObjectData gameObjectData)
 	{
 		int updateId = gameObjectData.Id;
 		PhysicsObject? physicsObject = physicsObjects.ContainsKey(updateId) ? physicsObjects[updateId] : null;

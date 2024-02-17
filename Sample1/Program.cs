@@ -14,14 +14,14 @@ internal class Program
 
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample #1";
-		GameEngine.FpsCap = 144;
+		GameEngine.FpsCap = 144; // Not supported for SilkOpenGL yet
 		GameEngine.LogFps = false;
 		GameEngine.LogInputs = false;
 		GameEngine.LogRenderingLogs = false; // Not supported for OpenTK yet
 		GameEngine.MouseLocked = true;
 
-		new SingleCameraScene().LoadScene(); // One player scene
-		// new SplitScreenScene().LoadScene(); // Two player scene, 1st player mouse and keyboard, 2nd player controller
+		// Press 4 on the keyboard to switch to a splitscreen scene
+		new SingleCameraScene().LoadScene();
 
 		GameEngine.Run();
 	}

@@ -1,11 +1,11 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
 
 namespace GameEngine.Services.Interfaces.Managers;
 
 internal interface IGameObjectManager
 {
-	List<GameObject> GameObjects { get; }
+	List<WorldObject> GameObjects { get; }
 
-	GameObject CreateGameObject();
-	void RemoveGameObject(GameObject gameObject);
+	WorldObject CreateGameObject();
+	void RemoveGameObject(WorldObject gameObject);
 }

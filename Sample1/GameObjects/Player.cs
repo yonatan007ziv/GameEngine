@@ -1,18 +1,17 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.Components.Input.Buttons;
 using Sample1.Components;
-using Sample1.Scenes;
 using System.Drawing;
 
 namespace Sample1.GameObjects;
 
-internal class Player : ScriptableGameObject
+internal class Player : ScriptableWorldObject
 {
 	// Gravity, -10 was a little low
 	private const float gravityMagnitude = 20;
 
 	public readonly MovementController movementController;
-	public readonly Camera camera;
+	public readonly WorldCamera camera;
 
 	private bool addedGravity;
 	private bool addedNormal;
@@ -21,14 +20,14 @@ internal class Player : ScriptableGameObject
 	{
 		_ = new SceneSwitcher(this, singlePlayerSceneLoader);
 		movementController = new MovementController(this, movementControls);
-		camera = new Camera(this, cameraAxes);
+		camera = new WorldCamera(this, cameraAxes);
 	}
 
 	public override void Update(float deltaTime)
 	{
-		// Simulate ground collision for now
-		#region hardcoded garbage temporary
-		if (Transform.Position.Y <= 1.5f && !addedNormal)
+        // Simulate ground collision for now
+        #region hardcoded garbage temporary
+        if (Transform.Position.Y <= 1.5f && !addedNormal)
 		{
 			Forces.Clear();
 			ImpulseVelocities.Clear();

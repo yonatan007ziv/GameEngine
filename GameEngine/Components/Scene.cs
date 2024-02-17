@@ -1,4 +1,5 @@
 ﻿using GameEngine.Components.Interfaces;
+using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
 
@@ -10,8 +11,11 @@ public class Scene : IInputMapper, IDisposable
 
 	private bool _loaded;
 
-	protected List<(GameComponent camera, ViewPort viewPort)> cameras = new List<(GameComponent camera, ViewPort viewPort)>();
-	protected List<GameObject> gameObjects = new List<GameObject>();
+	protected List<(WorldComponent camera, ViewPort viewPort)> worldCameras = new List<(WorldComponent camera, ViewPort viewPort)>();
+	protected List<WorldObject> worldObjects = new List<WorldObject>();
+
+	protected List<(UIComponent camera, ViewPort viewPort)> uiCameras = new List<(UIComponent camera, ViewPort viewPort)>();
+	protected List<UIObject> uiObjects = new List<UIObject>();
 
 	public async void LoadScene()
 	{
@@ -20,10 +24,15 @@ public class Scene : IInputMapper, IDisposable
 		if (_loadedScene is not null)
 			_loadedScene.UnloadScene();
 
-		foreach (GameObject gameObject in gameObjects)
-			Services.Implementations.GameEngine.EngineContext.AddGameObject(gameObject);
-		foreach ((GameComponent camera, ViewPort viewPort) in cameras)
-			Services.Implementations.GameEngine.EngineContext.AddCamera(camera, viewPort);
+		foreach (WorldObject worldObject in worldObjects)
+			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
+		foreach ((WorldComponent camera, ViewPort viewPort) in worldCameras)
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(camera, viewPort);
+
+		foreach (UIObject uiObject in uiObjects)
+			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
+		foreach ((UIComponent camera, ViewPort viewPort) in uiCameras)
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(camera, viewPort);
 
 		_loaded = true;
 		_loadedScene = this;
@@ -31,10 +40,10 @@ public class Scene : IInputMapper, IDisposable
 
 	public void UnloadScene()
 	{
-		foreach (GameObject gameObject in gameObjects)
-			Services.Implementations.GameEngine.EngineContext.RemoveGameObject(gameObject);
-		foreach ((GameComponent camera, _) in cameras)
-			Services.Implementations.GameEngine.EngineContext.RemoveCamera(camera);
+		foreach (WorldObject gameObject in worldObjects)
+			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(gameObject);
+		foreach ((WorldComponent camera, _) in worldCameras)
+			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(camera);
 
 		_loaded = false;
 		_loadedScene = null;
@@ -45,9 +54,9 @@ public class Scene : IInputMapper, IDisposable
 		if (_loaded)
 			UnloadScene();
 
-		foreach (GameObject gameObject in gameObjects)
+		foreach (WorldObject gameObject in worldObjects)
 			gameObject.Dispose();
-		foreach ((GameComponent camera, _) in cameras)
+		foreach ((WorldComponent camera, _) in worldCameras)
 			camera.Dispose();
 	}
 

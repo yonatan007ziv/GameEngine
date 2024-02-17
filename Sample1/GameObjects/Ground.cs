@@ -1,10 +1,10 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
 using System.Numerics;
 
 namespace Sample1.GameObjects;
 
-internal class Ground : GameObject
+internal class Ground : WorldObject
 {
 	public Ground(Vector2 size)
 	{

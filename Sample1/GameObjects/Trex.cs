@@ -1,9 +1,9 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
 
 namespace Sample1.GameObjects;
 
-internal class Trex : GameObject
+internal class Trex : WorldObject
 {
 	public Trex()
 	{

@@ -1,16 +1,17 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
+using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.Components;
 using System.Numerics;
 
 namespace Sample1.Components;
 
-internal class Camera : ScriptableGameComponent
+internal class WorldCamera : ScriptableWorldComponent
 {
 	private const float sensitivity = 25;
 
 	private readonly AxesSet cameraAxes;
 
-	public Camera(GameObject parent, AxesSet cameraAxes)
+	public WorldCamera(WorldObject parent, AxesSet cameraAxes)
 		: base(parent)
 	{
 		this.cameraAxes = cameraAxes;
@@ -23,10 +24,10 @@ internal class Camera : ScriptableGameComponent
 		if (MouseLocked)
 		{
 			Vector2 cameraVector = new Vector2(GetAxis(cameraAxes.Horizontal), GetAxis(cameraAxes.Vertical));
+
 			// Clamp camera
-			if (Math.Abs(Transform.Rotation.X + cameraVector.Y) > 89.5f)
-				cameraVector.Y = 0;
-			Transform.Rotation += new Vector3(cameraVector.Y, -cameraVector.X, 0) * deltaTime * sensitivity;
+			float clampedX = Math.Clamp(Transform.Rotation.X + cameraVector.Y * deltaTime * sensitivity, -90, 90); // Clamp vertical input to -1 and 1
+			Transform.Rotation = new Vector3(clampedX, Transform.Rotation .Y - cameraVector.X * deltaTime * sensitivity, 0);
 		}
 	}
 }

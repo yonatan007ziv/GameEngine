@@ -1,18 +1,19 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
+using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.Components;
 using GameEngine.Extensions;
 using System.Numerics;
 
 namespace Sample1.Components;
 
-internal class MovementController : ScriptableGameComponent
+internal class MovementController : ScriptableWorldComponent
 {
 	private const float jumpSpeed = 20;
 	private const float movementSpeed = 25;
 
 	private readonly PlayerMovementControls movementControls;
 
-	public MovementController(GameObject parent, PlayerMovementControls movementControls)
+	public MovementController(WorldObject parent, PlayerMovementControls movementControls)
 		: base(parent)
 	{
 		this.movementControls = movementControls;

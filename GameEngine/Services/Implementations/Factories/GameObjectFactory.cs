@@ -1,13 +1,13 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
 
 namespace GameEngine.Services.Implementations.Factories;
 
-internal class GameObjectFactory : IFactory<int, GameObject>
+internal class GameObjectFactory : IFactory<int, WorldObject>
 {
-	public bool Create(int id, out GameObject gameObject)
+	public bool Create(int id, out WorldObject gameObject)
 	{
-		gameObject = new GameObject();
+		gameObject = new WorldObject();
 		return true;
 	}
 }

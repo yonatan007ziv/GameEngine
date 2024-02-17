@@ -1,4 +1,4 @@
-﻿using GameEngine.Components;
+﻿using GameEngine.Components.Objects;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
@@ -29,10 +29,14 @@ public interface IGameEngine
 	void Run();
 	void SetBackgroundColor(Color color);
 
-	void AddGameObject(GameObject gameObject);
-	void RemoveGameObject(GameObject gameObject);
-	void AddCamera(GameComponent cameraObject, ViewPort viewport);
-	void RemoveCamera(GameComponent cameraObject);
+	void AddWorldObject(WorldObject worldObject);
+	void RemoveWorldObject(WorldObject worldObject);
+	void AddUIObject(UIObject uiObject);
+	void RemoveUIObject(UIObject uiObject);
+	void AddWorldCamera(WorldComponent cameraObject, ViewPort viewport);
+	void RemoveWorldCamera(WorldComponent cameraObject);
+	void AddUICamera(UIComponent cameraObject, ViewPort viewport);
+	void RemoveUICamera(UIComponent cameraObject);
 
 	#region Input polling
 	bool IsMouseButtonPressed(MouseButton mouseButton);

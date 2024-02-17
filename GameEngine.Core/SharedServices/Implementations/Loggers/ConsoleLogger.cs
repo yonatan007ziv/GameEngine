@@ -52,9 +52,9 @@ public class ConsoleLogger : ILogger
 		lock (_lock)
 		{
 			Console.ForegroundColor = clr;
-			Console.Write("{0}: ", logLevel.ToString());
+			Console.Write("{0}:", logLevel.ToString());
 			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine("{0}", message);
+			Console.WriteLine(" [GraphicsEngine:AddWorldCamera] {0}", message);
 		}
 	}
 }

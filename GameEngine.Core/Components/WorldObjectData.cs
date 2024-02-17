@@ -2,11 +2,10 @@
 
 namespace GameEngine.Core.Components;
 
-public readonly struct GameObjectData
+public readonly struct WorldObjectData
 {
 	public int Id { get; }
 
-	public bool UI { get; }
 	public bool TransformDirty { get; }
 	public TransformData Transform { get; }
 
@@ -19,15 +18,13 @@ public readonly struct GameObjectData
 	public bool ImpulseVelocitiesDirty { get; }
 	public List<Vector3> ImpulseVelocities { get; }
 
-	public GameObjectData(int id, bool ui,
+	public WorldObjectData(int id,
 		TransformData transform, bool transformDirty,
 		List<MeshData> meshes, bool meshesDirty,
 		List<Vector3> forces, bool forcesDirty,
 		List<Vector3> impulseVelocities, bool impulseVelocitiesDirty)
 	{
 		Id = id;
-
-		UI = ui;
 
 		Transform = transform;
 		TransformDirty = transformDirty;

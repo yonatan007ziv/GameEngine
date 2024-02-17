@@ -30,17 +30,17 @@ internal class SingleCameraScene : Scene
 		MapGamepadButton("Escape", GamepadButton.Start);
 
 		// Ground
-		gameObjects.Add(new Ground(new Vector2(100, 100)));
+		worldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Trex
 		Trex trex = new Trex();
 		trex.Transform.Scale /= 2;
-		gameObjects.Add(trex);
+		worldObjects.Add(trex);
 
 		// Player
 		Player player = new Player(new PlayerMovementControls(new AxesSet("XMovement", "YMovement"), "Jump", "Escape"), new AxesSet("XCamera", "YCamera"), false);
 		player.Transform.Position += new Vector3(0, 10, -10);
-		gameObjects.Add(player);
-		cameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
+		worldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
+		worldObjects.Add(player);
 	}
 }

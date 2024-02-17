@@ -28,12 +28,12 @@ internal class SplitScreenScene : Scene
 		MapGamepadButton("EscapeP2", GamepadButton.Start);
 
 		// Ground
-		gameObjects.Add(new Ground(new Vector2(100, 100)));
+		worldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Trex
 		Trex trex = new Trex();
 		trex.Transform.Scale /= 2;
-		gameObjects.Add(trex);
+		worldObjects.Add(trex);
 
 		// Players
 		Player playerOne = new Player(new PlayerMovementControls(new AxesSet("XMovementP1", "YMovementP1"), "JumpP1", "EscapeP1"), new AxesSet("XCameraP1", "YCameraP1"), true);
@@ -42,10 +42,10 @@ internal class SplitScreenScene : Scene
 		playerOne.Transform.Position += new Vector3(0, 10, -10);
 		playerTwo.Transform.Position += new Vector3(0, 10, 10);
 
-		gameObjects.Add(playerOne);
-		cameras.Add((playerOne.camera, new ViewPort(0.5f, 0.75f, 1, 0.5f)));
+		worldObjects.Add(playerOne);
+		worldCameras.Add((playerOne.camera, new ViewPort(0.5f, 0.75f, 1, 0.5f)));
 
-		gameObjects.Add(playerTwo);
-		cameras.Add((playerTwo.camera, new ViewPort(0.5f, 0.25f, 1, 0.5f)));
+		worldObjects.Add(playerTwo);
+		worldCameras.Add((playerTwo.camera, new ViewPort(0.5f, 0.25f, 1, 0.5f)));
 	}
 }

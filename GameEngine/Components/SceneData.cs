@@ -4,5 +4,5 @@ namespace GameEngine.Components;
 
 internal class SceneData
 {
-	public List<GameObjectData> GameObjects { get; set; } = new List<GameObjectData>();
+	public List<WorldObjectData> GameObjects { get; set; } = new List<WorldObjectData>();
 }
