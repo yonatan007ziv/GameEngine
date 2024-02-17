@@ -72,6 +72,11 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 	public void SetMouseLocked(bool locked)
 		=> LockMouse(locked);
 
+	public void SetMousePosition(Vector2 position)
+	{
+		MousePosition = position;
+	}
+
 	public void SetDepthTest(bool enable)
 	{
 		if (enable)

@@ -3,7 +3,7 @@ using GraphicsEngine.Components.Interfaces;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderedObject : IObject
+internal class RenderedObject
 {
 	public int Id { get; }
 

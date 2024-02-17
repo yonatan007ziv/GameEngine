@@ -22,7 +22,6 @@ internal class ObjModelImporter
 		List<Vector2> vt = new List<Vector2>();
 		List<Vector3> indexes = new List<Vector3>();
 
-
 		foreach (string currentLine in data)
 		{
 			string line = currentLine.Trim();

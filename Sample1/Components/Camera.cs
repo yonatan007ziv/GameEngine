@@ -4,15 +4,15 @@ using System.Numerics;
 
 namespace Sample1.Components;
 
-internal class Camera : ScriptableGameObject
+internal class Camera : ScriptableGameComponent
 {
 	private const float sensitivity = 25;
 
 	private readonly AxesSet cameraAxes;
 
-	public Camera(Transform parent, AxesSet cameraAxes)
+	public Camera(GameObject parent, AxesSet cameraAxes)
+		: base(parent)
 	{
-		Transform = parent;
 		this.cameraAxes = cameraAxes;
 
 		Meshes.Add(new MeshData("Camera.obj", "Red.mat"));

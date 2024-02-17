@@ -1,26 +1,31 @@
 ﻿using GameEngine.Components;
 using GameEngine.Core.Components;
+using GameEngine.Extensions;
+using System.Numerics;
 
 namespace Sample1.Components;
 
-internal class MovementController : ScriptableGameObject
+internal class MovementController : ScriptableGameComponent
 {
-	private const float movementSpeed = 0.2f;
+	private const float jumpSpeed = 20;
+	private const float movementSpeed = 25;
 
 	private readonly PlayerMovementControls movementControls;
 
-	public MovementController(Transform parent, PlayerMovementControls movementControls)
+	public MovementController(GameObject parent, PlayerMovementControls movementControls)
+		: base(parent)
 	{
-		Transform = parent;
 		this.movementControls = movementControls;
-
 	}
+
 	public override void Update(float deltaTime)
 	{
-		Transform.Position += (-GetAxis(movementControls.AxesSet.Horizontal) * Transform.LocalRight + GetAxis(movementControls.AxesSet.Vertical) * Transform.LocalFront) * movementSpeed;
+		Vector3 movementVector = movementSpeed * (-GetAxis(movementControls.AxesSet.Horizontal) * Transform.LocalRight + GetAxis(movementControls.AxesSet.Vertical) * Transform.LocalFront);
+		movementVector = movementVector.ClampMagnitude(movementSpeed);
+		Transform.Position += movementVector * deltaTime;
 
-		if (GetButtonDown(movementControls.Jump)) // Attach to parent velocities later I am tired
-			Transform.Position += new System.Numerics.Vector3(0, 20, 0);
+		if (GetButtonDown(movementControls.Jump))
+			ImpulseVelocities.Add(new Vector3(0, jumpSpeed, 0));
 
 		if (GetButtonDown(movementControls.Pause))
 			MouseLocked = !MouseLocked;

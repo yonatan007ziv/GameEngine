@@ -31,8 +31,8 @@ public interface IGameEngine
 
 	void AddGameObject(GameObject gameObject);
 	void RemoveGameObject(GameObject gameObject);
-	void AddCamera(GameObject cameraObject, ViewPort viewport);
-	void RemoveCamera(GameObject cameraObject);
+	void AddCamera(GameComponent cameraObject, ViewPort viewport);
+	void RemoveCamera(GameComponent cameraObject);
 
 	#region Input polling
 	bool IsMouseButtonPressed(MouseButton mouseButton);

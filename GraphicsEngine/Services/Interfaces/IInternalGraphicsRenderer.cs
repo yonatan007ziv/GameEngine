@@ -27,6 +27,7 @@ internal interface IInternalGraphicsRenderer
 	void ProcessEvents();
 	void SwapBuffers();
 	void SetMouseLocked(bool locked);
+	void SetMousePosition(Vector2 vector2);
 	void SetBackgroundColor(Color color);
 	void SetDepthTest(bool enable);
 	void SetViewport(ViewPort viewport);

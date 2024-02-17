@@ -23,13 +23,14 @@ internal class GameEngine : IGameEngine
 	public IInputEngine InputEngine { get; }
 	public IPhysicsEngine PhysicsEngine { get; }
 
-	private readonly Dictionary<int, GameObject> allObjects = new Dictionary<int, GameObject>();
 
+	private readonly Dictionary<int, GameObject> allObjects = new Dictionary<int, GameObject>();
 	private readonly Dictionary<int, GameObject> worldObjects = new Dictionary<int, GameObject>();
 	private readonly Dictionary<int, GameObject> uiObjects = new Dictionary<int, GameObject>();
 
-	private readonly Dictionary<int, GameObject> worldCameras = new Dictionary<int, GameObject>();
-	private readonly Dictionary<int, GameObject> uiCameras = new Dictionary<int, GameObject>();
+	private readonly Dictionary<int, GameComponent> allCameras = new Dictionary<int, GameComponent>();
+	private readonly Dictionary<int, GameComponent> worldCameras = new Dictionary<int, GameComponent>();
+	private readonly Dictionary<int, GameComponent> uiCameras = new Dictionary<int, GameComponent>();
 
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
@@ -91,41 +92,39 @@ internal class GameEngine : IGameEngine
 	public void SetBackgroundColor(Color color)
 		=> Renderer.SetBackgroundColor(color);
 
-	public void AddCamera(GameObject gameObject, ViewPort viewport)
+	public void AddCamera(GameComponent gameComponent, ViewPort viewport)
 	{
-		if (allObjects.ContainsKey(gameObject.Id))
+		if (allCameras.ContainsKey(gameComponent.Id))
 		{
 			logger.LogError("GameEngine. Object id exists");
 			return;
 		}
 
-		allObjects.Add(gameObject.Id, gameObject);
-		if (!gameObject.IsUI)
-			worldCameras.Add(gameObject.Id, gameObject);
+		if (!gameComponent.IsUI)
+			worldCameras.Add(gameComponent.Id, gameComponent);
 		else
-			uiCameras.Add(gameObject.Id, gameObject);
+			uiCameras.Add(gameComponent.Id, gameComponent);
+		allCameras.Add(gameComponent.Id, gameComponent);
 
-		GameObjectData comGameObject = gameObject.TranslateGameObject();
-		PhysicsEngine.AddPhysicsObject(ref comGameObject);
+		GameComponentData comGameObject = gameComponent.TranslateGameComponent();
 		Renderer.AddCamera(ref comGameObject, viewport);
 	}
 
-	public void RemoveCamera(GameObject gameObject)
+	public void RemoveCamera(GameComponent gameComponent)
 	{
-		if (!allObjects.ContainsKey(gameObject.Id))
+		if (!allCameras.ContainsKey(gameComponent.Id))
 		{
 			logger.LogError("GameEngine. Camera id doesn't exist");
 			return;
 		}
 
-		allObjects.Remove(gameObject.Id);
-		if (gameObject.IsUI)
-			uiCameras.Remove(gameObject.Id);
+		if (gameComponent.IsUI)
+			uiCameras.Remove(gameComponent.Id);
 		else
-			worldCameras.Remove(gameObject.Id);
+			worldCameras.Remove(gameComponent.Id);
+		allCameras.Remove(gameComponent.Id);
 
-		GameObjectData comGameObject = gameObject.TranslateGameObject();
-		PhysicsEngine.RemovePhysicsObject(ref comGameObject);
+		GameComponentData comGameObject = gameComponent.TranslateGameComponent();
 		Renderer.RemoveCamera(ref comGameObject);
 	}
 
@@ -211,8 +210,14 @@ internal class GameEngine : IGameEngine
 				if (gameObject.ImpulseVelocitiesDirty)
 					gameObject.ImpulseVelocities.Clear(); // Reset impulse velocities
 
+				// Poll scripting code from components
+				foreach (GameComponent gameComponent in gameObject.gameComponents)
+					if (gameComponent is ScriptableGameComponent scriptableComponent)
+						scriptableComponent.Update(TickDeltaTime);
+
+				// Poll scripting code from object
 				if (gameObject is ScriptableGameObject scriptableObject)
-					scriptableObject.Update(TickDeltaTime); // Poll scripting code from objects
+					scriptableObject.Update(TickDeltaTime);
 			}
 
 			InputEngine.InputTickPass();

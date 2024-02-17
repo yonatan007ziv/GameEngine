@@ -23,8 +23,8 @@ public interface IGraphicsEngine
 	void RenderFrame();
 	void UpdateObject(ref GameObjectData gameObject);
 
-	void AddCamera(ref GameObjectData gameObjectData, ViewPort viewPort);
-	void RemoveCamera(ref GameObjectData gameObjectData);
+	void AddCamera(ref GameComponentData gameObjectData, ViewPort viewPort);
+	void RemoveCamera(ref GameComponentData gameObjectData);
 
 	void AddGameObject(ref GameObjectData gameObject);
 	void RemoveGameObject(ref GameObjectData gameObjectData);

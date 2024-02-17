@@ -99,6 +99,11 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 				mouse.Cursor.CursorMode = locked ? CursorMode.Disabled : CursorMode.Normal;
 	}
 
+	public void SetMousePosition(Vector2 position)
+	{
+		MousePosition = position;
+	}
+
 	public void SetDepthTest(bool enable)
 	{
 		if (enable)

@@ -6,39 +6,49 @@ namespace GameEngine.Components;
 
 public class Scene : IInputMapper, IDisposable
 {
+	private static Scene? _loadedScene;
+
 	private bool _loaded;
 
-	protected List<(GameObject camera, ViewPort viewPort)> cameras = new List<(GameObject camera, ViewPort viewPort)>();
+	protected List<(GameComponent camera, ViewPort viewPort)> cameras = new List<(GameComponent camera, ViewPort viewPort)>();
 	protected List<GameObject> gameObjects = new List<GameObject>();
 
 	public async void LoadScene()
 	{
 		await Services.Implementations.GameEngine.EngineContext.EngineLoadingTask.Task;
 
-		_loaded = true;
-		foreach ((GameObject camera, ViewPort viewPort) in cameras)
-			Services.Implementations.GameEngine.EngineContext.AddCamera(camera, viewPort);
+		if (_loadedScene is not null)
+			_loadedScene.UnloadScene();
+
 		foreach (GameObject gameObject in gameObjects)
 			Services.Implementations.GameEngine.EngineContext.AddGameObject(gameObject);
+		foreach ((GameComponent camera, ViewPort viewPort) in cameras)
+			Services.Implementations.GameEngine.EngineContext.AddCamera(camera, viewPort);
+
+		_loaded = true;
+		_loadedScene = this;
 	}
 
 	public void UnloadScene()
 	{
-		_loaded = false;
-		foreach ((GameObject camera, _) in cameras)
-			Services.Implementations.GameEngine.EngineContext.RemoveCamera(camera);
 		foreach (GameObject gameObject in gameObjects)
 			Services.Implementations.GameEngine.EngineContext.RemoveGameObject(gameObject);
+		foreach ((GameComponent camera, _) in cameras)
+			Services.Implementations.GameEngine.EngineContext.RemoveCamera(camera);
+
+		_loaded = false;
+		_loadedScene = null;
 	}
 
 	public void Dispose()
 	{
 		if (_loaded)
 			UnloadScene();
-		foreach ((GameObject camera, _) in cameras)
-			camera.Dispose();
+
 		foreach (GameObject gameObject in gameObjects)
 			gameObject.Dispose();
+		foreach ((GameComponent camera, _) in cameras)
+			camera.Dispose();
 	}
 
 	public void MapMouseButton(string buttonName, MouseButton mouseButton)

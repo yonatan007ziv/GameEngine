@@ -20,8 +20,9 @@ internal class Program
 		GameEngine.LogRenderingLogs = false; // Not supported for OpenTK yet
 		GameEngine.MouseLocked = true;
 
-		// new SingleCameraScene().LoadScene();
-		new SplitScreenScene().LoadScene(); // Two player scene, 1st player mouse and keyboard, 2nd player controller
+		new SingleCameraScene().LoadScene(); // One player scene
+		// new SplitScreenScene().LoadScene(); // Two player scene, 1st player mouse and keyboard, 2nd player controller
+
 		GameEngine.Run();
 	}
 }

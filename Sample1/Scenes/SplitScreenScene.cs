@@ -3,6 +3,7 @@ using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
 using Sample1.Components;
 using Sample1.GameObjects;
+using System.Numerics;
 
 namespace Sample1.Scenes;
 
@@ -26,21 +27,25 @@ internal class SplitScreenScene : Scene
 		MapGamepadButton("JumpP2", GamepadButton.Cross);
 		MapGamepadButton("EscapeP2", GamepadButton.Start);
 
-		Player playerOne = new Player(new PlayerMovementControls(new AxesSet("XMovementP1", "YMovementP1"), "JumpP1", "EscapeP1"), new AxesSet("XCameraP1", "YCameraP1"));
-		Player playerTwo = new Player(new PlayerMovementControls(new AxesSet("XMovementP2", "YMovementP2"), "JumpP2", "EscapeP2"), new AxesSet("XCameraP2", "YCameraP2"));
+		// Ground
+		gameObjects.Add(new Ground(new Vector2(100, 100)));
 
-		playerOne.Transform.Scale *= 5;
-		playerTwo.Transform.Scale *= 5;
+		// Trex
+		Trex trex = new Trex();
+		trex.Transform.Scale /= 2;
+		gameObjects.Add(trex);
 
-		playerOne.Transform.Position -= new System.Numerics.Vector3(0, 0, 10);
-		playerTwo.Transform.Position -= new System.Numerics.Vector3(0, 0, -10);
+		// Players
+		Player playerOne = new Player(new PlayerMovementControls(new AxesSet("XMovementP1", "YMovementP1"), "JumpP1", "EscapeP1"), new AxesSet("XCameraP1", "YCameraP1"), true);
+		Player playerTwo = new Player(new PlayerMovementControls(new AxesSet("XMovementP2", "YMovementP2"), "JumpP2", "EscapeP2"), new AxesSet("XCameraP2", "YCameraP2"), true);
 
-		cameras.Add((playerOne.camera, new ViewPort(0.5f, 0.75f, 1, 0.5f)));
+		playerOne.Transform.Position += new Vector3(0, 10, -10);
+		playerTwo.Transform.Position += new Vector3(0, 10, 10);
+
 		gameObjects.Add(playerOne);
+		cameras.Add((playerOne.camera, new ViewPort(0.5f, 0.75f, 1, 0.5f)));
 
-		cameras.Add((playerTwo.camera, new ViewPort(0.5f, 0.25f, 1, 0.5f)));
 		gameObjects.Add(playerTwo);
-
-		gameObjects.Add(new Trex());
+		cameras.Add((playerTwo.camera, new ViewPort(0.5f, 0.25f, 1, 0.5f)));
 	}
 }

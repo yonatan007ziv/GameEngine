@@ -1,25 +1,51 @@
 ﻿using GameEngine.Components;
 using GameEngine.Core.Components.Input.Buttons;
 using Sample1.Components;
+using Sample1.Scenes;
 using System.Drawing;
 
 namespace Sample1.GameObjects;
 
 internal class Player : ScriptableGameObject
 {
+	// Gravity, -10 was a little low
+	private const float gravityMagnitude = 20;
+
 	public readonly MovementController movementController;
 	public readonly Camera camera;
 
-	public Player(PlayerMovementControls movementControls, AxesSet cameraAxes)
+	private bool addedGravity;
+	private bool addedNormal;
+
+	public Player(PlayerMovementControls movementControls, AxesSet cameraAxes, bool singlePlayerSceneLoader)
 	{
-		movementController = new MovementController(Transform, movementControls);
-		camera = new Camera(Transform, cameraAxes);
+		_ = new SceneSwitcher(this, singlePlayerSceneLoader);
+		movementController = new MovementController(this, movementControls);
+		camera = new Camera(this, cameraAxes);
 	}
 
 	public override void Update(float deltaTime)
 	{
-		movementController.Update(deltaTime);
-		camera.Update(deltaTime);
+		// Simulate ground collision for now
+		#region hardcoded garbage temporary
+		if (Transform.Position.Y <= 1.5f && !addedNormal)
+		{
+			Forces.Clear();
+			ImpulseVelocities.Clear();
+			ImpulseVelocities.Add(new System.Numerics.Vector3(0));
+			addedNormal = true;
+			addedGravity = false;
+		}
+		else if (Transform.Position.Y > 1.5f)
+		{
+			if (!addedGravity)
+			{
+				Forces.Add(new System.Numerics.Vector3(0, -gravityMagnitude, 0));
+				addedGravity = true;
+			}
+			addedNormal = false;
+		}
+		#endregion
 
 		if (GetKeyboardButtonDown(KeyboardButton.One))
 			SetBackgroundColor(Color.Red);

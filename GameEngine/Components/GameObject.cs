@@ -9,6 +9,7 @@ namespace GameEngine.Components;
 public class GameObject : IDisposable
 {
 	public int Id { get; }
+	public readonly List<GameComponent> gameComponents = new List<GameComponent>();
 
 	public bool IsUI { get; protected set; }
 

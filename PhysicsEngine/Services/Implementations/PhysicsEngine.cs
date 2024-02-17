@@ -19,7 +19,7 @@ internal class PhysicsEngine : IPhysicsEngine
 		for (int i = 0; i < physicsObjectsArr.Length; i++)
 		{
 			PhysicsObject physicsObject = physicsObjectsArr[i];
-			if (physicsObject.NetForce != Vector3.Zero)
+			if (physicsObject.NetForce != Vector3.Zero || physicsObject.Velocity != Vector3.Zero)
 			{
 				physicsObject.Velocity += physicsObject.NetForce * deltaTime;
 				physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;

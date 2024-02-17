@@ -19,7 +19,7 @@ public readonly struct GameObjectData
 	public bool ImpulseVelocitiesDirty { get; }
 	public List<Vector3> ImpulseVelocities { get; }
 
-	public GameObjectData(int id, bool isUI,
+	public GameObjectData(int id, bool ui,
 		TransformData transform, bool transformDirty,
 		List<MeshData> meshes, bool meshesDirty,
 		List<Vector3> forces, bool forcesDirty,
@@ -27,7 +27,7 @@ public readonly struct GameObjectData
 	{
 		Id = id;
 
-		UI = isUI;
+		UI = ui;
 
 		Transform = transform;
 		TransformDirty = transformDirty;

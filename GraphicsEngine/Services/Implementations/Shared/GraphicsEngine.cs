@@ -20,12 +20,14 @@ internal class GraphicsEngine : IGraphicsEngine
 	public string Title { get => internalRenderer.Title; set => internalRenderer.Title = value; }
 	public Vector2 WindowSize { get => internalRenderer.WindowSize; }
 	public bool LogRenderingMessages { get => internalRenderer.LogRenderingMessages; set => internalRenderer.LogRenderingMessages = value; }
-
-	private readonly Dictionary<int, IObject> allObjects = new Dictionary<int, IObject>();
-	private readonly Dictionary<int, Camera> worldCameras = new Dictionary<int, Camera>();
-	private readonly Dictionary<int, Camera> uiCameras = new Dictionary<int, Camera>();
+	
+	private readonly Dictionary<int, RenderedObject> allObjects = new Dictionary<int, RenderedObject>();
 	private readonly Dictionary<int, RenderedObject> worldObjects = new Dictionary<int, RenderedObject>();
 	private readonly Dictionary<int, RenderedObject> uiObjects = new Dictionary<int, RenderedObject>();
+
+	private readonly Dictionary<int, Camera> allCameras = new Dictionary<int, Camera>();
+	private readonly Dictionary<int, Camera> worldCameras = new Dictionary<int, Camera>();
+	private readonly Dictionary<int, Camera> uiCameras = new Dictionary<int, Camera>();
 
 	public event Action? Load;
 	public event Action<MouseEventData>? MouseEvent;
@@ -51,7 +53,10 @@ internal class GraphicsEngine : IGraphicsEngine
 		=> internalRenderer.SetBackgroundColor(color);
 
 	public void LockMouse(bool lockMouse)
-		=> internalRenderer.SetMouseLocked(lockMouse);
+	{
+		internalRenderer.SetMouseLocked(lockMouse);
+		internalRenderer.SetMousePosition(WindowSize / 2);
+	}
 
 	public void RenderFrame()
 	{
@@ -59,20 +64,17 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		internalRenderer.SetDepthTest(true);
 
-		foreach (Camera camera in worldCameras.Values)
+		Camera[] worldCamerasArr = worldCameras.Values.ToArray();
+		foreach (Camera camera in worldCamerasArr)
 		{
-			camera.Transform.Rotation += new Vector3(0, 0.2f, 0);
 			camera.Update();
 			internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render world objects
-			foreach (RenderedObject worldObject in worldObjects.Values)
+			RenderedObject[] worldObjectsArr = worldObjects.Values.ToArray();
+			foreach (RenderedObject worldObject in worldObjectsArr)
+				if (worldObject.Id != camera.ParentId)
 				worldObject.Render(camera);
-
-			// Render cameras
-			foreach (Camera camera1 in worldCameras.Values)
-				if (camera != camera1)
-					camera1.Render(camera);
 		}
 
 		internalRenderer.SetDepthTest(false);
@@ -83,7 +85,8 @@ internal class GraphicsEngine : IGraphicsEngine
 
 			// Render UI Objects
 			foreach (RenderedObject uiObject in worldObjects.Values)
-				uiObject.Render(camera);
+				if (uiObject.Id != camera.ParentId)
+					uiObject.Render(camera);
 		}
 
 		internalRenderer.SwapBuffers();
@@ -107,7 +110,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public void UpdateObject(ref GameObjectData gameObjectData)
 	{
 		int id = gameObjectData.Id;
-		IObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
+		RenderedObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
 
 		if (gameObject is not null)
 		{
@@ -125,39 +128,44 @@ internal class GraphicsEngine : IGraphicsEngine
 			gameObject.Update();
 		}
 	}
-	public void AddCamera(ref GameObjectData cameraData, ViewPort viewPort)
+	public void AddCamera(ref GameComponentData cameraData, ViewPort viewPort)
 	{
 		int id = cameraData.Id;
-		IObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
+		Camera? camera = allCameras.ContainsKey(id) ? allCameras[id] : null;
 
-		if (gameObject is null)
+		if (camera is null)
 		{
-			Camera camera = new Camera(cameraData.Id, cameraData.Transform.TranslateTransform(), (int)WindowSize.X, (int)WindowSize.Y, viewPort) { UI = cameraData.UI };
-			if (cameraData.UI)
-				uiCameras.Add(id, camera);
-			else
-				worldCameras.Add(id, camera);
-			allObjects.Add(id, camera);
+			// Find parent
+			RenderedObject? parent = allObjects.ContainsKey(cameraData.ParentId) ? allObjects[cameraData.ParentId] : null;
+			if (parent is not null)
+			{
+				camera = new Camera(cameraData.Id, cameraData.ParentId, parent.Transform, (int)WindowSize.X, (int)WindowSize.Y, viewPort) { UI = cameraData.UI };
+				if (cameraData.UI)
+					uiCameras.Add(id, camera);
+				else
+					worldCameras.Add(id, camera);
+				allCameras.Add(id, camera);
 
-			camera.Update();
+				camera.Update();
+			}
+			else
+				logger.LogError("Renderer. Parent id not found, id: {id}", cameraData.ParentId);
 		}
 		else
-		{
 			logger.LogError("Renderer. Camera id already exists, id: {id}", id);
-		}
 	}
-	public void RemoveCamera(ref GameObjectData cameraData)
+	public void RemoveCamera(ref GameComponentData cameraData)
 	{
 		int id = cameraData.Id;
-		IObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
+		Camera? camera = allCameras.ContainsKey(id) ? allCameras[id] : null;
 
-		if (gameObject is not null)
+		if (camera is not null)
 		{
 			if (cameraData.UI)
 				uiCameras.Remove(id);
 			else
 				worldCameras.Remove(id);
-			allObjects.Remove(id);
+			allCameras.Remove(id);
 		}
 		else
 		{
@@ -167,30 +175,30 @@ internal class GraphicsEngine : IGraphicsEngine
 	public void AddGameObject(ref GameObjectData gameObjectData)
 	{
 		int id = gameObjectData.Id;
-		IObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
+		RenderedObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
 
 		if (gameObject is null)
 		{
-			RenderedObject renderedObject = new RenderedObject(id, new Transform(gameObjectData.Transform));
+			gameObject = new RenderedObject(id, new Transform(gameObjectData.Transform));
 
 			if (gameObjectData.TransformDirty)
-				renderedObject.Transform.CopyFrom(gameObjectData.Transform);
+				gameObject.Transform.CopyFrom(gameObjectData.Transform);
 
 			if (gameObjectData.MeshesDirty)
 			{   // Update Meshes
-				renderedObject.Meshes.Clear();
+				gameObject.Meshes.Clear();
 				for (int i = 0; i < gameObjectData.Meshes.Count; i++)
 					if (internalRenderer.MeshFactory.Create(gameObjectData.Meshes[i].Model, gameObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
-						renderedObject.Meshes.Add(meshRenderer);
+						gameObject.Meshes.Add(meshRenderer);
 			}
 
 			if (gameObjectData.UI)
-				uiObjects.Add(id, renderedObject);
+				uiObjects.Add(id, gameObject);
 			else
-				worldObjects.Add(id, renderedObject);
-			allObjects.Add(id, renderedObject);
+				worldObjects.Add(id, gameObject);
+			allObjects.Add(id, gameObject);
 
-			renderedObject.Update();
+			gameObject.Update();
 		}
 		else
 		{
@@ -200,7 +208,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public void RemoveGameObject(ref GameObjectData gameObjectData)
 	{
 		int id = gameObjectData.Id;
-		IObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
+		RenderedObject? gameObject = allObjects.ContainsKey(id) ? allObjects[id] : null;
 
 		if (gameObject is not null)
 		{
