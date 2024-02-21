@@ -17,7 +17,7 @@ internal class RenderedWorldObject
 		Meshes.AddRange(meshRenderers);
 
 		Update();
-    }
+	}
 
 	public void Render(WorldCamera camera)
 	{

@@ -9,6 +9,9 @@ public readonly struct WorldObjectData
 	public bool TransformDirty { get; }
 	public TransformData Transform { get; }
 
+	public bool BoxColliderDirty { get; }
+	public BoxColliderData? BoxCollider { get; }
+
 	public bool MeshesDirty { get; }
 	public List<MeshData> Meshes { get; }
 
@@ -20,6 +23,7 @@ public readonly struct WorldObjectData
 
 	public WorldObjectData(int id,
 		TransformData transform, bool transformDirty,
+		BoxColliderData? boxCollider, bool boxColliderDirty,
 		List<MeshData> meshes, bool meshesDirty,
 		List<Vector3> forces, bool forcesDirty,
 		List<Vector3> impulseVelocities, bool impulseVelocitiesDirty)
@@ -28,6 +32,9 @@ public readonly struct WorldObjectData
 
 		Transform = transform;
 		TransformDirty = transformDirty;
+
+		BoxCollider = boxCollider;
+		BoxColliderDirty = boxColliderDirty;
 
 		Meshes = meshes;
 		MeshesDirty = meshesDirty;

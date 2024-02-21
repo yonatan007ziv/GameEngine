@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using GameEngine.Core.Extensions;
+using System.Numerics;
 
 namespace GameEngine.Extensions;
 
@@ -13,6 +14,7 @@ public static class VectorExtensions
 		return clamped;
 	}
 
+
 	public static Vector2 ClampMagnitude(this Vector2 vec, float magnitude)
 	{
 		Vector2 clamped = vec;
@@ -20,5 +22,12 @@ public static class VectorExtensions
 		if (length > magnitude)
 			clamped = vec / length * magnitude;
 		return clamped;
+	}
+
+	public static Vector3 RotateVectorByAxis(this Vector3 vec, Vector3 axis, float degree)
+	{
+		float radians = MathHelper.DegToRad(degree);
+		Matrix4x4 rotationMatrix = Matrix4x4.CreateFromAxisAngle(axis, radians);
+		return Vector3.Transform(vec, rotationMatrix);
 	}
 }

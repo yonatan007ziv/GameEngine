@@ -8,7 +8,7 @@ internal class Trex : ScriptableWorldObject
 {
 	public Trex()
 	{
-		Meshes.Add(new MeshData("Trex.obj", "Hamama.mat"));
+		Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
 	}
 
 	public override void Update(float deltaTime)

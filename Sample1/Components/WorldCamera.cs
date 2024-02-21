@@ -27,7 +27,7 @@ internal class WorldCamera : ScriptableWorldComponent
 
 			// Clamp camera
 			float clampedX = Math.Clamp(Transform.Rotation.X + cameraVector.Y * deltaTime * sensitivity, -90, 90); // Clamp vertical input to -1 and 1
-			Transform.Rotation = new Vector3(clampedX, Transform.Rotation .Y - cameraVector.X * deltaTime * sensitivity, 0);
+			Transform.Rotation = new Vector3(clampedX, Transform.Rotation.Y - cameraVector.X * deltaTime * sensitivity, 0);
 		}
 	}
 }

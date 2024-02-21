@@ -8,7 +8,10 @@ namespace GameEngine.Services.Interfaces;
 
 public interface IGameEngine
 {
+	IGraphicsEngine Renderer { get; }
+	ISoundEngine SoundEngine { get; }
 	IInputEngine InputEngine { get; }
+	IPhysicsEngine PhysicsEngine { get; }
 
 	string Title { get; set; }
 
@@ -16,6 +19,9 @@ public interface IGameEngine
 	bool LogInputs { get; set; }
 	bool LogFps { get; set; }
 	bool LogTps { get; set; }
+
+	// Future implementation
+	bool DrawColliderGizmos { get; set; }
 
 	int TickRate { get; set; }
 	int FpsCap { get; set; }
@@ -28,6 +34,9 @@ public interface IGameEngine
 
 	void Run();
 	void SetBackgroundColor(Color color);
+
+	public WorldObject? GetWorldObjectFromId(int id);
+	public UIObject? GetUIObjectFromId(int id);
 
 	void AddWorldObject(WorldObject worldObject);
 	void RemoveWorldObject(WorldObject worldObject);

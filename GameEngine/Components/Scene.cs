@@ -19,8 +19,8 @@ public class Scene : IInputMapper, IDisposable
 	public readonly ObservableCollection<(UIComponent camera, ViewPort viewPort)> uiCameras = new ObservableCollection<(UIComponent camera, ViewPort viewPort)>();
 	public readonly ObservableCollection<UIObject> uiObjects = new ObservableCollection<UIObject>();
 
-    public Scene()
-    {
+	public Scene()
+	{
 		worldCameras.CollectionChanged += WorldCamerasChanged;
 		worldObjects.CollectionChanged += WorldObjectsChanged;
 		uiCameras.CollectionChanged += UICamerasChanged;
@@ -60,6 +60,9 @@ public class Scene : IInputMapper, IDisposable
 	{
 		await Services.Implementations.GameEngine.EngineContext.EngineLoadingTask.Task;
 
+		if (_loaded)
+			return;
+
 		if (LoadedScene is not null)
 			LoadedScene.UnloadScene();
 
@@ -79,6 +82,9 @@ public class Scene : IInputMapper, IDisposable
 
 	public void UnloadScene()
 	{
+		if (!_loaded)
+			return;
+
 		foreach (WorldObject gameObject in worldObjects)
 			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(gameObject);
 		foreach ((WorldComponent camera, _) in worldCameras)

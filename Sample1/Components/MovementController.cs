@@ -25,8 +25,8 @@ internal class MovementController : ScriptableWorldComponent
 		movementVector = movementVector.ClampMagnitude(movementSpeed);
 		Transform.Position += movementVector * deltaTime;
 
-		if (GetButtonDown(movementControls.Jump))
-			ImpulseVelocities.Add(new Vector3(0, jumpSpeed, 0));
+		//if (GetButtonDown(movementControls.Jump))
+		//	ImpulseVelocities.Add(new Vector3(0, jumpSpeed, 0));
 
 		if (GetButtonDown(movementControls.Pause))
 			MouseLocked = !MouseLocked;

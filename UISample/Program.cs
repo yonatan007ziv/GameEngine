@@ -13,7 +13,7 @@ internal class Program
 		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
 
 		GameEngine.SetBackgroundColor(Color.LightBlue);
-		GameEngine.Title = "Game Engine Sample #2";
+		GameEngine.Title = "Game Engine Sample - UI";
 		GameEngine.FpsCap = 144; // Not supported for SilkOpenGL yet
 		GameEngine.LogFps = false;
 		GameEngine.LogInputs = false;

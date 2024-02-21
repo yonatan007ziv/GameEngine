@@ -13,11 +13,11 @@ internal class Program
 		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
 
 		GameEngine.SetBackgroundColor(Color.LightBlue);
-		GameEngine.Title = "Game Engine Sample #1";
-		GameEngine.FpsCap = 144; // Not supported for SilkOpenGL yet
+		GameEngine.Title = "Game Engine Sample - #1";
+		GameEngine.FpsCap = 60; // Not supported for SilkOpenGL yet
 		GameEngine.LogFps = false;
 		GameEngine.LogInputs = false;
-		GameEngine.LogRenderingLogs = false; // Not supported for OpenTK yet
+		GameEngine.LogRenderingLogs = true; // Not supported for OpenTK yet
 		GameEngine.MouseLocked = true;
 
 		// Press 4 on the keyboard to switch to a splitscreen scene

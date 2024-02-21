@@ -43,6 +43,8 @@ internal class GameEngine : IGameEngine
 	public bool LogFps { get; set; }
 	public bool LogTps { get; set; }
 
+	public bool DrawColliderGizmos { get; set; }
+
 	public int TickRate { get; set; } = 128;
 	public int FpsCap { get; set; } = 144;
 
@@ -94,6 +96,11 @@ internal class GameEngine : IGameEngine
 		=> Renderer.SetBackgroundColor(color);
 
 	#region Object management
+	public WorldObject? GetWorldObjectFromId(int id)
+		=> worldObjects.ContainsKey(id) ? worldObjects[id] : null;
+	public UIObject? GetUIObjectFromId(int id)
+		=> uiObjects.ContainsKey(id) ? uiObjects[id] : null;
+
 	public void AddWorldObject(WorldObject worldObject)
 	{
 		if (allObjectIds.Contains(worldObject.Id))
@@ -117,7 +124,7 @@ internal class GameEngine : IGameEngine
 			return;
 		}
 
-        worldCameras.Add(worldCamera.Id, worldCamera);
+		worldCameras.Add(worldCamera.Id, worldCamera);
 		allObjectIds.Add(worldCamera.Id);
 
 		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
@@ -239,13 +246,16 @@ internal class GameEngine : IGameEngine
 			updateStopwatch.Restart();
 
 			SyncPhysicsSoundEngines();
-			ApplyPhysicsUpdates(PhysicsEngine.PhysicsPass(TickDeltaTime));
+			PhysicsGameObjectUpdateData[] physicsUpdates = PhysicsEngine.PhysicsPass(TickDeltaTime);
 
 			// Tps Limit
 			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
 			TickDeltaTime = TickDeltaTimeStopper;
+
+			// Apply forces and collider constraints
+			ApplyPhysicsUpdates(physicsUpdates);
 
 			// Checking for input after limiting TPS
 			WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
@@ -295,7 +305,7 @@ internal class GameEngine : IGameEngine
 		}
 	}
 
-	private void ApplyPhysicsUpdates(List<PhysicsGameObjectUpdateData> physicsUpdates)
+	private void ApplyPhysicsUpdates(PhysicsGameObjectUpdateData[] physicsUpdates)
 	{
 		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
 		{
@@ -304,7 +314,11 @@ internal class GameEngine : IGameEngine
 
 			WorldObject worldObject = worldObjects[physicsUpdate.Id];
 			if (worldObject is not null)
+			{
+				bool isDirtyBefore = worldObject.TransformDirty;
 				worldObject.Transform.Position = physicsUpdate.Transform.position;
+				worldObject.TransformDirty = isDirtyBefore;
+			}
 		}
 	}
 
@@ -315,7 +329,7 @@ internal class GameEngine : IGameEngine
 		{
 			if (!worldObject.SyncPhysics && !worldObject.SyncSound)
 				continue;
-			
+
 			WorldObjectData comGameObject = worldObject.TranslateWorldObject();
 
 			// Physics Engine

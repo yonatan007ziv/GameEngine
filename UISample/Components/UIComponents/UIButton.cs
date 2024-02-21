@@ -5,13 +5,13 @@ namespace UISample.Components.UIComponents;
 
 internal class UIButton : ScriptableUIObject
 {
-    public UIButton()
-    {
-		Meshes.Add(new MeshData("UIPlane.obj", "Hamama.mat"));
+	public UIButton()
+	{
+		Meshes.Add(new MeshData("UIPlane.obj", "Wall.mat"));
 		Transform.Scale /= 4;
-    }
+	}
 
-    public override void OnClicked()
+	public override void OnClicked()
 	{
 		Console.WriteLine("Clicked");
 	}

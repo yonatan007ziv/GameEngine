@@ -1,4 +1,5 @@
 ﻿using GameEngine.Components;
+using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
 using Sample1.Components;
@@ -31,7 +32,7 @@ internal class SingleCameraScene : Scene
 
 		// Ground
 		worldObjects.Add(new Ground(new Vector2(100, 100)));
-
+		
 		// Trex
 		Trex trex = new Trex();
 		trex.Transform.Scale /= 2;

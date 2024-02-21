@@ -6,29 +6,29 @@ namespace GameEngine.Components.Objects;
 
 public abstract class WorldComponent : IDisposable
 {
-    public int Id { get; }
-    public int ParentId { get; }
+	public int Id { get; }
+	public int ParentId { get; }
 
-    protected Transform Transform;
-    protected ObservableCollection<MeshData> Meshes;
-    protected ObservableCollection<Vector3> Forces;
-    protected ObservableCollection<Vector3> ImpulseVelocities;
+	protected Transform Transform;
+	protected ObservableCollection<MeshData> Meshes;
+	protected ObservableCollection<Vector3> Forces;
+	protected ObservableCollection<Vector3> ImpulseVelocities;
 
-    public WorldComponent(WorldObject parent)
-    {
-        Id = IdGenerator.GenerateNext();
-        ParentId = parent.Id;
+	public WorldComponent(WorldObject parent)
+	{
+		Id = IdGenerator.GenerateNext();
+		ParentId = parent.Id;
 
-        parent.components.Add(this);
+		parent.components.Add(this);
 
-        Transform = parent.Transform;
-        Meshes = parent.Meshes;
-        Forces = parent.Forces;
-        ImpulseVelocities = parent.ImpulseVelocities;
-    }
+		Transform = parent.Transform;
+		Meshes = parent.Meshes;
+		Forces = parent.Forces;
+		ImpulseVelocities = parent.ImpulseVelocities;
+	}
 
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
+	public void Dispose()
+	{
+		throw new NotImplementedException();
+	}
 }

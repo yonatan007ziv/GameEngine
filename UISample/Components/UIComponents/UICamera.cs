@@ -1,5 +1,4 @@
-﻿using GameEngine.Components;
-using GameEngine.Components.Objects;
+﻿using GameEngine.Components.Objects;
 
 namespace UISample.Components.UIComponents
 {

@@ -1,5 +1,4 @@
-﻿using GameEngine.Core.Components;
-using GraphicsEngine.Components.Interfaces.Buffers;
+﻿using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Interfaces.Utils;
 using System.Numerics;
@@ -107,14 +106,13 @@ internal class ObjModelImporter
 		IVertexArray va;
 		IVertexBuffer vb = bufferGenerator.GenerateVertexBuffer();
 		IIndexBuffer ib = bufferGenerator.GenerateIndexBuffer();
-		BoxData boundingBox = new BoxData(left, right, top, bottom, front, back);
 
 		// "Fatal error while logging another fatal error." ?
 		vb.WriteData(vertexBuffer);
 		ib.WriteData(indexBuffer);
 		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());
 
-		return new ModelData(va, boundingBox, (uint)indexBuffer.Length);
+		return new ModelData(va, (uint)indexBuffer.Length);
 	}
 
 	private void FindExtremes(List<Vector3> v, out float right, out float left, out float top, out float bottom, out float front, out float back)

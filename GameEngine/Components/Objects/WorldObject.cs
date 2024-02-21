@@ -8,79 +8,86 @@ namespace GameEngine.Components.Objects;
 
 public class WorldObject : IDisposable
 {
-    public int Id { get; }
-    public readonly List<WorldComponent> components = new List<WorldComponent>();
+	public int Id { get; }
+	public string Tag { get; protected set; } = "";
 
-    public bool SyncGraphics { get; set; } = true;
-    public bool SyncPhysics { get; set; }
-    public bool SyncSound { get; set; }
+	public readonly List<WorldComponent> components = new List<WorldComponent>();
 
-    public bool TransformDirty { get; private set; }
-    public Transform Transform { get; }
+	public bool SyncGraphics { get; set; } = true;
+	public bool SyncPhysics { get; set; }
+	public bool SyncSound { get; set; }
 
-    public bool MeshesDirty { get; private set; }
-    public ObservableCollection<MeshData> Meshes { get; }
+	public bool TransformDirty { get; set; }
+	public Transform Transform { get; }
 
-    public bool ForcesDirty { get; private set; }
-    public ObservableCollection<Vector3> Forces { get; }
+	public bool BoxColliderDirty { get; set; }
+	private BoxColliderData? _boxCollider;
+	public BoxColliderData? BoxCollider { get => _boxCollider; set { _boxCollider = value; BoxColliderDirty = true; SyncPhysics = true; } }
 
-    public bool ImpulseVelocitiesDirty { get; private set; }
-    public ObservableCollection<Vector3> ImpulseVelocities { get; }
+	public bool MeshesDirty { get; set; }
+	public ObservableCollection<MeshData> Meshes { get; }
 
-    public WorldObject()
-    {
-        Id = IdGenerator.GenerateNext();
+	public bool ForcesDirty { get; set; }
+	public ObservableCollection<Vector3> Forces { get; }
 
-        Transform = new Transform();
-        Transform.PropertyChanged += TransformChanged;
+	public bool ImpulseVelocitiesDirty { get; set; }
+	public ObservableCollection<Vector3> ImpulseVelocities { get; }
 
-        Meshes = new ObservableCollection<MeshData>();
-        Meshes.CollectionChanged += MeshesChanged;
+	public WorldObject()
+	{
+		Id = IdGenerator.GenerateNext();
 
-        Forces = new ObservableCollection<Vector3>();
-        Forces.CollectionChanged += ForcesChanged;
+		Transform = new Transform();
+		Transform.PropertyChanged += TransformChanged;
 
-        ImpulseVelocities = new ObservableCollection<Vector3>();
-        ImpulseVelocities.CollectionChanged += ImpulseVelocitiesChanged;
-    }
+		Meshes = new ObservableCollection<MeshData>();
+		Meshes.CollectionChanged += MeshesChanged;
 
-    private void TransformChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        TransformDirty = true;
-        SyncPhysics = true;
-        SyncGraphics = true;
-    }
+		Forces = new ObservableCollection<Vector3>();
+		Forces.CollectionChanged += ForcesChanged;
 
-    private void MeshesChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        MeshesDirty = true;
-        SyncGraphics = true;
-    }
+		ImpulseVelocities = new ObservableCollection<Vector3>();
+		ImpulseVelocities.CollectionChanged += ImpulseVelocitiesChanged;
+	}
 
-    private void ForcesChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        ForcesDirty = true;
-        SyncPhysics = true;
-    }
+	private void TransformChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		TransformDirty = true;
+		SyncPhysics = true;
+		SyncGraphics = true;
+	}
 
-    private void ImpulseVelocitiesChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        ImpulseVelocitiesDirty = true;
-        SyncPhysics = true;
-    }
+	private void MeshesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		MeshesDirty = true;
+		SyncGraphics = true;
+	}
 
-    internal void ResetPhysicsSoundDirty()
-    {
-        ForcesDirty = false;
-        ImpulseVelocitiesDirty = false;
-        SyncPhysics = false;
-        SyncSound = false;
-    }
+	private void ForcesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		ForcesDirty = true;
+		SyncPhysics = true;
+	}
 
-    public void Dispose()
-    {
-        Meshes.Clear();
-        Forces.Clear();
-        ImpulseVelocities.Clear();
-    }
+	private void ImpulseVelocitiesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		ImpulseVelocitiesDirty = true;
+		SyncPhysics = true;
+	}
+
+	internal void ResetPhysicsSoundDirty()
+	{
+		BoxColliderDirty = false;
+		ForcesDirty = false;
+		ImpulseVelocitiesDirty = false;
+		SyncPhysics = false;
+		SyncSound = false;
+	}
+
+	public void Dispose()
+	{
+		Meshes.Clear();
+		Forces.Clear();
+		ImpulseVelocities.Clear();
+	}
 }

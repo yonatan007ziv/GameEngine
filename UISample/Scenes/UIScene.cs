@@ -7,8 +7,8 @@ namespace UISample.Scenes;
 
 internal class UIScene : Scene
 {
-    public UIScene()
-    {
+	public UIScene()
+	{
 		UIObject cameraParent = new UIObject();
 
 		uiObjects.Add(new UIButton());

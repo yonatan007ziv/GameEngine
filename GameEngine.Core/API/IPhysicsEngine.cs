@@ -9,5 +9,7 @@ public interface IPhysicsEngine
 	void RemovePhysicsObject(ref WorldObjectData gameObject);
 
 	void UpdatePhysicsObject(ref WorldObjectData gameObject);
-	List<PhysicsGameObjectUpdateData> PhysicsPass(float deltaTime);
+	PhysicsGameObjectUpdateData[] PhysicsPass(float deltaTime);
+
+	int[] GetTouchingColliderIds(int id);
 }

@@ -8,6 +8,7 @@ internal static class ObjectExtensions
 {
 	public static WorldObjectData TranslateWorldObject(this WorldObject worldObject)
 		=> new WorldObjectData(worldObject.Id, worldObject.Transform.TranslateTransform(), worldObject.TransformDirty,
+			worldObject.BoxCollider, worldObject.BoxColliderDirty,
 			worldObject.Meshes.ToList(), worldObject.MeshesDirty,
 			worldObject.Forces.ToList(), worldObject.ForcesDirty,
 			worldObject.ImpulseVelocities.ToList(), worldObject.ImpulseVelocitiesDirty);
