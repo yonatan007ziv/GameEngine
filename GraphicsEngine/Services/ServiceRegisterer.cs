@@ -107,6 +107,7 @@ internal class ServiceRegisterer
 		// Managers
 		collection.AddSingleton<IShaderManager, ShaderManager>();
 		collection.AddSingleton<IResourceManager, ContentResourceManager>(); // EmbeddedResourceManager : Test in the Future
+		collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
 		collection.AddSingleton<ITextureManager, TextureManager>();
 
 		// Factories

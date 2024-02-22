@@ -110,7 +110,7 @@ internal class PhysicsEngine : IPhysicsEngine
 
 	public bool CollidersOverlap(PhysicsObject colliderA, PhysicsObject colliderB, out Vector3 positionDelta)
 	{
-        Vector3 positionA = colliderA.Transform.Position;
+		Vector3 positionA = colliderA.Transform.Position;
 		Vector3 positionB = colliderB.Transform.Position;
 		BoxColliderData boxA = colliderA.BoxCollider!.Value;
 		BoxColliderData boxB = colliderB.BoxCollider!.Value;
@@ -124,7 +124,7 @@ internal class PhysicsEngine : IPhysicsEngine
 			boundMaxA.Y < boundMinB.Y || boundMinA.Y > boundMaxB.Y ||
 			boundMaxA.Z < boundMinB.Z || boundMinA.Z > boundMaxB.Z)
 		{
-            positionDelta = Vector3.Zero;
+			positionDelta = Vector3.Zero;
 			return false;
 		}
 

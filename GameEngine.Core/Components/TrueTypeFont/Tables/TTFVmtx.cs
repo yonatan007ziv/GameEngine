@@ -1,6 +1,6 @@
 ﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
 
-internal class Head
+internal class TTFVmtx
 {
 
 }

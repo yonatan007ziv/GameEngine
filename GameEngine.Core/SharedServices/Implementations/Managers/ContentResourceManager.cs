@@ -5,25 +5,15 @@ namespace GameEngine.Core.SharedServices.Implementations.Managers;
 
 public class ContentResourceManager : IResourceManager
 {
-	private readonly Dictionary<string, string> resourceNamePathDictionary = new Dictionary<string, string>();
+	private readonly IResourceDiscoverer resourceDiscoverer;
 	private readonly IFileReader<string> stringFileReader;
 	private readonly IFileReader<FileStream> fileStreamFileReader;
 
-	public ContentResourceManager(IFileReader<string> stringFileReader, IFileReader<FileStream> fileStreamFileReader)
+	public ContentResourceManager(IResourceDiscoverer resourceDiscoverer, IFileReader<string> stringFileReader, IFileReader<FileStream> fileStreamFileReader)
 	{
+		this.resourceDiscoverer = resourceDiscoverer;
 		this.stringFileReader = stringFileReader;
 		this.fileStreamFileReader = fileStreamFileReader;
-
-		DiscoverResources(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), @"Resources\")), @"Resources\");
-	}
-
-	private void DiscoverResources(DirectoryInfo directory, string depth)
-	{
-		foreach (FileInfo file in directory.GetFiles())
-			resourceNamePathDictionary.Add(file.Name, Path.Combine(depth, file.Name));
-
-		foreach (DirectoryInfo subDirectory in directory.GetDirectories())
-			DiscoverResources(subDirectory, Path.Combine(depth, subDirectory.Name));
 	}
 
 	public bool LoadResourceFileStream(string resource, out FileStream result)
@@ -33,7 +23,7 @@ public class ContentResourceManager : IResourceManager
 		if (!ResourceExists(resource))
 			return false;
 
-		if (fileStreamFileReader.ReadFile(resourceNamePathDictionary[resource], out FileStream stream))
+		if (fileStreamFileReader.ReadFile(resourceDiscoverer.ResourceNamePathDictionary[resource], out FileStream stream))
 		{
 			result = stream;
 			return true;
@@ -48,7 +38,7 @@ public class ContentResourceManager : IResourceManager
 		if (!ResourceExists(resource))
 			return false;
 
-		if (stringFileReader.ReadFile(resourceNamePathDictionary[resource], out string file))
+		if (stringFileReader.ReadFile(resourceDiscoverer.ResourceNamePathDictionary[resource], out string file))
 		{
 			result = file;
 			return true;
@@ -71,6 +61,5 @@ public class ContentResourceManager : IResourceManager
 	}
 
 	private bool ResourceExists(string resource)
-		=> resourceNamePathDictionary.ContainsKey(resource);
-
+		=> resourceDiscoverer.ResourceNamePathDictionary.ContainsKey(resource);
 }

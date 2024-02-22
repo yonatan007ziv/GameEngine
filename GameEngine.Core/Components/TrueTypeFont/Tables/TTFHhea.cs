@@ -1,6 +1,6 @@
 ﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
 
-internal class Vhea
+internal class TTFHhea
 {
 
 }

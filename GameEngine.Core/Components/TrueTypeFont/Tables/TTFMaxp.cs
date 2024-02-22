@@ -1,6 +1,6 @@
 ﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
 
-internal class Glyf
+internal class TTFMaxp
 {
 
 }

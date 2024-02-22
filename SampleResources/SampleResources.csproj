@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Resources\Fonts\Arial.ttf" />
+    <None Remove="Resources\Fonts\ToThePointRegular.ttf" />
     <None Remove="Resources\Materials\Colors\Blue.mat" />
     <None Remove="Resources\Materials\Colors\Green.mat" />
     <None Remove="Resources\Materials\Colors\Red.mat" />
@@ -49,6 +50,9 @@
 
   <ItemGroup>
     <Content Include="Resources\Fonts\Arial.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Fonts\ToThePointRegular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Materials\Colors\Blue.mat">

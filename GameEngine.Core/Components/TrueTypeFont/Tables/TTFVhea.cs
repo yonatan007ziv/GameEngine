@@ -1,6 +1,6 @@
 ﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
 
-internal class Cmap
+internal class TTFVhea
 {
 
 }
