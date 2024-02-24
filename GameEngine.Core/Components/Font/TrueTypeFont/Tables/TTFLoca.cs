@@ -1,8 +1,8 @@
-﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
+﻿namespace GameEngine.Core.Components.Font.TrueTypeFont.Tables;
 
 internal class TTFLoca
 {
-	public uint[] Offsets { get; }
+    public uint[] Offsets { get; }
 
     public TTFLoca(uint[] offsets)
     {

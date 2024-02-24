@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Core.Components.TrueTypeFont.Tables;
+﻿namespace GameEngine.Core.Components.Font.TrueTypeFont.Tables;
 
 internal class TTFCmap
 {

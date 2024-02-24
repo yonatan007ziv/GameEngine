@@ -1,8 +1,9 @@
-﻿using GameEngine.Core.Components.TrueTypeFont;
+﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Font;
 
 namespace GraphicsEngine.Services.Interfaces.Utils;
 
 internal interface ITTFLoader
 {
-	TrueTypeFont LoadFont(string fontName);
+	Font LoadFont(string fontName);
 }

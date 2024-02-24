@@ -2,10 +2,18 @@
 
 internal class BigEndianBinaryReader : BinaryReader
 {
+	public BinaryReader Base => this;
+
 	public BigEndianBinaryReader(Stream stream)
 		: base(stream)
 	{
 
+	}
+
+
+	public byte[] ReadBytesBigEndian(int bytes)
+	{
+		return base.ReadBytes(bytes).ToArray();
 	}
 
 	public Single ReadFixed32()

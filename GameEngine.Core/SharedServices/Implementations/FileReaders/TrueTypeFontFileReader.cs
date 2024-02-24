@@ -1,6 +1,8 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Font;
+using GameEngine.Core.Components.Font.TrueTypeFont;
+using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
 using GameEngine.Core.Components.TrueTypeFont;
-using GameEngine.Core.Components.TrueTypeFont.Tables;
 using GameEngine.Core.SharedServices.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
@@ -8,7 +10,7 @@ using System.Text;
 
 namespace GameEngine.Core.SharedServices.Implementations.FileReaders;
 
-public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
+public class TrueTypeFontFileReader : IFileReader<Font>
 {
 	private readonly ILogger logger;
 	private readonly IResourceDiscoverer resourceDiscoverer;
@@ -34,7 +36,7 @@ public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
 		return sum;
 	}
 
-	public bool ReadFile(string fontName, out TrueTypeFont result)
+	public bool ReadFile(string fontName, out Font result)
 	{
 		if (!resourceDiscoverer.ResourceNamePathDictionary.ContainsKey(fontName))
 		{
@@ -124,25 +126,17 @@ public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
 
 		TTFTableParser tableParser = new TTFTableParser(logger);
 		TTFHead head = tableParser.ReadHead(binaryReader, headInfo);
-		// TTFName name = tableParser.ReadName(binaryReader, nameInfo);
+		TTFName name = tableParser.ReadName(binaryReader, nameInfo);
 		TTFMaxp maxp = tableParser.ReadMaxp(binaryReader, maxpInfo);
 		TTFLoca loca = tableParser.ReadLoca(head, maxp, binaryReader, locaInfo);
 		TTFGlyf glyf = tableParser.ReadGlyf(maxp, loca, binaryReader, glyfInfo);
-		//TTFCmap cmap = tableParser.ReadCmap(binaryReader, cmapInfo);
-		//TTFHhea hhea = tableParser.ReadHhea(binaryReader, hheaInfo);
-		//TTFVhea vhea = tableParser.ReadVhea(binaryReader, vheaInfo);
-		//TTFHmtx hmtx = tableParser.ReadHmtx(hhea, binaryReader, hmtxInfo);
-		//TTFVmtx vmtx = tableParser.ReadVmtx(binaryReader, vmtxInfo);
+		TTFCmap cmap = tableParser.ReadCmap(binaryReader, cmapInfo);
+		TTFHhea hhea = tableParser.ReadHhea(binaryReader, hheaInfo);
+		TTFVhea vhea = tableParser.ReadVhea(binaryReader, vheaInfo);
+		TTFHmtx hmtx = tableParser.ReadHmtx(hhea, binaryReader, hmtxInfo);
+		TTFVmtx vmtx = tableParser.ReadVmtx(binaryReader, vmtxInfo);
 
-		List<Vector2> vecs = new List<Vector2>();
-		int glyfCoord = 12;
-		for (int i = 0; i < glyf.Glyphs[glyfCoord].XCoordinates.Length; i++)
-			vecs.Add(new Vector2(glyf.Glyphs[glyfCoord].XCoordinates[i], glyf.Glyphs[glyfCoord].YCoordinates[i]));
-
-		foreach (Vector2 vec in vecs)
-			Console.WriteLine(vec.ToString());
-
-        result = default!; // new TrueTypeFont(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
+        result = new Font(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
 		return true;
 	}
 

@@ -1,5 +1,5 @@
 ﻿using GameEngine;
-using GameEngine.Core.Components.TrueTypeFont;
+using GameEngine.Core.Components.Font;
 using GameEngine.Core.Enums;
 using GameEngine.Core.SharedServices.Implementations;
 using GameEngine.Core.SharedServices.Implementations.FileReaders;
@@ -15,7 +15,7 @@ internal class Program
 	public static void Main()
 	{
 		TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer());
-		trueTypeFontFileReader.ReadFile("Arial.ttf", out TrueTypeFont font);
+		trueTypeFontFileReader.ReadFile("Arial.ttf", out Font font);
 
 		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
 
