@@ -257,21 +257,33 @@ internal class GameEngine : IGameEngine
 			// Apply forces and collider constraints
 			ApplyPhysicsUpdates(physicsUpdates);
 
-			// Checking for input after limiting TPS
 			WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
-			foreach (WorldObject gameObject in worldObjects)
+			foreach (WorldObject worldObject in worldObjects)
 			{
-				if (gameObject.ImpulseVelocitiesDirty)
-					gameObject.ImpulseVelocities.Clear(); // Reset impulse velocities
+				if (worldObject.ImpulseVelocitiesDirty)
+					worldObject.ImpulseVelocities.Clear(); // Reset impulse velocities
 
-				// Poll scripting code from components
-				foreach (WorldComponent gameComponent in gameObject.components)
-					if (gameComponent is ScriptableWorldComponent scriptableComponent)
+				// Update components
+				foreach (WorldComponent worldComponent in worldObject.components)
+					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
+						scriptableWorldComponent.Update(TickDeltaTime);
+
+				// Update object
+				if (worldObject is ScriptableWorldObject scriptableWorldObject)
+					scriptableWorldObject.Update(TickDeltaTime);
+			}
+
+			UIObject[] uiObjects = this.uiObjects.Values.ToArray();
+			foreach (UIObject uiObject in uiObjects)
+			{
+				// Update components
+				foreach (UIComponent uiComponent in uiObject.components)
+					if (uiComponent is ScriptableUIComponent scriptableComponent)
 						scriptableComponent.Update(TickDeltaTime);
 
-				// Poll scripting code from object
-				if (gameObject is ScriptableWorldObject scriptableObject)
-					scriptableObject.Update(TickDeltaTime);
+				// Update object
+				if (uiObject is ScriptableUIObject scriptableUIObject)
+					scriptableUIObject.Update(TickDeltaTime);
 			}
 
 			InputEngine.InputTickPass();

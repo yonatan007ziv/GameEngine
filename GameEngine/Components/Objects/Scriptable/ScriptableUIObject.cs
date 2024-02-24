@@ -37,4 +37,6 @@ public abstract class ScriptableUIObject : UIObject
 
 	public void SetBackgroundColor(Color color)
 		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);
+
+	public abstract void Update(float deltaTime);
 }
