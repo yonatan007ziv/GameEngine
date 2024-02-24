@@ -9,6 +9,7 @@ using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace GameEngine.Services.Implementations;
@@ -19,7 +20,7 @@ internal class GameEngine : IGameEngine
 
 	private readonly ILogger logger;
 
-	public IGraphicsEngine Renderer { get; }
+	public IGraphicsEngine GraphicsEngine { get; }
 	public ISoundEngine SoundEngine { get; }
 	public IInputEngine InputEngine { get; }
 	public IPhysicsEngine PhysicsEngine { get; }
@@ -36,9 +37,10 @@ internal class GameEngine : IGameEngine
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
 
-	public string Title { get => Renderer.Title; set => Renderer.Title = value; }
+	public string Title { get => GraphicsEngine.Title; set => GraphicsEngine.Title = value; }
+	public Vector2 NormalizedMousePosition => InputEngine.GetMousePos() / GraphicsEngine.WindowSize * 2 - Vector2.One;
 
-	public bool LogRenderingLogs { get => Renderer.LogRenderingMessages; set => Renderer.LogRenderingMessages = value; }
+	public bool LogRenderingLogs { get => GraphicsEngine.LogRenderingMessages; set => GraphicsEngine.LogRenderingMessages = value; }
 	public bool LogInputs { get => InputEngine.LogInputs; set => InputEngine.LogInputs = value; }
 	public bool LogFps { get; set; }
 	public bool LogTps { get; set; }
@@ -51,7 +53,7 @@ internal class GameEngine : IGameEngine
 	private bool _mouseLocked, _updateMouseLocked;
 	public bool MouseLocked { get => _mouseLocked; set { _mouseLocked = value; _updateMouseLocked = true; } }
 
-	public IntPtr WindowHandle => Renderer.WindowHandle;
+	public IntPtr WindowHandle => GraphicsEngine.WindowHandle;
 	public float FpsDeltaTimeStopper => (float)renderStopwatch.Elapsed.TotalSeconds;
 	public float TickDeltaTimeStopper => (float)updateStopwatch.Elapsed.TotalSeconds;
 	public float ElapsedSeconds => (float)engineTime.Elapsed.TotalSeconds;
@@ -61,7 +63,7 @@ internal class GameEngine : IGameEngine
 	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine)
 	{
 		this.logger = logger;
-		Renderer = renderer;
+		GraphicsEngine = renderer;
 		SoundEngine = soundEngine;
 		InputEngine = inputEngine;
 		PhysicsEngine = physicsEngine;
@@ -69,7 +71,7 @@ internal class GameEngine : IGameEngine
 		EngineContext = this;
 
 		EngineLoadingTask = new TaskCompletionSource();
-		Renderer.Load += EngineLoadingTask.SetResult;
+		GraphicsEngine.Load += EngineLoadingTask.SetResult;
 
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			ExpectedTaskSchedulerPeriod = 8;
@@ -93,7 +95,7 @@ internal class GameEngine : IGameEngine
 	}
 
 	public void SetBackgroundColor(Color color)
-		=> Renderer.SetBackgroundColor(color);
+		=> GraphicsEngine.SetBackgroundColor(color);
 
 	#region Object management
 	public WorldObject? GetWorldObjectFromId(int id)
@@ -114,7 +116,7 @@ internal class GameEngine : IGameEngine
 
 		WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
 		PhysicsEngine.AddPhysicsObject(ref worldObjectData);
-		Renderer.AddWorldObject(ref worldObjectData);
+		GraphicsEngine.AddWorldObject(ref worldObjectData);
 	}
 	public void AddWorldCamera(WorldComponent worldCamera, ViewPort viewport)
 	{
@@ -128,7 +130,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Add(worldCamera.Id);
 
 		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		Renderer.AddWorldCamera(ref worldCameraData, viewport);
+		GraphicsEngine.AddWorldCamera(ref worldCameraData, viewport);
 	}
 	public void AddUIObject(UIObject uiObject)
 	{
@@ -142,7 +144,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Add(uiObject.Id);
 
 		UIObjectData uiObjectData = uiObject.TranslateUIObject();
-		Renderer.AddUIObject(ref uiObjectData);
+		GraphicsEngine.AddUIObject(ref uiObjectData);
 	}
 	public void AddUICamera(UIComponent uiCamera, ViewPort viewport)
 	{
@@ -156,7 +158,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Add(uiCamera.Id);
 
 		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		Renderer.AddUICamera(ref uiCameraData, viewport);
+		GraphicsEngine.AddUICamera(ref uiCameraData, viewport);
 	}
 
 	public void RemoveWorldObject(WorldObject worldObject)
@@ -171,7 +173,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(worldObject.Id);
 
 		WorldObjectData worldCameraData = worldObject.TranslateWorldObject();
-		Renderer.RemoveWorldObject(ref worldCameraData);
+		GraphicsEngine.RemoveWorldObject(ref worldCameraData);
 	}
 	public void RemoveWorldCamera(WorldComponent worldCamera)
 	{
@@ -185,7 +187,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(worldCamera.Id);
 
 		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		Renderer.RemoveWorldCamera(ref worldCameraData);
+		GraphicsEngine.RemoveWorldCamera(ref worldCameraData);
 	}
 	public void RemoveUIObject(UIObject uiObject)
 	{
@@ -199,7 +201,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(uiObject.Id);
 
 		UIObjectData worldCameraData = uiObject.TranslateUIObject();
-		Renderer.RemoveUIObject(ref worldCameraData);
+		GraphicsEngine.RemoveUIObject(ref worldCameraData);
 	}
 	public void RemoveUICamera(UIComponent uiCamera)
 	{
@@ -213,27 +215,15 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(uiCamera.Id);
 
 		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		Renderer.RemoveUICamera(ref uiCameraData);
+		GraphicsEngine.RemoveUICamera(ref uiCameraData);
 	}
 	#endregion
 
-	public bool IsMouseButtonPressed(MouseButton mouseButton)
-		=> InputEngine.GetMouseButtonPressed(mouseButton);
-
-	public bool IsMouseButtonDown(MouseButton mouseButton)
-		=> InputEngine.GetMouseButtonDown(mouseButton);
-
-	public bool IsKeyboardButtonPressed(KeyboardButton keyboardButton)
-		=> InputEngine.GetKeyboardButtonPressed(keyboardButton);
-
-	public bool IsKeyboardButtonDown(KeyboardButton keyboardButton)
-		=> InputEngine.GetKeyboardButtonDown(keyboardButton);
-
 	private void AttachInput()
 	{
-		Renderer.MouseEvent += InputEngine.OnMouseEvent;
-		Renderer.KeyboardEvent += InputEngine.OnKeyboardEvent;
-		Renderer.GamepadEvent += InputEngine.OnGamepadEvent;
+		GraphicsEngine.MouseEvent += InputEngine.OnMouseEvent;
+		GraphicsEngine.KeyboardEvent += InputEngine.OnKeyboardEvent;
+		GraphicsEngine.GamepadEvent += InputEngine.OnGamepadEvent;
 	}
 
 	private void UpdateLoop()
@@ -297,14 +287,14 @@ internal class GameEngine : IGameEngine
 	{
 		Thread.CurrentThread.Name = "Render Thread";
 
-		Renderer.Start();
+		GraphicsEngine.Start();
 		float FpsDeltaTime = FpsCap / 1000f;
 		while (true)
 		{
 			renderStopwatch.Restart();
 
 			SyncRenderEngine();
-			Renderer.RenderFrame();
+			GraphicsEngine.RenderFrame();
 
 			// Fps Limit
 			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
@@ -360,7 +350,7 @@ internal class GameEngine : IGameEngine
 	{
 		if (_updateMouseLocked)
 		{
-			Renderer.LockMouse(_mouseLocked);
+			GraphicsEngine.LockMouse(_mouseLocked);
 			_updateMouseLocked = false;
 		}
 
@@ -373,7 +363,7 @@ internal class GameEngine : IGameEngine
 			WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
 
 			// Graphics Engine
-			Renderer.UpdateWorldObject(ref worldObjectData);
+			GraphicsEngine.UpdateWorldObject(ref worldObjectData);
 
 			worldObject.SyncGraphics = false;
 		}
@@ -387,7 +377,7 @@ internal class GameEngine : IGameEngine
 			UIObjectData uiObjectData = uiObject.TranslateUIObject();
 
 			// Graphics Engine
-			Renderer.UpdateUIObject(ref uiObjectData);
+			GraphicsEngine.UpdateUIObject(ref uiObjectData);
 
 			uiObject.SyncGraphics = false;
 		}

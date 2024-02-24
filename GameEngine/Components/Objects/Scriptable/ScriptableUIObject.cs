@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.Components.Input.Buttons;
 using System.Drawing;
+using System.Numerics;
 
 namespace GameEngine.Components.Objects.Scriptable;
 
@@ -7,8 +8,10 @@ public abstract class ScriptableUIObject : UIObject
 {
 	protected bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public virtual void OnHover() { }
-	public virtual void OnClicked() { }
+	public Vector2 GetNormalizedMousePosition()
+		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
+	public Vector2 GetMousePosition()
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMousePos();
 
 	public float GetAxis(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxis(axis);

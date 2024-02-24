@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoxColliderSample", "BoxCol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleResources", "SampleResources\SampleResources.csproj", "{887FCE5E-0176-4EA3-A6E7-6B3128949F38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFont", "SampleFont\SampleFont.csproj", "{40999001-EB29-4C2A-8DF8-AE0B3C4C4560}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{887FCE5E-0176-4EA3-A6E7-6B3128949F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{887FCE5E-0176-4EA3-A6E7-6B3128949F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{887FCE5E-0176-4EA3-A6E7-6B3128949F38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40999001-EB29-4C2A-8DF8-AE0B3C4C4560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40999001-EB29-4C2A-8DF8-AE0B3C4C4560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40999001-EB29-4C2A-8DF8-AE0B3C4C4560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40999001-EB29-4C2A-8DF8-AE0B3C4C4560}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{5F8273B5-B436-42E4-8655-BF07B8CD4329} = {23DA426A-B2C4-4D0B-A38C-9F5E842808D1}
 		{B2647F45-0B36-420B-909E-699059193FAD} = {23DA426A-B2C4-4D0B-A38C-9F5E842808D1}
 		{887FCE5E-0176-4EA3-A6E7-6B3128949F38} = {23DA426A-B2C4-4D0B-A38C-9F5E842808D1}
+		{40999001-EB29-4C2A-8DF8-AE0B3C4C4560} = {23DA426A-B2C4-4D0B-A38C-9F5E842808D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95EC1704-1496-418B-91EA-426968391608}

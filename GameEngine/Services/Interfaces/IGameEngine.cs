@@ -1,19 +1,21 @@
 ﻿using GameEngine.Components.Objects;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Input.Buttons;
 using System.Drawing;
+using System.Numerics;
 
 namespace GameEngine.Services.Interfaces;
 
 public interface IGameEngine
 {
-	IGraphicsEngine Renderer { get; }
+	IGraphicsEngine GraphicsEngine { get; }
 	ISoundEngine SoundEngine { get; }
 	IInputEngine InputEngine { get; }
 	IPhysicsEngine PhysicsEngine { get; }
 
 	string Title { get; set; }
+
+	Vector2 NormalizedMousePosition { get; }
 
 	bool LogRenderingLogs { get; set; }
 	bool LogInputs { get; set; }
@@ -46,12 +48,4 @@ public interface IGameEngine
 	void RemoveWorldCamera(WorldComponent cameraObject);
 	void AddUICamera(UIComponent cameraObject, ViewPort viewport);
 	void RemoveUICamera(UIComponent cameraObject);
-
-	#region Input polling
-	bool IsMouseButtonPressed(MouseButton mouseButton);
-	bool IsMouseButtonDown(MouseButton mouseButton);
-
-	bool IsKeyboardButtonPressed(KeyboardButton keyboardButton);
-	bool IsKeyboardButtonDown(KeyboardButton keyboardButton);
-	#endregion
 }

@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Events;
 using System.Drawing;
+using System.Numerics;
 
 namespace GameEngine.Core.API;
 
@@ -14,6 +15,7 @@ public interface IGraphicsEngine
 
 	string Title { get; set; }
 	IntPtr WindowHandle { get; }
+	Vector2 WindowSize { get; }
 	bool LogRenderingMessages { get; set; }
 
 	void Start();

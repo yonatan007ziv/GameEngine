@@ -14,8 +14,8 @@ internal class Program
 {
 	public static void Main()
 	{
-		TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer());
-		trueTypeFontFileReader.ReadFile("Arial.ttf", out Font font);
+		// TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer());
+		// trueTypeFontFileReader.ReadFile("Arial.ttf", out Font font);
 
 		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
 
