@@ -1,5 +1,9 @@
 ﻿using GameEngine;
+using GameEngine.Core.Components.TrueTypeFont;
 using GameEngine.Core.Enums;
+using GameEngine.Core.SharedServices.Implementations;
+using GameEngine.Core.SharedServices.Implementations.FileReaders;
+using GameEngine.Core.SharedServices.Implementations.Loggers;
 using GameEngine.Services.Interfaces;
 using System.Drawing;
 using UISample.Scenes;
@@ -10,6 +14,9 @@ internal class Program
 {
 	public static void Main()
 	{
+		TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer());
+		trueTypeFontFileReader.ReadFile("Arial.ttf", out TrueTypeFont font);
+
 		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
 
 		GameEngine.SetBackgroundColor(Color.LightBlue);

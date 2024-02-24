@@ -3,6 +3,7 @@ using GameEngine.Core.Components.TrueTypeFont;
 using GameEngine.Core.Components.TrueTypeFont.Tables;
 using GameEngine.Core.SharedServices.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Numerics;
 using System.Text;
 
 namespace GameEngine.Core.SharedServices.Implementations.FileReaders;
@@ -18,17 +19,17 @@ public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
 		this.resourceDiscoverer = resourceDiscoverer;
 	}
 
-	private uint CalculateChecksum(BigEndianBinaryReader file, uint offset, uint length)
+	private uint CalculateTableChecksum(BigEndianBinaryReader file, uint offset, uint length)
 	{
 		// Go to specified offset
 		file.BaseStream.Seek(offset, SeekOrigin.Begin);
-
+		
 		// Calculate number of 32-bit chunks
 		uint nlongs = (length + 3) / 4;
 
 		uint sum = 0;
 		while (nlongs-- > 0)
-			sum = (sum + file.ReadUInt32()) & 0xffffffff;
+			sum += file.ReadUInt32();
 
 		return sum;
 	}
@@ -111,7 +112,7 @@ public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
 				continue;
 
 			uint checksum;
-			if ((checksum = CalculateChecksum(binaryReader, tableInfo.offset, tableInfo.length)) != tableInfo.checksum)
+			if ((checksum = CalculateTableChecksum(binaryReader, tableInfo.offset, tableInfo.length)) != tableInfo.checksum)
 			{
 				logger.LogError($"Checksum error while loading font! expected: {tableInfo.checksum}, got: {checksum}");
 				result = default!;
@@ -119,19 +120,29 @@ public class TrueTypeFontFileReader : IFileReader<TrueTypeFont>
 			}
 		}
 
-		TTFTableParser tableParser = new TTFTableParser();
-		TTFHead head = tableParser.ReadHead(binaryReader, headInfo);
-		TTFName name = tableParser.ReadName(binaryReader, nameInfo);
-		TTFLoca loca = tableParser.ReadLoca(binaryReader, locaInfo);
-		TTFGlyf glyf = tableParser.ReadGlyf(binaryReader, glyfInfo);
-		TTFCmap cmap = tableParser.ReadCmap(binaryReader, cmapInfo);
-		TTFHhea hhea = tableParser.ReadHhea(binaryReader, hheaInfo);
-		TTFVhea vhea = tableParser.ReadVhea(binaryReader, vheaInfo);
-		TTFHmtx hmtx = tableParser.ReadHmtx(binaryReader, hmtxInfo);
-		TTFVmtx vmtx = tableParser.ReadVmtx(binaryReader, vmtxInfo);
-		TTFMaxp maxp = tableParser.ReadMaxp(binaryReader, maxpInfo);
+		// TODO: Compare head checksum
 
-		result = new TrueTypeFont(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
+		TTFTableParser tableParser = new TTFTableParser(logger);
+		TTFHead head = tableParser.ReadHead(binaryReader, headInfo);
+		// TTFName name = tableParser.ReadName(binaryReader, nameInfo);
+		TTFMaxp maxp = tableParser.ReadMaxp(binaryReader, maxpInfo);
+		TTFLoca loca = tableParser.ReadLoca(head, maxp, binaryReader, locaInfo);
+		TTFGlyf glyf = tableParser.ReadGlyf(maxp, loca, binaryReader, glyfInfo);
+		//TTFCmap cmap = tableParser.ReadCmap(binaryReader, cmapInfo);
+		//TTFHhea hhea = tableParser.ReadHhea(binaryReader, hheaInfo);
+		//TTFVhea vhea = tableParser.ReadVhea(binaryReader, vheaInfo);
+		//TTFHmtx hmtx = tableParser.ReadHmtx(hhea, binaryReader, hmtxInfo);
+		//TTFVmtx vmtx = tableParser.ReadVmtx(binaryReader, vmtxInfo);
+
+		List<Vector2> vecs = new List<Vector2>();
+		int glyfCoord = 12;
+		for (int i = 0; i < glyf.Glyphs[glyfCoord].XCoordinates.Length; i++)
+			vecs.Add(new Vector2(glyf.Glyphs[glyfCoord].XCoordinates[i], glyf.Glyphs[glyfCoord].YCoordinates[i]));
+
+		foreach (Vector2 vec in vecs)
+			Console.WriteLine(vec.ToString());
+
+        result = default!; // new TrueTypeFont(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
 		return true;
 	}
 

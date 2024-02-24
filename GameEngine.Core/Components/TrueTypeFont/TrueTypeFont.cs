@@ -9,7 +9,7 @@ public class TrueTypeFont
 	public string Style { get; }
 	public string version { get; }
 
-	private readonly Dictionary<char, TTFGlyf> characterMaps = new Dictionary<char, TTFGlyf>();
+	private readonly Dictionary<char, CharacterGlyf> characterMaps = new Dictionary<char, CharacterGlyf>();
 
 	internal TrueTypeFont(TTFHead head, TTFName name, TTFLoca loca, TTFGlyf glyf, TTFCmap cmap, TTFHhea hhea, TTFVhea vhea, TTFHmtx hmtx, TTFVmtx vmtx, TTFMaxp maxp)
 	{
