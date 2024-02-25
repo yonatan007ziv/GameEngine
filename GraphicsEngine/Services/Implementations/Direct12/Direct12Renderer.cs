@@ -6,18 +6,18 @@ using GraphicsEngine.Services.Interfaces;
 using System.Drawing;
 using System.Numerics;
 
-namespace GraphicsEngine.Services.Implementations.Direct11.Renderer;
+namespace GraphicsEngine.Services.Implementations.Direct12;
 
-public class Direct11Renderer : IInternalGraphicsRenderer
+internal class Direct12Renderer : IInternalGraphicsRenderer
 {
+	public IFactory<string, string, MeshRenderer> MeshFactory => throw new NotImplementedException();
+
 	public IntPtr WindowHandle => throw new NotImplementedException();
 
 	public Vector2 WindowSize => throw new NotImplementedException();
 
 	public string Title { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public bool LogRenderingMessages { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-	IFactory<string, string, MeshRenderer> IInternalGraphicsRenderer.MeshFactory => throw new NotImplementedException();
 
 	public event Action LoadEvent;
 	public event Action ResizedEvent;

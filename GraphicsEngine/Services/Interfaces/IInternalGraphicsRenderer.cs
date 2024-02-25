@@ -1,7 +1,7 @@
 ﻿using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
-using GraphicsEngine.Components.Interfaces;
+using GraphicsEngine.Components.Shared;
 using System.Drawing;
 using System.Numerics;
 
@@ -9,7 +9,7 @@ namespace GraphicsEngine.Services.Interfaces;
 
 internal interface IInternalGraphicsRenderer
 {
-	IFactory<string, string, IMeshRenderer> MeshFactory { get; }
+	IFactory<string, string, MeshRenderer> MeshFactory { get; }
 
 	event Action LoadEvent;
 	event Action ResizedEvent;

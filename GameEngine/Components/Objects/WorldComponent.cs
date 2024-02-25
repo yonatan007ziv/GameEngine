@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace GameEngine.Components.Objects;
 
-public abstract class WorldComponent : IDisposable
+public abstract class WorldComponent
 {
 	public int Id { get; }
 	public int ParentId { get; }
@@ -25,10 +25,5 @@ public abstract class WorldComponent : IDisposable
 		Meshes = parent.Meshes;
 		Forces = parent.Forces;
 		ImpulseVelocities = parent.ImpulseVelocities;
-	}
-
-	public void Dispose()
-	{
-		throw new NotImplementedException();
 	}
 }

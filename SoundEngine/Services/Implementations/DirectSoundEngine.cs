@@ -50,8 +50,7 @@ internal class DirectSoundEngine : ISoundEngine
 		var capabilities = secondarySoundBuffer.Capabilities;
 
 		// Lock the buffer
-		DataStream dataPart2;
-		var dataPart1 = secondarySoundBuffer.Lock(0, capabilities.BufferBytes, LockFlags.EntireBuffer, out dataPart2);
+		var dataPart1 = secondarySoundBuffer.Lock(0, capabilities.BufferBytes, LockFlags.EntireBuffer, out DataStream dataPart2);
 
 		// Fill the buffer with some sound
 		int numberOfSamples = capabilities.BufferBytes / waveFormat.BlockAlign;

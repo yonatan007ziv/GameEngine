@@ -10,16 +10,14 @@ internal class ModelFactory : IFactory<string, ModelData>
 	private readonly ILogger logger;
 	private readonly IResourceManager resourceManager;
 	private readonly ObjModelImporter objModelImporter;
-	private readonly FbxModelImporter fbxModelImporter;
 
 	private readonly Dictionary<string, ModelData> cachedModels = new Dictionary<string, ModelData>();
 
-	public ModelFactory(ILogger logger, IResourceManager resourceManager, ObjModelImporter objModelImporter, FbxModelImporter fbxModelImporter)
+	public ModelFactory(ILogger logger, IResourceManager resourceManager, ObjModelImporter objModelImporter)
 	{
 		this.logger = logger;
 		this.resourceManager = resourceManager;
 		this.objModelImporter = objModelImporter;
-		this.fbxModelImporter = fbxModelImporter;
 	}
 
 	public bool Create(string modelName, out ModelData modelData)
@@ -41,8 +39,6 @@ internal class ModelFactory : IFactory<string, ModelData>
 		string modelType = modelName.Split('.')[1];
 		if (modelType == "obj")
 			modelData = objModelImporter.Import(data);
-		else if (modelType == "fbx")
-			modelData = fbxModelImporter.Import(data);
 		else
 			return false;
 

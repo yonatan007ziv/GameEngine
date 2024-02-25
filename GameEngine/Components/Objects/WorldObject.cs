@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace GameEngine.Components.Objects;
 
-public class WorldObject : IDisposable
+public class WorldObject
 {
 	public int Id { get; }
 	public string Tag { get; protected set; } = "";
@@ -82,12 +82,5 @@ public class WorldObject : IDisposable
 		ImpulseVelocitiesDirty = false;
 		SyncPhysics = false;
 		SyncSound = false;
-	}
-
-	public void Dispose()
-	{
-		Meshes.Clear();
-		Forces.Clear();
-		ImpulseVelocities.Clear();
 	}
 }

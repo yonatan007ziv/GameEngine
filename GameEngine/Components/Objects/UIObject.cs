@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace GameEngine.Components.Objects;
 
-public class UIObject : IDisposable
+public class UIObject
 {
 	public int Id { get; }
 	public readonly List<UIComponent> components = new List<UIComponent>();
@@ -42,10 +42,5 @@ public class UIObject : IDisposable
 	{
 		MeshesDirty = true;
 		SyncGraphics = true;
-	}
-
-	public void Dispose()
-	{
-
 	}
 }

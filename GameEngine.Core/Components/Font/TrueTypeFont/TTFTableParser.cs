@@ -2,7 +2,6 @@
 using GameEngine.Core.Components.TrueTypeFont;
 using Microsoft.Extensions.Logging;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEngine.Core.Components.Font.TrueTypeFont;
 
@@ -54,7 +53,7 @@ internal class TTFTableParser
 		ushort count = binaryReader.ReadUInt16();
 		ushort stringOffset = binaryReader.ReadUInt16();
 
-		TTFName.NameRecord[] nameRecord = new TTFName.NameRecord[count];
+		TTFName.NameRecordStruct[] nameRecord = new TTFName.NameRecordStruct[count];
 		for (int i = 0; i < count; i++)
 		{
 			ushort platformID = binaryReader.ReadUInt16();
@@ -63,7 +62,7 @@ internal class TTFTableParser
 			ushort nameID = binaryReader.ReadUInt16();
 			ushort length = binaryReader.ReadUInt16();
 			ushort offset = binaryReader.ReadUInt16();
-			nameRecord[i] = new TTFName.NameRecord(platformID, platformSpecificID, languageID, nameID, length, offset);
+			nameRecord[i] = new TTFName.NameRecordStruct(platformID, platformSpecificID, languageID, nameID, length, offset);
 		}
 
 		string[] name = new string[count];
@@ -72,7 +71,7 @@ internal class TTFTableParser
 			binaryReader.BaseStream.Seek(nameInfo.offset + stringOffset + nameRecord[i].offset, SeekOrigin.Begin);
 			byte[] readBytes = binaryReader.ReadBytesBigEndian(nameRecord[i].length);
 			name[i] = Encoding.BigEndianUnicode.GetString(readBytes).Replace("\0", "");
-        }
+		}
 
 		return new TTFName(format, count, stringOffset, nameRecord, name);
 	}
@@ -367,18 +366,18 @@ internal class TTFTableParser
 	}
 
 	// Reads a 16.16 fixed-point number
-	private float ReadFixed1616(BigEndianBinaryReader binaryReader)
+	private static float ReadFixed1616(BigEndianBinaryReader binaryReader)
 	{
 		int integer = binaryReader.ReadInt32();
 		return (integer >> 16) + (integer & 0xFFFF) / 65536f;
 	}
-	private float ReadFixed32(BigEndianBinaryReader binaryReader) => binaryReader.ReadFixed32();
-	private short ReadFWord(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
-	private ushort ReadUFWord(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt16();
-	private sbyte ReadInt8(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt8();
-	private short ReadInt16(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
-	private int ReadInt32(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
-	private byte ReadUInt8(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt8();
-	private ushort ReadUInt16(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt16();
-	private uint ReadUInt32(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt32();
+	private static float ReadFixed32(BigEndianBinaryReader binaryReader) => binaryReader.ReadFixed32();
+	private static short ReadFWord(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
+	private static ushort ReadUFWord(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt16();
+	private static sbyte ReadInt8(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt8();
+	private static short ReadInt16(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
+	private static int ReadInt32(BigEndianBinaryReader binaryReader) => binaryReader.ReadInt16();
+	private static byte ReadUInt8(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt8();
+	private static ushort ReadUInt16(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt16();
+	private static uint ReadUInt32(BigEndianBinaryReader binaryReader) => binaryReader.ReadUInt32();
 }

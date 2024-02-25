@@ -43,10 +43,33 @@ public class OpenTKShaderProgram : IShaderProgram
 		GL.UseProgram(0);
 	}
 
+	#region Dispose pattern
+	private bool disposedValue;
+	~OpenTKShaderProgram()
+	{
+		Dispose(disposing: false);
+	}
 	public void Dispose()
 	{
-		GL.DeleteProgram(Id);
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
 	}
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+
+			}
+
+			Unbind();
+			GL.DeleteProgram(Id);
+
+			disposedValue = true;
+		}
+	}
+	#endregion
 
 	public void SetMatrix4Uniform(Matrix4x4 value, string uniformName)
 	{

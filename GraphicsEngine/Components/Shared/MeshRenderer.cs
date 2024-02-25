@@ -1,13 +1,12 @@
 ﻿using GameEngine.Core.Components;
 using GameEngine.Core.Extensions;
-using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Interfaces;
 using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class MeshRenderer : IMeshRenderer
+internal class MeshRenderer
 {
 	private readonly IDrawingCall drawingCall;
 

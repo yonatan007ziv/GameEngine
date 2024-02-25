@@ -1,9 +1,5 @@
 ﻿using GameEngine;
-using GameEngine.Core.Components.Font;
 using GameEngine.Core.Enums;
-using GameEngine.Core.SharedServices.Implementations;
-using GameEngine.Core.SharedServices.Implementations.FileReaders;
-using GameEngine.Core.SharedServices.Implementations.Loggers;
 using GameEngine.Services.Interfaces;
 using System.Drawing;
 using UISample.Scenes;

@@ -1,5 +1,4 @@
 ﻿using GameEngine.Core.SharedServices.Interfaces;
-using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Interfaces;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GraphicsEngine.Services.Implementations.Shared;
 
-internal class MeshRendererFactory : IFactory<string, string, IMeshRenderer>
+internal class MeshRendererFactory : IFactory<string, string, MeshRenderer>
 {
 	private readonly ILogger logger;
 	private readonly IDrawingCall drawingCall;
@@ -22,7 +21,7 @@ internal class MeshRendererFactory : IFactory<string, string, IMeshRenderer>
 		this.materialFactory = materialFactory;
 	}
 
-	public bool Create(string modelName, string materialName, out IMeshRenderer mesh)
+	public bool Create(string modelName, string materialName, out MeshRenderer mesh)
 	{
 		if (!modelFactory.Create(modelName, out ModelData model))
 		{

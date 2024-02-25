@@ -1,7 +1,6 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Events;
-using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -131,7 +130,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		{
 			worldObject.Meshes.Clear();
 			for (int i = 0; i < worldObjectData.Meshes.Count; i++)
-				if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
+				if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
 					worldObject.Meshes.Add(meshRenderer);
 				else
 					logger.LogError("Error creating MeshRenderer: {model}, {material}", worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material);
@@ -161,7 +160,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		{
 			uiObject.Meshes.Clear();
 			for (int i = 0; i < uiObjectData.Meshes.Count; i++)
-				if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
+				if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
 					uiObject.Meshes.Add(meshRenderer);
 				else
 					logger.LogError("Error creating MeshRenderer: {model}, {material}", uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material);
@@ -179,9 +178,9 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		List<IMeshRenderer> meshes = new List<IMeshRenderer>();
+		List<MeshRenderer> meshes = new List<MeshRenderer>();
 		for (int i = 0; i < worldObjectData.Meshes.Count; i++)
-			if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
+			if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
 				meshes.Add(meshRenderer);
 			else
 				logger.LogError("Error creating MeshRenderer: {model}, {material}", worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material);
@@ -217,9 +216,9 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		List<IMeshRenderer> meshes = new List<IMeshRenderer>();
+		List<MeshRenderer> meshes = new List<MeshRenderer>();
 		for (int i = 0; i < uiObjectData.Meshes.Count; i++)
-			if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out IMeshRenderer meshRenderer))
+			if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
 				meshes.Add(meshRenderer);
 			else
 				logger.LogError("Error creating MeshRenderer: {model}, {material}", uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material);

@@ -7,7 +7,7 @@ namespace GameEngine.Components.UIComponents;
 
 public class UIButton : ScriptableUIObject
 {
-	private bool _onEnterCalled, _onExitCalled, _clicked, _released;
+	private bool _onEnterCalled = true, _onExitCalled = true, _clicked = true, _released = true;
 
 	protected virtual void OnFullClicked() { }
 	protected virtual void OnDragClicked() { }
@@ -23,6 +23,7 @@ public class UIButton : ScriptableUIObject
 	public override void Update(float deltaTime)
 	{
 		Vector2 mousePos = GetNormalizedMousePosition();
+
 		bool insideX = mousePos.X <= Transform.Position.X + Transform.Scale.X && mousePos.X >= Transform.Position.X - Transform.Scale.X;
 		bool insideY = mousePos.Y <= Transform.Position.Y + Transform.Scale.Y && mousePos.Y >= Transform.Position.Y - Transform.Scale.Y;
 

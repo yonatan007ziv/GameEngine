@@ -59,8 +59,31 @@ internal class SilkOpenGLShaderProgram : IShaderProgram
 		glContext.UniformMatrix4(loc, true, span);
 	}
 
+	#region Dispose pattern
+	private bool disposedValue;
+	~SilkOpenGLShaderProgram()
+	{
+		Dispose(disposing: false);
+	}
 	public void Dispose()
 	{
-
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
 	}
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+
+			}
+
+			Unbind();
+			glContext.DeleteProgram((uint)Id);
+
+			disposedValue = true;
+		}
+	}
+	#endregion
 }

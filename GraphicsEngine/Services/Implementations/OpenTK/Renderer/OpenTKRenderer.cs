@@ -3,7 +3,6 @@ using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Extensions;
-using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.RendererSpecific.OpenTK;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
@@ -19,7 +18,7 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 {
 	private readonly ILogger logger;
 
-	public IFactory<string, string, IMeshRenderer> MeshFactory { get; }
+	public IFactory<string, string, MeshRenderer> MeshFactory { get; }
 
 	public event Action? LoadEvent;
 
@@ -27,9 +26,9 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	private MouseEventData mouseEventData = new MouseEventData();
-	private KeyboardEventData keyboardEventData = new KeyboardEventData();
-	private GamepadEventData gamepadEventData = new GamepadEventData();
+	private readonly MouseEventData mouseEventData = new MouseEventData();
+	private readonly KeyboardEventData keyboardEventData = new KeyboardEventData();
+	// NOT IMPLEMENTED: private readonly GamepadEventData gamepadEventData = new GamepadEventData();
 
 	public OpenTKRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory)
 	{

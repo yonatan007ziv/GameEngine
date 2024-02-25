@@ -5,7 +5,6 @@ using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
 using GameEngine.Core.Components.TrueTypeFont;
 using GameEngine.Core.SharedServices.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Numerics;
 using System.Text;
 
 namespace GameEngine.Core.SharedServices.Implementations.FileReaders;
@@ -21,11 +20,11 @@ public class TrueTypeFontFileReader : IFileReader<Font>
 		this.resourceDiscoverer = resourceDiscoverer;
 	}
 
-	private uint CalculateTableChecksum(BigEndianBinaryReader file, uint offset, uint length)
+	private static uint CalculateTableChecksum(BigEndianBinaryReader file, uint offset, uint length)
 	{
 		// Go to specified offset
 		file.BaseStream.Seek(offset, SeekOrigin.Begin);
-		
+
 		// Calculate number of 32-bit chunks
 		uint nlongs = (length + 3) / 4;
 
@@ -116,7 +115,7 @@ public class TrueTypeFontFileReader : IFileReader<Font>
 			uint checksum;
 			if ((checksum = CalculateTableChecksum(binaryReader, tableInfo.offset, tableInfo.length)) != tableInfo.checksum)
 			{
-				logger.LogError($"Checksum error while loading font! expected: {tableInfo.checksum}, got: {checksum}");
+				logger.LogError("Checksum error while loading font! expected: {checksum}, got: {gotChecksum}", tableInfo.checksum, checksum);
 				result = default!;
 				return false;
 			}
@@ -136,7 +135,7 @@ public class TrueTypeFontFileReader : IFileReader<Font>
 		TTFHmtx hmtx = tableParser.ReadHmtx(hhea, binaryReader, hmtxInfo);
 		TTFVmtx vmtx = tableParser.ReadVmtx(binaryReader, vmtxInfo);
 
-        result = new Font(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
+		result = new Font(head, name, loca, glyf, cmap, hhea, vhea, hmtx, vmtx, maxp);
 		return true;
 	}
 

@@ -30,9 +30,32 @@ public abstract class OpenTKBuffer : IDisposable
 		GL.BindBuffer(Target, 0);
 	}
 
+	#region Dispose pattern
+	private bool disposedValue;
+	~OpenTKBuffer()
+	{
+		Dispose(disposing: false);
+	}
 	public void Dispose()
 	{
-		Unbind();
-		GL.DeleteBuffer(Id);
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
 	}
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+
+			}
+
+			Console.WriteLine("SilkOpenGL Buffer: fix dispose cleanup");
+			// Unbind();
+			// GL.DeleteBuffer(Id);
+
+			disposedValue = true;
+		}
+	}
+	#endregion
 }

@@ -10,7 +10,7 @@ internal abstract class BaseSilkOpenGLRenderer
 {
 	protected readonly IWindow window;
 
-	public GL openGLContext { get; private set; }
+	public GL OpenGLContext { get; private set; }
 	public string Title { get => window.Title; set => window.Title = value; }
 	public bool LogRenderingMessages { get; set; }
 	public IntPtr WindowHandle => window.Handle;
@@ -26,20 +26,20 @@ internal abstract class BaseSilkOpenGLRenderer
 		window.Load += InternalLoad;
 		window.VSync = false;
 
-		openGLContext = null!;
+		OpenGLContext = null!;
 	}
 
 	protected abstract void ErrorCallback(string msg, GLEnum severity);
 
 	protected unsafe virtual void InternalLoad()
 	{
-		openGLContext = GL.GetApi(window);
-		openGLContext.Enable(EnableCap.DebugOutput);
-		openGLContext.ActiveTexture(TextureUnit.Texture0);
+		OpenGLContext = GL.GetApi(window);
+		OpenGLContext.Enable(EnableCap.DebugOutput);
+		OpenGLContext.ActiveTexture(TextureUnit.Texture0);
 
 		unsafe
 		{
-			openGLContext.DebugMessageCallback(GLDebugCallback, null);
+			OpenGLContext.DebugMessageCallback(GLDebugCallback, null);
 		}
 
 		Load();
@@ -72,11 +72,11 @@ internal abstract class BaseSilkOpenGLRenderer
 
 		if (_changedBackgroundColor)
 		{
-			openGLContext.ClearColor(backgroundColor.R / 255f, backgroundColor.G / 255f, backgroundColor.B / 255f, 1);
+			OpenGLContext.ClearColor(backgroundColor.R / 255f, backgroundColor.G / 255f, backgroundColor.B / 255f, 1);
 			_changedBackgroundColor = false;
 		}
 
-		openGLContext.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+		OpenGLContext.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 	}
 
 	public void SwapBuffers()

@@ -2,22 +2,22 @@
 
 internal class TTFName
 {
-	public ushort format { get; }
-	public ushort count { get; }
-	public ushort stringOffset { get; }
-	public NameRecord[] nameRecord { get; }
-	public string[] name { get; }
+	public ushort Format { get; }
+	public ushort Count { get; }
+	public ushort StringOffset { get; }
+	public NameRecordStruct[] NameRecord { get; }
+	public string[] Name { get; }
 
-	public TTFName(ushort format, ushort count, ushort stringOffset, NameRecord[] nameRecord, string[] name)
+	public TTFName(ushort format, ushort count, ushort stringOffset, NameRecordStruct[] nameRecord, string[] name)
 	{
-		this.format = format;
-		this.count = count;
-		this.stringOffset = stringOffset;
-		this.nameRecord = nameRecord;
-		this.name = name;
+		Format = format;
+		Count = count;
+		StringOffset = stringOffset;
+		NameRecord = nameRecord;
+		Name = name;
 	}
 
-	internal struct NameRecord
+	internal struct NameRecordStruct
 	{
 		public ushort platformID;
 		public ushort platformSpecificID;
@@ -26,7 +26,7 @@ internal class TTFName
 		public ushort length;
 		public ushort offset;
 
-		public NameRecord(ushort platformID, ushort platformSpecificID, ushort languageID, ushort nameID, ushort length, ushort offset)
+		public NameRecordStruct(ushort platformID, ushort platformSpecificID, ushort languageID, ushort nameID, ushort length, ushort offset)
 		{
 			this.platformID = platformID;
 			this.platformSpecificID = platformSpecificID;

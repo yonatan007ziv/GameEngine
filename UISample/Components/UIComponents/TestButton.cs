@@ -31,7 +31,7 @@ internal class TestButton : UIButton
 	}
 
 	public TestButton()
-		: base(new MeshData("UIPlane.obj", "MissingTexture.mat"))
+		: base(new MeshData("UIPlane.obj", "Trex.mat"))
 	{
 
 	}

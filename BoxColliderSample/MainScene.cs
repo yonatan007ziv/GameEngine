@@ -39,7 +39,7 @@ internal class MainScene : Scene
 
 		// Player
 		Player player = new Player();
-		player.Transform.Position += new Vector3(0, 5, 0);
+		player.Transform.Position += new Vector3(0, 10, 0);
 		worldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
 		worldObjects.Add(player);
 	}

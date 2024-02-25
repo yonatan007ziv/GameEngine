@@ -108,7 +108,7 @@ internal class PhysicsEngine : IPhysicsEngine
 		}
 	}
 
-	public bool CollidersOverlap(PhysicsObject colliderA, PhysicsObject colliderB, out Vector3 positionDelta)
+	public static bool CollidersOverlap(PhysicsObject colliderA, PhysicsObject colliderB, out Vector3 positionDelta)
 	{
 		Vector3 positionA = colliderA.Transform.Position;
 		Vector3 positionB = colliderB.Transform.Position;

@@ -18,7 +18,7 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 {
 	private readonly ILogger logger;
 
-	public IFactory<string, string, IMeshRenderer> MeshFactory { get; private set; }
+	public IFactory<string, string, MeshRenderer> MeshFactory { get; private set; }
 
 	private readonly IFactory<string, ModelData> modelFactory;
 	private readonly IFactory<string, Material> materialFactory;
@@ -39,12 +39,14 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 		this.materialFactory = materialFactory;
 
 		window.Resize += (size) => { ResizedEvent?.Invoke(); };
+
+		mainMouse = null!;
 		MeshFactory = null!;
 	}
 
 	protected override void Load()
 	{
-		SilkOpenGLContext.Instance = new SilkOpenGLContext(openGLContext);
+		SilkOpenGLContext.Instance = new SilkOpenGLContext(OpenGLContext);
 		MeshFactory = new MeshRendererFactory(logger, new SilkOpenGLDrawingCall(), modelFactory, materialFactory);
 		AttachInput();
 
@@ -64,6 +66,7 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 		// Attach Keyboard
 		foreach (IKeyboard keyboard in context.Keyboards)
 			inputDevices.Add(keyboard, new SilkOpenGLKeyboardHandler(keyboard, KeyboardEvent));
+
 		// Attach Joystick
 		foreach (IGamepad gamepad in context.Gamepads)
 			inputDevices.Add(gamepad, new SilkOpenGLGamepadHandler(gamepad, GamepadEvent));
@@ -107,14 +110,14 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 	public void SetDepthTest(bool enable)
 	{
 		if (enable)
-			openGLContext.Enable(EnableCap.DepthTest);
+			OpenGLContext.Enable(EnableCap.DepthTest);
 		else
-			openGLContext.Disable(EnableCap.DepthTest);
+			OpenGLContext.Disable(EnableCap.DepthTest);
 	}
 
 	public void SetViewport(ViewPort viewport)
 	{
-		openGLContext.Viewport(
+		OpenGLContext.Viewport(
 			(int)((viewport.x - viewport.width / 2) * WindowSize.X),
 			(int)((viewport.y - viewport.height / 2) * WindowSize.Y),
 			(uint)(viewport.width * WindowSize.X),

@@ -37,12 +37,35 @@ internal abstract class SilkOpenGLBuffer : IDisposable
 
 	public virtual void Unbind()
 	{
-		glContext.BindBuffer(Target, 0);
+		glContext.BindBuffer(Target, 0u);
 	}
 
+	#region Dispose pattern
+	private bool disposedValue;
+	~SilkOpenGLBuffer()
+	{
+		Dispose(disposing: false);
+	}
 	public void Dispose()
 	{
-		Unbind();
-		glContext.DeleteBuffer(Id);
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
 	}
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+
+			}
+
+			Console.WriteLine("SilkOpenGL Buffer: fix dispose cleanup");
+			// Unbind();
+			// glContext.DeleteBuffer(Id);
+
+			disposedValue = true;
+		}
+	}
+	#endregion
 }

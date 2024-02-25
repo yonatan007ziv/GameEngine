@@ -54,7 +54,7 @@ public class ConsoleLogger : ILogger
 			Console.ForegroundColor = clr;
 			Console.Write("{0}:", logLevel.ToString());
 			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine(" [GraphicsEngine:AddWorldCamera] {0}", message);
+			Console.WriteLine(" [{0}] {1}", "*CALLER*", message);
 		}
 	}
 }

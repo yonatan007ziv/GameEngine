@@ -1,5 +1,4 @@
-﻿using GameEngine.Core.Components;
-using GameEngine.Core.Components.Font;
+﻿using GameEngine.Core.Components.Font;
 
 namespace GraphicsEngine.Services.Interfaces.Utils;
 

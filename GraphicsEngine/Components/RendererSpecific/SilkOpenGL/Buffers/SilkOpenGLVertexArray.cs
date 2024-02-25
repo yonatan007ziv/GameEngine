@@ -1,4 +1,5 @@
-﻿using GraphicsEngine.Components.Interfaces.Buffers;
+﻿using GraphicsEngine.Components.Extensions;
+using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared.Data;
 using Silk.NET.OpenGL;
 using System.Runtime.InteropServices;
@@ -48,7 +49,7 @@ internal class SilkOpenGLVertexArray : IVertexArray, IDisposable
 		{
 			unsafe
 			{
-				glContext.VertexAttribPointer(i, arrayLayout[i].Size, SystemToSilkOpenGLType(arrayLayout[i].Type), false, (uint)totalStride.ToInt32(), offset.ToPointer());
+				glContext.VertexAttribPointer(i, arrayLayout[i].Size, arrayLayout[i].Type.ToSilkOpenGLType(), false, (uint)totalStride.ToInt32(), offset.ToPointer());
 			}
 
 			glContext.EnableVertexAttribArray(i);
@@ -57,29 +58,6 @@ internal class SilkOpenGLVertexArray : IVertexArray, IDisposable
 		}
 
 		Unbind();
-	}
-
-	private VertexAttribPointerType SystemToSilkOpenGLType(Type type)
-	{
-		if (type == typeof(sbyte))
-			return VertexAttribPointerType.Byte;
-		else if (type == typeof(byte))
-			return VertexAttribPointerType.UnsignedByte;
-		else if (type == typeof(short))
-			return VertexAttribPointerType.Short;
-		else if (type == typeof(ushort))
-			return VertexAttribPointerType.UnsignedShort;
-		else if (type == typeof(int))
-			return VertexAttribPointerType.Int;
-		else if (type == typeof(uint))
-			return VertexAttribPointerType.UnsignedInt;
-		else if (type == typeof(float))
-			return VertexAttribPointerType.Float;
-		else if (type == typeof(double))
-			return VertexAttribPointerType.Double;
-		else if (type == typeof(Half))
-			return VertexAttribPointerType.HalfFloat;
-		throw new ArgumentException("Unsupported Type");
 	}
 
 	public void Dispose()

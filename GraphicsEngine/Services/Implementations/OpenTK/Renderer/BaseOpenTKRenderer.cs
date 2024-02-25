@@ -5,7 +5,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Drawing;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Services.Implementations.OpenTK.Renderer;
 
@@ -102,12 +101,12 @@ public abstract class BaseOpenTKRenderer : GameWindow
 		Load();
 	}
 
-	private void GLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
-	{
-		if (LogRenderingMessages)
-		{
-			string msg = Marshal.PtrToStringAnsi(message, length);
-			ErrorCallback(msg, severity);
-		}
-	}
+	//private void GLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+	//{
+	//	if (LogRenderingMessages)
+	//	{
+	//		string msg = Marshal.PtrToStringAnsi(message, length);
+	//		ErrorCallback(msg, severity);
+	//	}
+	//}
 }

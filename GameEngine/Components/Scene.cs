@@ -12,7 +12,6 @@ public class Scene : IInputMapper, IDisposable
 	public static Scene LoadedScene { get; private set; } = null!;
 
 	private bool _loaded;
-
 	public readonly ObservableCollection<(WorldComponent camera, ViewPort viewPort)> worldCameras = new ObservableCollection<(WorldComponent camera, ViewPort viewPort)>();
 	public readonly ObservableCollection<WorldObject> worldObjects = new ObservableCollection<WorldObject>();
 
@@ -63,8 +62,7 @@ public class Scene : IInputMapper, IDisposable
 		if (_loaded)
 			return;
 
-		if (LoadedScene is not null)
-			LoadedScene.UnloadScene();
+		LoadedScene?.UnloadScene();
 
 		foreach (WorldObject worldObject in worldObjects)
 			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
@@ -94,17 +92,6 @@ public class Scene : IInputMapper, IDisposable
 		LoadedScene = null!;
 	}
 
-	public void Dispose()
-	{
-		if (_loaded)
-			UnloadScene();
-
-		foreach (WorldObject gameObject in worldObjects)
-			gameObject.Dispose();
-		foreach ((WorldComponent camera, _) in worldCameras)
-			camera.Dispose();
-	}
-
 	public void MapMouseButton(string buttonName, MouseButton mouseButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.MapMouseButton(buttonName, mouseButton);
 
@@ -122,4 +109,30 @@ public class Scene : IInputMapper, IDisposable
 
 	public void MapGamepadAxis(string axis, GamepadAxis analog, float multiplier, float offset)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.MapGamepadAxis(axis, analog, multiplier, offset);
+
+	#region Dispose pattern
+	private bool disposedValue;
+	~Scene()
+	{
+		Dispose(disposing: false);
+	}
+	public void Dispose()
+	{
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+
+			}
+
+			UnloadScene();
+			disposedValue = true;
+		}
+	}
+	#endregion
 }

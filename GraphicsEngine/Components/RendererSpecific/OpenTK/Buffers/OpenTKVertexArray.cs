@@ -1,4 +1,5 @@
-﻿using GraphicsEngine.Components.Interfaces.Buffers;
+﻿using GraphicsEngine.Components.Extensions;
+using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared.Data;
 using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
@@ -49,35 +50,12 @@ internal class OpenTKVertexArray : IVertexArray, IDisposable
 		IntPtr offset = IntPtr.Zero;
 		for (int i = 0; i < arrayLayout.Length; i++)
 		{
-			GL.VertexAttribPointer(i, arrayLayout[i].Size, SystemToOpenTKType(arrayLayout[i].Type), false, totalStride.ToInt32(), offset);
+			GL.VertexAttribPointer(i, arrayLayout[i].Size, arrayLayout[i].Type.ToOpenTKType(), false, totalStride.ToInt32(), offset);
 			GL.EnableVertexAttribArray(i);
 
 			offset += Marshal.SizeOf(arrayLayout[i].Type) * arrayLayout[i].Size;
 		}
 
 		Unbind();
-	}
-
-	private VertexAttribPointerType SystemToOpenTKType(Type type)
-	{
-		if (type == typeof(sbyte))
-			return VertexAttribPointerType.Byte;
-		else if (type == typeof(byte))
-			return VertexAttribPointerType.UnsignedByte;
-		else if (type == typeof(short))
-			return VertexAttribPointerType.Short;
-		else if (type == typeof(ushort))
-			return VertexAttribPointerType.UnsignedShort;
-		else if (type == typeof(int))
-			return VertexAttribPointerType.Int;
-		else if (type == typeof(uint))
-			return VertexAttribPointerType.UnsignedInt;
-		else if (type == typeof(float))
-			return VertexAttribPointerType.Float;
-		else if (type == typeof(double))
-			return VertexAttribPointerType.Double;
-		else if (type == typeof(Half))
-			return VertexAttribPointerType.HalfFloat;
-		throw new ArgumentException("Unsupported Type");
 	}
 }

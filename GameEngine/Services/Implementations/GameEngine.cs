@@ -2,7 +2,6 @@
 using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Physics;
 using GameEngine.Extensions;
 using GameEngine.Services.Interfaces;
@@ -38,7 +37,9 @@ internal class GameEngine : IGameEngine
 	private readonly int ExpectedTaskSchedulerPeriod;
 
 	public string Title { get => GraphicsEngine.Title; set => GraphicsEngine.Title = value; }
-	public Vector2 NormalizedMousePosition => InputEngine.GetMousePos() / GraphicsEngine.WindowSize * 2 - Vector2.One;
+
+	// Vector2.One limits the position to [-1 : 1] range and Vector2(1, -1) used to flip the y sign
+	public Vector2 NormalizedMousePosition => (2 * InputEngine.GetMousePos() / GraphicsEngine.WindowSize - Vector2.One) * new Vector2(1, -1);
 
 	public bool LogRenderingLogs { get => GraphicsEngine.LogRenderingMessages; set => GraphicsEngine.LogRenderingMessages = value; }
 	public bool LogInputs { get => InputEngine.LogInputs; set => InputEngine.LogInputs = value; }
@@ -300,7 +301,7 @@ internal class GameEngine : IGameEngine
 			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
-			FpsDeltaTime = this.FpsDeltaTimeStopper;
+			FpsDeltaTime = FpsDeltaTimeStopper;
 
 			if (LogFps)
 				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);

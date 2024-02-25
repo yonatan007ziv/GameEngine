@@ -6,39 +6,39 @@ namespace GameEngine.Components.Objects.Scriptable;
 
 public abstract class ScriptableUIObject : UIObject
 {
-	protected bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
+	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public Vector2 GetNormalizedMousePosition()
+	public static Vector2 GetNormalizedMousePosition()
 		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
-	public Vector2 GetMousePosition()
+	public static Vector2 GetMousePosition()
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMousePos();
 
-	public float GetAxis(string axis)
+	public static float GetAxis(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxis(axis);
-	public float GetAxisRaw(string axis)
+	public static float GetAxisRaw(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxisRaw(axis);
 
-	public bool GetButtonPressed(string buttonName)
+	public static bool GetButtonPressed(string buttonName)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetButtonPressed(buttonName);
-	public bool GetButtonDown(string buttonName)
+	public static bool GetButtonDown(string buttonName)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetButtonDown(buttonName);
 
-	public bool GetMouseButtonPressed(MouseButton mouseButton)
-	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
-	public bool GetMouseButtonDown(MouseButton mouseButton)
+	public static bool GetMouseButtonPressed(MouseButton mouseButton)
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
+	public static bool GetMouseButtonDown(MouseButton mouseButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonDown(mouseButton);
 
-	public bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
+	public static bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetKeyboardButtonPressed(keyboardButton);
-	public bool GetKeyboardButtonDown(KeyboardButton keyboardButton)
+	public static bool GetKeyboardButtonDown(KeyboardButton keyboardButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetKeyboardButtonDown(keyboardButton);
 
-	public bool GetJoystickButtonPressed(GamepadButton joystickButton)
+	public static bool GetJoystickButtonPressed(GamepadButton joystickButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonPressed(joystickButton);
-	public bool GetJoystickButtonDown(GamepadButton joystickButton)
+	public static bool GetJoystickButtonDown(GamepadButton joystickButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonDown(joystickButton);
 
-	public void SetBackgroundColor(Color color)
+	public static void SetBackgroundColor(Color color)
 		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);
 
 	public abstract void Update(float deltaTime);

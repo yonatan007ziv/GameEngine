@@ -2,7 +2,7 @@
 
 internal class TTFCmap
 {
-	internal struct SubtableFormat4
+	internal readonly struct SubtableFormat4
 	{
 		public ushort PlatformID { get; }
 		public ushort PlatformSpecificID { get; }
@@ -25,6 +25,7 @@ internal class TTFCmap
 			PlatformID = platformID;
 			PlatformSpecificID = platformSpecificID;
 			Offset = offset;
+			// does it exist in the subtable? Format = format;
 			Length = length;
 			Language = language;
 			SegCountX2 = segCountX2;

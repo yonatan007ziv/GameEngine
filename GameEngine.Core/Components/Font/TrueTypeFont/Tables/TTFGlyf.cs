@@ -9,7 +9,7 @@ internal class TTFGlyf
 		Glyphs = glyfs;
 	}
 
-	internal struct GlyfData
+	internal readonly struct GlyfData
 	{
 		public short NumberOfContours { get; }
 		public float XMin { get; }

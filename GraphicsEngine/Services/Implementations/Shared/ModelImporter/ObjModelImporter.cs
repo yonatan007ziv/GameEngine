@@ -41,11 +41,8 @@ internal class ObjModelImporter
 
 			if (type == "f")
 				for (int i = 0; i < temp.Length - 2; i++)
-					AddFace(indexes, temp[0], temp[i + 1], temp[i + 2]);
+					Add3PieceFace(indexes, temp[0], temp[i + 1], temp[i + 2]);
 		}
-
-		// Bounding Box Setup
-		FindExtremes(v, out float right, out float left, out float top, out float bottom, out float front, out float back);
 
 		// Attribute Array
 		List<AttributeLayout> attribList = new List<AttributeLayout>
@@ -115,41 +112,7 @@ internal class ObjModelImporter
 		return new ModelData(va, (uint)indexBuffer.Length);
 	}
 
-	private void FindExtremes(List<Vector3> v, out float right, out float left, out float top, out float bottom, out float front, out float back)
-	{
-		float rightMost = float.NegativeInfinity, leftMost = float.PositiveInfinity,
-			topMost = float.NegativeInfinity, bottomMost = float.PositiveInfinity,
-			frontMost = float.NegativeInfinity, backMost = float.PositiveInfinity;
-
-		foreach (Vector3 v2 in v)
-		{
-			if (v2.X < leftMost)
-				leftMost = v2.X;
-			if (v2.X > rightMost)
-				rightMost = v2.X;
-
-			if (v2.Y < bottomMost)
-				bottomMost = v2.Y;
-			if (v2.Y > topMost)
-				topMost = v2.Y;
-
-			if (v2.Z < backMost)
-				backMost = v2.Z;
-			if (v2.Z > frontMost)
-				frontMost = v2.Z;
-		}
-
-		right = rightMost;
-		left = leftMost;
-
-		top = topMost;
-		bottom = bottomMost;
-
-		front = frontMost;
-		back = backMost;
-	}
-
-	private void AddFace(List<Vector3> faces, string data1, string data2, string data3)
+	private static void Add3PieceFace(List<Vector3> faces, string data1, string data2, string data3)
 	{
 		string[] face1 = data1.Split('/');
 		string[] face2 = data2.Split('/');
@@ -162,10 +125,8 @@ internal class ObjModelImporter
 
 	private static Vector2 StringToVector2f(string x, string y)
 		=> new Vector2(float.Parse(x), float.Parse(y));
-
 	private static Vector3 StringToVector3f(string x, string y, string z)
 		=> new Vector3(float.Parse(x), float.Parse(y), float.Parse(z));
-
 	private static Vector3 StringToVector3Face(string x, string y, string z)
 		=> new Vector3(int.Parse(x), int.Parse(y == "" ? "0" : y), int.Parse(z == "" ? "0" : z));
 }

@@ -46,13 +46,9 @@ public class StbTextureLoader : ITextureLoader
 			byte[] row = image.Data.Skip(y * stride).Take(stride).ToArray();
 			for (int i = 0; i < row.Length; i += 4)
 			{
-				byte temp = row[i + 2];
-				row[i + 2] = row[i + 1];
-				row[i + 1] = temp;
-
-				temp = row[i + 0];
-				row[i + 0] = row[i + 3];
-				row[i + 3] = temp;
+				// Swap
+				(row[i + 1], row[i + 2]) = (row[i + 2], row[i + 1]);
+				(row[i + 0], row[i + 3]) = (row[i + 3], row[i + 0]);
 			}
 
 			Array.Reverse(row);

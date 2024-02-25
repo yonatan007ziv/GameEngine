@@ -15,6 +15,7 @@ public interface IGameEngine
 
 	string Title { get; set; }
 
+	// Used for ui interactions, (-1, -1) bottom left and (1, 1) top right
 	Vector2 NormalizedMousePosition { get; }
 
 	bool LogRenderingLogs { get; set; }

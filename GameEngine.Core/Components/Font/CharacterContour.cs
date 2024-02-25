@@ -6,12 +6,12 @@ internal class CharacterContour
 {
 	public Vector2[] Points { get; }
 
-    public CharacterContour(Vector2[] points)
-    {
+	public CharacterContour(Vector2[] points)
+	{
 		Points = points;
 	}
 
-    public bool IsClockwise()
+	public bool IsClockwise()
 	{
 		// Implement shoelace theorem to check for clockwise orientation
 		double shoelaceSum = 0;
