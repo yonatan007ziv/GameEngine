@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Extensions;
+using GameEngine.Extensions;
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,7 @@ public class Transform : INotifyPropertyChanged
 	private Vector3 _position, _rotation, _scale = Vector3.One;
 
 	public Vector3 Position { get => _position; set { _position = value; OnPropertyChanged(); } }
-	public Vector3 Rotation { get => _rotation; set { _rotation = value; CalculateLocalVectors(); OnPropertyChanged(); } }
+	public Vector3 Rotation { get => _rotation; set { _rotation = value.ClampYZTo360Degrees() ; CalculateLocalVectors(); OnPropertyChanged(); } }
 	public Vector3 Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
 
 	public Vector3 LocalRight { get; private set; } = GlobalRight;

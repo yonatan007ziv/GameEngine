@@ -5,11 +5,12 @@ using System.Numerics;
 
 namespace BoxColliderSample;
 
-internal class WorldCameraController : WorldCamera
+internal class PlayerCameraController : WorldCamera
 {
 	private const float sensitivity = 25;
+	private const float clampAngleX = 90;
 
-	public WorldCameraController(WorldObject parent)
+	public PlayerCameraController(WorldObject parent)
 		: base(parent)
 	{
 		Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
@@ -22,8 +23,8 @@ internal class WorldCameraController : WorldCamera
 			Vector2 cameraVector = new Vector2(GetAxis("XCamera"), GetAxis("YCamera"));
 
 			// Clamp camera
-			float clampedX = Math.Clamp(Transform.Rotation.X + cameraVector.Y * deltaTime * sensitivity, -90, 90);
-			Transform.Rotation = new Vector3(clampedX, Transform.Rotation.Y - cameraVector.X * deltaTime * sensitivity, 0);
+			float clampedX = Math.Clamp(Transform.Rotation.X - cameraVector.Y * deltaTime * sensitivity, -clampAngleX, clampAngleX);
+			Transform.Rotation = new Vector3(clampedX, Transform.Rotation.Y + cameraVector.X * deltaTime * sensitivity, 0);
 		}
 	}
 }

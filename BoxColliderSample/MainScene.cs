@@ -15,9 +15,9 @@ internal class MainScene : Scene
 		MapGamepadAxis("YMovement", GamepadAxis.LeftAnalogVertical, -1, 0);
 
 		MapMouseAxis("XCamera", MouseAxis.MouseHorizontal, 1, 0);
-		MapMouseAxis("YCamera", MouseAxis.MouseVertical, 1, 0);
+		MapMouseAxis("YCamera", MouseAxis.MouseVertical, -1, 0);
 		MapGamepadAxis("XCamera", GamepadAxis.RightAnalogHorizontal, 5, 0);
-		MapGamepadAxis("YCamera", GamepadAxis.RightAnalogVertical, 5, 0);
+		MapGamepadAxis("YCamera", GamepadAxis.RightAnalogVertical, -5, 0);
 
 		MapKeyboardButton("Jump", KeyboardButton.Space);
 		MapGamepadButton("Jump", GamepadButton.Cross);
@@ -44,5 +44,11 @@ internal class MainScene : Scene
 		
 		WorldObjects.Add(player);
 		WorldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
+
+		UICameras.Add((new UICamera(), new ViewPort(0.5f, 0.5f, 1, 1)));
+		TestButton a = new TestButton();
+		a.Transform.Scale /= 5;
+		a.Transform.Position = new Vector3(0.9f - a.Transform.Scale.X, 0.9f - a.Transform.Scale.Y, 0);
+		UIObjects.Add(a);
 	}
 }

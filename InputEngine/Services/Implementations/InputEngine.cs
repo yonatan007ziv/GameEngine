@@ -56,7 +56,6 @@ internal class InputEngine : IInputEngine
 	public Vector2 GetMousePos()
 		=> mousePosition;
 
-
 	private void AddKeyboardButtonToCurrent(KeyboardButton keyboardButton, ref string keyboardInput)
 	{
 		// Check for capitalization
@@ -292,7 +291,6 @@ internal class InputEngine : IInputEngine
 			}
 		}
 	}
-
 	public void OnGamepadEvent(GamepadEventData gamepadEvent)
 	{
 		if (gamepadEvent.GamepadEventType == GamepadEventType.GamepadButton)

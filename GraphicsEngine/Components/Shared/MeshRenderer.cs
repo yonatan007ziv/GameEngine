@@ -43,7 +43,7 @@ internal class MeshRenderer
 	{
 		Matrix4x4 rotationMatrix =
 			Matrix4x4.CreateRotationX(MathHelper.DegToRad(transform.Rotation.X))
-			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y))
+			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y + 180))
 			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(transform.Rotation.Z));
 
 		modelMatrix = rotationMatrix * Matrix4x4.CreateScale(transform.Scale) * Matrix4x4.CreateTranslation(transform.Position);

@@ -29,7 +29,7 @@ internal class WorldCamera : Camera
 
 	public void Update()
 	{
-		ViewMatrix = Matrix4x4.CreateLookAt(Transform.Position, Transform.Position + Transform.LocalFront, Transform.LocalUp);
+		ViewMatrix = Matrix4x4.CreateLookAt(Transform.Position, Transform.Position + Transform.LocalFront, Transform.LocalUp) * Matrix4x4.CreateScale(-1, 1, 1);
 		ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegToRad(FOV), Width / Height, Near, Far);
 	}
 }
