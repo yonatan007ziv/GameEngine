@@ -82,6 +82,8 @@ internal static class OpenTKInputExtensions
 				return KeyboardButton.Slash;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backslash:
 				return KeyboardButton.Backslash;
+			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace:
+				return KeyboardButton.Backspace;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Delete:
 				return KeyboardButton.Delete;
 		}

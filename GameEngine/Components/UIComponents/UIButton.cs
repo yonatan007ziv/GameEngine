@@ -15,13 +15,16 @@ public class UIButton : ScriptableUIObject
 	protected virtual void OnEnter() { }
 	protected virtual void OnExit() { }
 
-	public UIButton(MeshData uiMeshData)
+	public UIButton(string materialName)
 	{
-		Meshes.Add(uiMeshData);
+		Meshes.Add(new MeshData("UIPlane.obj", $"{materialName}.mat"));
 	}
 
 	public override void Update(float deltaTime)
 	{
+		if (MouseLocked)
+			return;
+
 		Vector2 mousePos = GetNormalizedMousePosition();
 
 		bool insideX = mousePos.X <= Transform.Position.X + Transform.Scale.X && mousePos.X >= Transform.Position.X - Transform.Scale.X;

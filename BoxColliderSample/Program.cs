@@ -1,5 +1,4 @@
 ﻿using GameEngine;
-using GameEngine.Core.Enums;
 using GameEngine.Services.Interfaces;
 using System.Drawing;
 
@@ -9,11 +8,11 @@ internal class Program
 {
 	public static void Main()
 	{
-		IGameEngine GameEngine = GameEngineProvider.BuildEngine(GraphicsApi.SilkOpenGL);
+		IGameEngine GameEngine = GameEngineProvider.BuildEngine(global::GameEngine.Core.Enums.GraphicsApi.SilkOpenGL);
 
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Box Colliders";
-		GameEngine.FpsCap = 144;
+		GameEngine.FpsCap = 60;
 		GameEngine.LogFps = false;
 		GameEngine.LogInputs = false;
 		GameEngine.LogRenderingLogs = true;

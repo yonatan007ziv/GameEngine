@@ -8,7 +8,13 @@ public class ResourceDiscoverer : IResourceDiscoverer
 
 	public ResourceDiscoverer()
 	{
-		DiscoverResources(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), @"Resources\")), @"Resources\");
+		string resourcesPath = Path.Combine(Directory.GetCurrentDirectory(), @"Resources\");
+
+		// If resources folder doesn't exist
+		if (!Directory.Exists(resourcesPath))
+			Directory.CreateDirectory(resourcesPath);
+
+		DiscoverResources(new DirectoryInfo(resourcesPath), @"Resources\");
 	}
 
 	private void DiscoverResources(DirectoryInfo directory, string depth)

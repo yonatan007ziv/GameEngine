@@ -6,7 +6,7 @@ namespace GameEngine.Components.Objects;
 public class UIComponent
 {
 	public int Id { get; }
-	public int ParentId { get; }
+	public UIObject Parent { get; }
 
 	protected Transform Transform;
 	protected ObservableCollection<MeshData> Meshes;
@@ -14,7 +14,7 @@ public class UIComponent
 	public UIComponent(UIObject parent)
 	{
 		Id = IdGenerator.GenerateNext();
-		ParentId = parent.Id;
+		Parent = parent;
 
 		parent.components.Add(this);
 

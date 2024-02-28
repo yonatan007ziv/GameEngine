@@ -8,23 +8,11 @@ public enum KeyboardButton
 	A = 65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 	F1 = 101, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
-	RightArrow,
-	LeftArrow,
-	UpArrow,
-	DownArrow,
+	RightArrow = 120, LeftArrow, UpArrow, DownArrow,
 
-	LShift,
-	LCtrl,
-	LAlt,
-	RShift,
-	RCtrl,
-	RAlt,
-
+	// Special characters
 	Space,
-	Enter,
 	Tab,
-	Escape,
-	CapsLock,
 	Backtick,
 	Semicolon,
 	Equal,
@@ -32,5 +20,20 @@ public enum KeyboardButton
 	Apostrophe,
 	Slash,
 	Backslash,
+
+	// Special insertions
+	Enter,
+	Escape,
+	Backspace,
 	Delete,
+
+
+	// Control buttons
+	CapsLock,
+	LShift,
+	LCtrl,
+	LAlt,
+	RShift,
+	RCtrl,
+	RAlt,
 }

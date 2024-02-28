@@ -10,11 +10,11 @@ internal class Player : ScriptableWorldObject
 	private const float jumpSpeed = 20;
 	private const float movementSpeed = 25;
 
-	public readonly WorldCamera camera;
+	public readonly WorldCameraController camera;
 
 	public Player()
 	{
-		camera = new WorldCamera(this);
+		camera = new WorldCameraController(this);
 		BoxCollider = new GameEngine.Core.Components.BoxColliderData(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
 	}
 

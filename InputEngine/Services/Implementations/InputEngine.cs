@@ -31,6 +31,8 @@ internal class InputEngine : IInputEngine
 	#endregion
 
 	private Vector2 mousePosition, lastMousePosition;
+	private string currentKeyboardInput = "";
+	private bool capsLockToggled = false;
 
 	public InputEngine(ILogger logger)
 	{
@@ -43,15 +45,87 @@ internal class InputEngine : IInputEngine
 		keyboardButtonsDownMask.Clear();
 		gamepadButtonsDownMask.Clear();
 
-		// Temp solution to clear mouse input each tick
+		// Clear mouse input each tick
 		mouseAxes[MouseAxis.MouseHorizontal] = 0;
 		mouseAxes[MouseAxis.MouseVertical] = 0;
 
 		lastMousePosition = mousePosition;
+		currentKeyboardInput = "";
 	}
 
 	public Vector2 GetMousePos()
 		=> mousePosition;
+
+
+	private void AddKeyboardButtonToCurrent(KeyboardButton keyboardButton, ref string keyboardInput)
+	{
+		// Check for capitalization
+		bool capitalized = false;
+		if (keyboardButtons.Contains(KeyboardButton.LShift) || capsLockToggled)
+			capitalized = true;
+
+		int keyboardButtonValue = (int)keyboardButton;
+		string received = "";
+
+		// Non-alphanumeric
+		switch (keyboardButton)
+		{
+			case KeyboardButton.Space:
+				received = " ";
+				break;
+			case KeyboardButton.Tab:
+				received = "\t";
+				break;
+			case KeyboardButton.Backtick:
+				received = "`";
+				break;
+			case KeyboardButton.Semicolon:
+				received = ";";
+				break;
+			case KeyboardButton.Equal:
+				received = "=";
+				break;
+			case KeyboardButton.Minus:
+				received = "-";
+				break;
+			case KeyboardButton.Apostrophe:
+				received = "'";
+				break;
+			case KeyboardButton.Slash:
+				received = "/";
+				break;
+			case KeyboardButton.Backslash:
+				received = "\\";
+				break;
+		}
+
+		// Insertion / deletion
+		switch (keyboardButton)
+		{
+			case KeyboardButton.Enter:
+				break;
+			case KeyboardButton.Escape:
+				return;
+			case KeyboardButton.Backspace:
+				keyboardInput = keyboardInput.Substring(0, received.Length - 1);
+				return;
+			case KeyboardButton.Delete:
+				break;
+		}
+
+		// 0 - 9
+		if (48 <= keyboardButtonValue && keyboardButtonValue <= 57)
+			received = ((char)keyboardButtonValue).ToString();
+
+		// A - Z
+		if (65 <= keyboardButtonValue && keyboardButtonValue <= 90)
+			received = ((char)keyboardButtonValue).ToString();
+
+		if (!capitalized)
+			received = received.ToLower();
+
+		keyboardInput = keyboardInput + received;
+	}
 
 	#region Get button pressed/down
 	public bool GetButtonPressed(string buttonName)
@@ -102,6 +176,8 @@ internal class InputEngine : IInputEngine
 	public bool GetMouseButtonDown(MouseButton mouseButton)
 		=> mouseButtonsDownMask.Contains(mouseButton) && mouseButtons.Contains(mouseButton);
 
+	public string GetRecentKeyboardInput()
+		=> currentKeyboardInput;
 	public bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 		=> keyboardButtons.Contains(keyboardButton);
 	public bool GetKeyboardButtonDown(KeyboardButton keyboardButton)
@@ -195,6 +271,8 @@ internal class InputEngine : IInputEngine
 
 		if (keyboardEvent.Pressed)
 		{
+			AddKeyboardButtonToCurrent(keyboardEvent.KeyboardButton, ref currentKeyboardInput);
+
 			if (!keyboardButtons.Contains(keyboardEvent.KeyboardButton))
 			{
 				keyboardButtons.Add(keyboardEvent.KeyboardButton);
@@ -214,6 +292,7 @@ internal class InputEngine : IInputEngine
 			}
 		}
 	}
+
 	public void OnGamepadEvent(GamepadEventData gamepadEvent)
 	{
 		if (gamepadEvent.GamepadEventType == GamepadEventType.GamepadButton)

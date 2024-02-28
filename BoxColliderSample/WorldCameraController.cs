@@ -1,15 +1,15 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Components;
+using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
 using System.Numerics;
 
 namespace BoxColliderSample;
 
-internal class WorldCamera : ScriptableWorldComponent
+internal class WorldCameraController : WorldCamera
 {
 	private const float sensitivity = 25;
 
-	public WorldCamera(WorldObject parent)
+	public WorldCameraController(WorldObject parent)
 		: base(parent)
 	{
 		Meshes.Add(new MeshData("Camera.obj", "Red.mat"));

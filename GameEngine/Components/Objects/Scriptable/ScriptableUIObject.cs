@@ -28,6 +28,9 @@ public abstract class ScriptableUIObject : UIObject
 	public static bool GetMouseButtonDown(MouseButton mouseButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonDown(mouseButton);
 
+	public static string GetRecentKeyboardInput()
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetRecentKeyboardInput();
+
 	public static bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetKeyboardButtonPressed(keyboardButton);
 	public static bool GetKeyboardButtonDown(KeyboardButton keyboardButton)

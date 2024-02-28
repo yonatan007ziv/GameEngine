@@ -82,6 +82,8 @@ internal static class SilkOpenGLInputExtensions
 				return KeyboardButton.Slash;
 			case Silk.NET.Input.Key.BackSlash:
 				return KeyboardButton.Backslash;
+			case Silk.NET.Input.Key.Backspace:
+				return KeyboardButton.Backspace;
 			case Silk.NET.Input.Key.Delete:
 				return KeyboardButton.Delete;
 		}

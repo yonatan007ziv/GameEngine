@@ -7,7 +7,7 @@ namespace GameEngine.Components.Objects;
 public abstract class WorldComponent
 {
 	public int Id { get; }
-	public int ParentId { get; }
+	public WorldObject Parent { get; }
 
 	protected Transform Transform;
 	protected ObservableCollection<MeshData> Meshes;
@@ -17,7 +17,7 @@ public abstract class WorldComponent
 	public WorldComponent(WorldObject parent)
 	{
 		Id = IdGenerator.GenerateNext();
-		ParentId = parent.Id;
+		Parent = parent;
 
 		parent.components.Add(this);
 

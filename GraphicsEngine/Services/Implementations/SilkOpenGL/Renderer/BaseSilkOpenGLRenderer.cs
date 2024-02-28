@@ -25,7 +25,7 @@ internal abstract class BaseSilkOpenGLRenderer
 		window = Window.Create(WindowOptions.Default);
 		window.Load += InternalLoad;
 		window.VSync = false;
-
+		window.ShouldSwapAutomatically = false;
 		OpenGLContext = null!;
 	}
 
@@ -36,6 +36,8 @@ internal abstract class BaseSilkOpenGLRenderer
 		OpenGLContext = GL.GetApi(window);
 		OpenGLContext.Enable(EnableCap.DebugOutput);
 		OpenGLContext.ActiveTexture(TextureUnit.Texture0);
+
+		window.GLContext!.SwapInterval(0);
 
 		unsafe
 		{

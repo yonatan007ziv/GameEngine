@@ -25,22 +25,24 @@ internal class MainScene : Scene
 		MapKeyboardButton("Escape", KeyboardButton.Escape);
 		MapGamepadButton("Escape", GamepadButton.Start);
 
-		// Ground
-		worldObjects.Add(new Ground(new Vector2(100, 100)));
+		// Ground, temp solution
+		for (int i = 0; i < 5; i++)
+			WorldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Wall
 		Wall wall = new Wall(new Vector3(100, 100, 1));
 		wall.Transform.Position += new Vector3(0, 50, 10);
-		worldObjects.Add(wall);
+		WorldObjects.Add(wall);
 
 		// Trex
 		Trex trex = new Trex();
-		worldObjects.Add(trex);
+		WorldObjects.Add(trex);
 
 		// Player
 		Player player = new Player();
 		player.Transform.Position += new Vector3(0, 10, 0);
-		worldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
-		worldObjects.Add(player);
+
+		WorldObjects.Add(player);
+		WorldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
 	}
 }
