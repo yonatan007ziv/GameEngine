@@ -92,8 +92,14 @@ public class Scene : IInputMapper, IDisposable
 
 		foreach (UIObject uiObject in UIObjects)
 			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
-		foreach ((UIComponent camera, ViewPort viewPort) in UICameras)
-			Services.Implementations.GameEngine.EngineContext.AddUICamera(camera, viewPort);
+		foreach ((UICamera uiCamera, ViewPort viewPort) in UICameras)
+			if (uiCamera.Standalone)
+			{
+				Services.Implementations.GameEngine.EngineContext.AddUIObject(uiCamera.Parent);
+				Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
+			}
+			else
+				Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
 
 		_loaded = true;
 		LoadedScene = this;

@@ -21,7 +21,7 @@ internal class UICamera : Camera
 		Height = height;
 		ViewPort = viewPort;
 
-		ViewMatrix = Matrix4x4.CreateLookAt(Transform.Position, Transform.Position + Transform.LocalFront, Transform.LocalUp);
+		ViewMatrix = Matrix4x4.CreateLookAt(Transform.Position, Transform.Position - Transform.LocalFront, Transform.LocalUp);
 		ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(-1, 1, -1, 1, Near, Far);
 	}
 }
