@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest  # Or your preferred runner
     
     env:
-       CURRENT_VERSION: 1.2.5
+       CURRENT_VERSION: $ENGINE_VERSION
        
     steps:
       - uses: actions/checkout@v4  # Checkout code from repository
