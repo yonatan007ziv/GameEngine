@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3  # Checkout code from repository
 
       - name: Use NuGet CLI
-        uses: NuGet/setup-nuget@v1.1.7  # Install the NuGet CLI
+        uses: nuget/setup-nuget@v2  # Install the NuGet CLI
 
       - name: Restore dependencies (optional, but recommended for stability)
         run: nuget restore ./sln_file.sln  # Replace with your solution file path
