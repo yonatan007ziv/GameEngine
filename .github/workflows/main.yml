@@ -14,11 +14,19 @@ jobs:
       - name: Use NuGet CLI
         uses: nuget/setup-nuget@v2  # Install the NuGet CLI
 
+      - name: Use Dotnet CLI
+        uses: actions/setup-dotnet@4 # Install the NuGet CLI
+        with:
+          dotnet-version: 8
+          
       - name: Restore dependencies (optional, but recommended for stability)
         run: nuget restore ./GameEngine.sln  # Replace with your solution file path
 
+      - name: Build Solution
+        run: dotnet build ./GameEngine.sln
+    
       - name: Pack GameEngine
-        run: |
+          dotnet build
           nuget pack ./GameEngine/GameEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
 
       - name: Pack GameEngine.Core
