@@ -15,7 +15,7 @@ jobs:
         uses: nuget/setup-nuget@v2  # Install the NuGet CLI
 
       - name: Restore dependencies (optional, but recommended for stability)
-        run: nuget restore ./sln_file.sln  # Replace with your solution file path
+        run: nuget restore ./GameEngine.sln  # Replace with your solution file path
 
       - name: Pack GameEngine
         run: |
