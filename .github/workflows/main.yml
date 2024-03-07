@@ -51,9 +51,9 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
-          nuget push ./nuget_packages/YonatanZ.GameEngine.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
-          nuget push ./nuget_packages/YonatanZ.GameEngine.Core.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
-          nuget push ./nuget_packages/YonatanZ.GraphicsEngine.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
-          nuget push ./nuget_packages/YonatanZ.InputEngine.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
-          nuget push ./nuget_packages/YonatanZ.PhysicsEngine.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
-          nuget push ./nuget_packages/YonatanZ.SoundEngine.'"$CURRENT_VERSION"'.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.GameEngine.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.GameEngine.Core.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.GraphicsEngine.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.InputEngine.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.PhysicsEngine.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
+          nuget push ./nuget_packages/YonatanZ.SoundEngine.${{ $CURRENT_VERSION }}.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
