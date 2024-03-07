@@ -43,7 +43,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		internalRenderer.GamepadEvent += (joystickEvent) => { GamepadEvent?.Invoke(joystickEvent); };
 	}
 
-	public void Start()
+	public void Run()
 		=> internalRenderer.Start();
 
 	public void SetBackgroundColor(Color color)

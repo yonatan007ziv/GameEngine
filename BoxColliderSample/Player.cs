@@ -1,4 +1,5 @@
 ﻿using GameEngine.Components.Objects.Scriptable;
+using GameEngine.Core.Components;
 using GameEngine.Extensions;
 using System.Numerics;
 
@@ -15,12 +16,12 @@ internal class Player : ScriptableWorldObject
 	public Player()
 	{
 		camera = new PlayerCameraController(this);
-		BoxCollider = new GameEngine.Core.Components.BoxColliderData(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+		BoxCollider = new BoxColliderData(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
 	}
 
 	public override void Update(float deltaTime)
 	{
-        if (TouchingColliderTag("Ground"))
+		if (TouchingColliderTag("Ground"))
 		{
 			Forces.Clear();
 			// Temp, need to have a Velocity property instead of ImpulseVelocities and set the Y to 0
@@ -29,7 +30,7 @@ internal class Player : ScriptableWorldObject
 		else if (Forces.Count == 0)
 			Forces.Add(new Vector3(0, -gravityMagnitude, 0));
 
-		Vector3 movementVector = movementSpeed * (GetAxis("XMovement") * Transform.LocalRight + GetAxis("YMovement") * Transform.LocalRight.RotateVectorByAxis(GameEngine.Core.Components.Transform.GlobalUp, -90));
+		Vector3 movementVector = movementSpeed * (GetAxis("XMovement") * Transform.LocalRight + GetAxis("YMovement") * Transform.LocalRight.RotateVectorByAxis(Transform.GlobalUp, -90));
 		movementVector = movementVector.ClampMagnitude(movementSpeed);
 		Transform.Position += movementVector * deltaTime;
 

@@ -36,6 +36,8 @@ public interface IGameEngine
 	TaskCompletionSource EngineLoadingTask { get; }
 
 	void Run();
+
+	void SetResourceFolder(string path);
 	void SetBackgroundColor(Color color);
 
 	public WorldObject? GetWorldObjectFromId(int id);

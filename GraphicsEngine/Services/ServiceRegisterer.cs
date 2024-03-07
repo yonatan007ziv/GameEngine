@@ -1,5 +1,4 @@
 ﻿using GameEngine.Core.API;
-using GameEngine.Core.Enums;
 using GameEngine.Core.SharedServices.Implementations;
 using GameEngine.Core.SharedServices.Implementations.FileReaders;
 using GameEngine.Core.SharedServices.Implementations.Loggers;
@@ -35,52 +34,47 @@ internal class ServiceRegisterer
 {
 	private readonly IServiceCollection collection;
 
-	public ServiceRegisterer(GraphicsApi graphicsApi)
+	public ServiceRegisterer()
 	{
 		collection = new ServiceCollection();
-		RegisterServices(graphicsApi);
+		RegisterServices();
+	}
+
+	public ServiceRegisterer(IServiceCollection collection)
+	{
+		this.collection = collection;
+		RegisterServices();
 	}
 
 	public IServiceProvider BuildProvider()
 		=> collection.BuildServiceProvider();
 
-	private void RegisterServices(GraphicsApi graphicsApi)
+	private void RegisterServices()
 	{
-		switch (graphicsApi)
-		{
-			case GraphicsApi.OpenTK:
-				RegisterOpenTK();
-				break;
-			case GraphicsApi.SilkOpenGL:
-				RegisterSilkOpenGL();
-				break;
-			case GraphicsApi.SilkDirect11:
-				RegisterSilkDirect11();
-				break;
-			case GraphicsApi.SilkDirect12:
-				RegisterSilkDirect12();
-				break;
-		}
-
+		RegisterSilkOpenGL();
 		RegisterShared();
 	}
 
-	private void RegisterSilkOpenGL()
-	{
-		collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
-		collection.AddSingleton<IBufferGenerator, SilkOpenGLBufferGenerator>();
-		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
-
-		collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
-	}
-
-	private void RegisterOpenTK()
+	public ServiceRegisterer RegisterOpenTK()
 	{
 		collection.AddSingleton<IInternalGraphicsRenderer, OpenTKRenderer>();
 		collection.AddSingleton<IBufferGenerator, OpenTKBufferGenerator>();
 		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, OpenTKShaderProgramFactory>();
 
 		collection.AddSingleton<IDrawingCall, OpenTKDrawingCall>();
+
+		return this;
+	}
+
+	public ServiceRegisterer RegisterSilkOpenGL()
+	{
+		collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
+		collection.AddSingleton<IBufferGenerator, SilkOpenGLBufferGenerator>();
+		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
+
+		collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
+
+		return this;
 	}
 
 	private void RegisterSilkDirect11()
@@ -105,7 +99,7 @@ internal class ServiceRegisterer
 
 		// Managers
 		collection.AddSingleton<IShaderManager, ShaderManager>();
-		collection.AddSingleton<IResourceManager, ContentResourceManager>(); // EmbeddedResourceManager : Test in the Future
+		collection.AddSingleton<IResourceManager, ContentResourceManager>();
 		collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
 		collection.AddSingleton<ITextureManager, TextureManager>();
 

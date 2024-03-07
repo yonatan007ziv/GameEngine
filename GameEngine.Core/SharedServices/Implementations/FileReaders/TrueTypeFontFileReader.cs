@@ -2,7 +2,6 @@
 using GameEngine.Core.Components.Font;
 using GameEngine.Core.Components.Font.TrueTypeFont;
 using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
-using GameEngine.Core.Components.TrueTypeFont;
 using GameEngine.Core.SharedServices.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -37,13 +36,13 @@ public class TrueTypeFontFileReader : IFileReader<Font>
 
 	public bool ReadFile(string fontName, out Font result)
 	{
-		if (!resourceDiscoverer.ResourceNamePathDictionary.ContainsKey(fontName))
+		if (!resourceDiscoverer.ResourceExists(fontName))
 		{
 			result = default!;
 			return false;
 		}
 
-		using FileStream fs = File.Open(resourceDiscoverer.ResourceNamePathDictionary[fontName], FileMode.Open);
+		using FileStream fs = File.Open(resourceDiscoverer.GetResourcePath(fontName), FileMode.Open);
 		using BigEndianBinaryReader binaryReader = new BigEndianBinaryReader(fs);
 
 		// Read BinSrchHeader

@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Core.Enums;
+﻿namespace GameEngine.Components;
 
 public enum GraphicsApi
 {

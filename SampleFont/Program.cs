@@ -9,7 +9,7 @@ internal class Program
 {
 	public static void Main()
 	{
-		TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer());
+		TrueTypeFontFileReader trueTypeFontFileReader = new TrueTypeFontFileReader(new ConsoleLogger(), new ResourceDiscoverer(new ConsoleLogger()));
 		trueTypeFontFileReader.ReadFile("Arial.ttf", out Font font);
 
 		Console.WriteLine($"Font Name: {font.FontName}");

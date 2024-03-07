@@ -1,6 +1,6 @@
 ﻿using GameEngine.Core.Components;
 
-namespace GameEngine.Core.Extensions;
+namespace GameEngine.Extensions;
 
 public static class TransformExtensions
 {

@@ -20,10 +20,10 @@ public class ContentResourceManager : IResourceManager
 	{
 		result = default!;
 
-		if (!ResourceExists(resource))
+		if (!resourceDiscoverer.ResourceExists(resource))
 			return false;
 
-		if (fileStreamFileReader.ReadFile(resourceDiscoverer.ResourceNamePathDictionary[resource], out FileStream stream))
+		if (fileStreamFileReader.ReadFile(resourceDiscoverer.GetResourcePath(resource), out FileStream stream))
 		{
 			result = stream;
 			return true;
@@ -35,10 +35,10 @@ public class ContentResourceManager : IResourceManager
 	{
 		result = default!;
 
-		if (!ResourceExists(resource))
+		if (!resourceDiscoverer.ResourceExists(resource))
 			return false;
 
-		if (stringFileReader.ReadFile(resourceDiscoverer.ResourceNamePathDictionary[resource], out string file))
+		if (stringFileReader.ReadFile(resourceDiscoverer.GetResourcePath(resource), out string file))
 		{
 			result = file;
 			return true;
@@ -59,7 +59,4 @@ public class ContentResourceManager : IResourceManager
 		result = default!;
 		return false;
 	}
-
-	private bool ResourceExists(string resource)
-		=> resourceDiscoverer.ResourceNamePathDictionary.ContainsKey(resource);
 }

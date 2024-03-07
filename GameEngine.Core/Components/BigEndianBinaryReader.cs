@@ -16,53 +16,53 @@ internal class BigEndianBinaryReader : BinaryReader
 		return base.ReadBytes(bytes).ToArray();
 	}
 
-	public Single ReadFixed32()
+	public float ReadFixed32()
 	{
 		var data = base.ReadBytes(4);
 		// Array.Reverse(data);
 		return BitConverter.ToSingle(data);
 	}
 
-	public SByte ReadInt8()
+	public sbyte ReadInt8()
 	{
 		return (sbyte)base.ReadByte();
 	}
-	public override Int16 ReadInt16()
+	public override short ReadInt16()
 	{
 		var data = base.ReadBytes(2);
 		Array.Reverse(data);
 		return BitConverter.ToInt16(data);
 	}
-	public override Int32 ReadInt32()
+	public override int ReadInt32()
 	{
 		var data = base.ReadBytes(4);
 		Array.Reverse(data);
 		return BitConverter.ToInt32(data);
 	}
-	public override Int64 ReadInt64()
+	public override long ReadInt64()
 	{
 		var data = base.ReadBytes(8);
 		Array.Reverse(data);
 		return BitConverter.ToInt64(data);
 	}
 
-	public Byte ReadUInt8()
+	public byte ReadUInt8()
 	{
 		return base.ReadByte();
 	}
-	public override UInt16 ReadUInt16()
+	public override ushort ReadUInt16()
 	{
 		var data = base.ReadBytes(2);
 		Array.Reverse(data);
 		return BitConverter.ToUInt16(data);
 	}
-	public override UInt32 ReadUInt32()
+	public override uint ReadUInt32()
 	{
 		var data = base.ReadBytes(4);
 		Array.Reverse(data);
 		return BitConverter.ToUInt32(data);
 	}
-	public override UInt64 ReadUInt64()
+	public override ulong ReadUInt64()
 	{
 		var data = base.ReadBytes(8);
 		Array.Reverse(data);

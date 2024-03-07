@@ -13,6 +13,12 @@ internal class ServiceRegisterer
 		RegisterServices();
 	}
 
+	public ServiceRegisterer(IServiceCollection collection)
+	{
+		this.collection = collection;
+		RegisterServices();
+	}
+
 	public IServiceProvider BuildProvider()
 		=> collection.BuildServiceProvider();
 

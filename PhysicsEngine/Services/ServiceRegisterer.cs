@@ -1,13 +1,12 @@
-﻿using GameEngine.Core.API;
-using GameEngine.Core.SharedServices.Implementations.Loggers;
+﻿
+using GameEngine.Core.API;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
-namespace InputEngine.Services;
+namespace PhysicsEngine.Services;
 
 internal class ServiceRegisterer
 {
-	private readonly IServiceCollection collection;
+	private readonly IServiceCollection collection = new ServiceCollection();
 
 	public ServiceRegisterer()
 	{
@@ -26,7 +25,6 @@ internal class ServiceRegisterer
 
 	private void RegisterServices()
 	{
-		collection.AddSingleton<IInputEngine, Implementations.InputEngine>();
-		collection.AddSingleton<ILogger, ConsoleLogger>();
+		collection.AddSingleton<IPhysicsEngine, Implementations.PhysicsEngine>();
 	}
 }

@@ -18,7 +18,7 @@ public interface IGraphicsEngine
 	Vector2 WindowSize { get; }
 	bool LogRenderingMessages { get; set; }
 
-	void Start();
+	void Run();
 
 	void SetBackgroundColor(Color color);
 

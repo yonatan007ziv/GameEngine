@@ -50,7 +50,7 @@ public abstract class OpenTKBuffer : IDisposable
 
 			}
 
-			Console.WriteLine("SilkOpenGL Buffer: fix dispose cleanup");
+			Console.WriteLine("OpenTK Buffer: fix dispose cleanup");
 			// Unbind();
 			// GL.DeleteBuffer(Id);
 

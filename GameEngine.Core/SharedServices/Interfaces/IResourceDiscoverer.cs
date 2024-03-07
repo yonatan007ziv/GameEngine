@@ -2,5 +2,7 @@
 
 public interface IResourceDiscoverer
 {
-	Dictionary<string, string> ResourceNamePathDictionary { get; }
+	void InitResourceFolder(string folderPath);
+	string GetResourcePath(string resource);
+	bool ResourceExists(string fontName);
 }

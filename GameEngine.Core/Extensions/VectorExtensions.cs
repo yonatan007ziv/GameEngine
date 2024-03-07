@@ -1,5 +1,4 @@
-﻿using GameEngine.Core.Extensions;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace GameEngine.Extensions;
 
@@ -34,7 +33,7 @@ public static class VectorExtensions
 		return clamped;
 	}
 
-	
+
 	public static Vector2 ClampMagnitude(this Vector2 vec, float magnitude)
 	{
 		Vector2 clamped = vec;

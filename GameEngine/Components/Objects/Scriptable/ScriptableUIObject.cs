@@ -8,7 +8,7 @@ public abstract class ScriptableUIObject : UIObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public static Vector2 GetNormalizedMousePosition()
+	public static Vector2 GetUIMousePosition()
 		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
 	public static Vector2 GetMousePosition()
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMousePos();

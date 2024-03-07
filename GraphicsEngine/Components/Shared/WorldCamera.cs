@@ -1,5 +1,5 @@
 ﻿using GameEngine.Core.Components;
-using GameEngine.Core.Extensions;
+using GameEngine.Extensions;
 using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;

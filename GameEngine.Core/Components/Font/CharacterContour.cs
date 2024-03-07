@@ -20,7 +20,7 @@ internal class CharacterContour
 			Vector2 p1 = Points[i];
 			Vector2 p2 = Points[(i + 1) % Points.Length]; // Wrap around for last point
 
-			shoelaceSum += (p1.X * p2.Y - p2.X * p1.Y);
+			shoelaceSum += p1.X * p2.Y - p2.X * p1.Y;
 		}
 
 		return shoelaceSum > 0; // Clockwise if positive, counter-clockwise otherwise

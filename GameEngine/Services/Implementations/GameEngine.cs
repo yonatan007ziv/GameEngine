@@ -3,6 +3,7 @@ using GameEngine.Components.Objects.Scriptable;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Physics;
+using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Extensions;
 using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ internal class GameEngine : IGameEngine
 	public static IGameEngine EngineContext { get; private set; } = null!;
 
 	private readonly ILogger logger;
+	private readonly IResourceDiscoverer resourceDiscoverer;
 
 	public IGraphicsEngine GraphicsEngine { get; }
 	public ISoundEngine SoundEngine { get; }
@@ -61,9 +63,11 @@ internal class GameEngine : IGameEngine
 
 	public TaskCompletionSource EngineLoadingTask { get; }
 
-	public GameEngine(ILogger logger, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine)
+	public GameEngine(ILogger logger, IResourceDiscoverer resourceDiscoverer, IGraphicsEngine renderer, ISoundEngine soundEngine, IInputEngine inputEngine, IPhysicsEngine physicsEngine)
 	{
 		this.logger = logger;
+		this.resourceDiscoverer = resourceDiscoverer;
+
 		GraphicsEngine = renderer;
 		SoundEngine = soundEngine;
 		InputEngine = inputEngine;
@@ -94,6 +98,9 @@ internal class GameEngine : IGameEngine
 		new Thread(UpdateLoop).Start(); // Update Thread;
 		RenderLoop(); // Render Thread
 	}
+
+	public void SetResourceFolder(string path)
+		=> resourceDiscoverer.InitResourceFolder(path);
 
 	public void SetBackgroundColor(Color color)
 		=> GraphicsEngine.SetBackgroundColor(color);
@@ -288,7 +295,7 @@ internal class GameEngine : IGameEngine
 	{
 		Thread.CurrentThread.Name = "Render Thread";
 
-		GraphicsEngine.Start();
+		GraphicsEngine.Run();
 		float FpsDeltaTime = FpsCap / 1000f;
 		while (true)
 		{

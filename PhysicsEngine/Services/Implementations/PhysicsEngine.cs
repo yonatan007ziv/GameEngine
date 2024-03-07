@@ -1,11 +1,11 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Physics;
-using GameEngine.Core.Extensions;
+using GameEngine.Extensions;
 using PhysicsEngine.Components;
 using System.Numerics;
 
-namespace PhysicsEngine;
+namespace PhysicsEngine.Services.Implementations;
 
 internal class PhysicsEngine : IPhysicsEngine
 {
@@ -158,9 +158,9 @@ internal class PhysicsEngine : IPhysicsEngine
 			Vector3 boundMaxB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Value.Max;
 			Vector3 boundMinB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Value.Min;
 
-			if ((boundMaxA.X >= boundMinB.X && boundMinA.X <= boundMaxB.X) &&
-				   (boundMaxA.Y >= boundMinB.Y && boundMinA.Y <= boundMaxB.Y) &&
-				   (boundMaxA.Z >= boundMinB.Z && boundMinA.Z <= boundMaxB.Z))
+			if (boundMaxA.X >= boundMinB.X && boundMinA.X <= boundMaxB.X &&
+				   boundMaxA.Y >= boundMinB.Y && boundMinA.Y <= boundMaxB.Y &&
+				   boundMaxA.Z >= boundMinB.Z && boundMinA.Z <= boundMaxB.Z)
 				collisions.Add(staticCollider.Id);
 		}
 

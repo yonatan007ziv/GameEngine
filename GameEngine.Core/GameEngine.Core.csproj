@@ -1,9 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<PackageId>YonatanZ.GameEngine.Core</PackageId>
+	<Author>Yonatan Ziv</Author>
+	<Product>GameEngine.Core</Product>
   </PropertyGroup>
 
   <ItemGroup>

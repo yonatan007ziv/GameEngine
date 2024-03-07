@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.Components.Input.Events;
+﻿
+using GameEngine.Core.Components.Input.Events;
 using GraphicsEngine.Components.Interfaces;
 using Silk.NET.Input;
 using System.Numerics;
@@ -12,7 +13,6 @@ internal class SilkOpenGLMouseHandler : IInputHandler
 	private readonly IMouse mouse;
 	private readonly Action<MouseEventData>? MouseEvent;
 	private readonly MouseEventData mouseEventData;
-
 
 	public SilkOpenGLMouseHandler(IMouse mouse, Action<MouseEventData>? MouseEvent)
 	{

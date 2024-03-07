@@ -1,5 +1,4 @@
 ﻿using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
-using GameEngine.Core.Components.TrueTypeFont;
 using Microsoft.Extensions.Logging;
 using System.Text;
 

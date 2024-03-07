@@ -23,9 +23,23 @@ public class UIButton : ScriptableUIObject
 	public override void Update(float deltaTime)
 	{
 		if (MouseLocked)
-			return;
+		{
+			if (_clicked && !_released)
+			{
+				OnReleased();
+				_released = true;
+			}
 
-		Vector2 mousePos = GetNormalizedMousePosition();
+			if (_onEnterCalled && !_onExitCalled)
+			{
+				OnExit();
+				_onExitCalled = true;
+			}
+
+			return;
+		}
+
+		Vector2 mousePos = GetUIMousePosition();
 
 		bool insideX = mousePos.X <= Transform.Position.X + Transform.Scale.X && mousePos.X >= Transform.Position.X - Transform.Scale.X;
 		bool insideY = mousePos.Y <= Transform.Position.Y + Transform.Scale.Y && mousePos.Y >= Transform.Position.Y - Transform.Scale.Y;
@@ -49,14 +63,11 @@ public class UIButton : ScriptableUIObject
 			_onEnterCalled = false;
 		}
 
-		if (GetMouseButtonDown(MouseButton.Mouse0))
+		if (insideX && insideY && GetMouseButtonDown(MouseButton.Mouse0))
 		{
-			if (insideX && insideY)
-			{
-				OnDragClicked();
-				_clicked = true;
-				_released = false;
-			}
+			OnDragClicked();
+			_clicked = true;
+			_released = false;
 		}
 		else if (!GetMouseButtonPressed(MouseButton.Mouse0))
 		{
