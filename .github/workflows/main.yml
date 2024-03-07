@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: 8
           
-      - name: Restore dependencies (optional, but recommended for stability)
+      - name: Restore dependencies
         run: nuget restore ./GameEngine.sln  # Replace with your solution file path
 
       - name: Build Solution
