@@ -21,33 +21,30 @@ jobs:
           
       - name: Restore dependencies
         run: nuget restore ./GameEngine.sln  # Replace with your solution file path
-
-      - name: Build Solution
-        run: dotnet build ./GameEngine.sln
     
       - name: Pack GameEngine
-          dotnet build
-          nuget pack ./GameEngine/GameEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+        run: |
+          dotnet pack ./GameEngine/GameEngine.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Pack GameEngine.Core
         run: |
-          nuget pack ./GameEngine.Core/GameEngine.Core.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+          dotnet pack ./GameEngine.Core/GameEngine.Core.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Pack GraphicsEngine
         run: |
-          nuget pack ./GraphicsEngine/GraphicsEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+          dotnet pack ./GraphicsEngine/GraphicsEngine.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Pack PhysicsEngine
         run: |
-          nuget pack ./PhysicsEngine/PhysicsEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+          dotnet pack ./PhysicsEngine/PhysicsEngine.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Pack SoundEngine
         run: |
-          nuget pack ./SoundEngine/SoundEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+          dotnet pack ./SoundEngine/SoundEngine.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Pack InputEngine
         run: |
-          nuget pack ./InputEngine/InputEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+          dotnet pack ./InputEngine/InputEngine.csproj /p:PackageVersion=1.2.3 -o ./nuget_packages
 
       - name: Publish NuGet packages
         run: |
