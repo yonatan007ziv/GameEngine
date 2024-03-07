@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest  # Or your preferred runner
 
     steps:
-      - uses: actions/checkout@v3  # Checkout code from repository
+      - uses: actions/checkout@v4  # Checkout code from repository
 
       - name: Use NuGet CLI
         uses: nuget/setup-nuget@v2  # Install the NuGet CLI
 
       - name: Use Dotnet CLI
-        uses: actions/setup-dotnet@4 # Install the NuGet CLI
+        uses: actions/setup-dotnet@v4 # Install the Dotnet CLI
         with:
           dotnet-version: 8
           
