@@ -19,27 +19,27 @@ jobs:
 
       - name: Pack GameEngine
         run: |
-          nuget pack ./GameEngine/GameEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./GameEngine/GameEngine.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Pack GameEngine.Core
         run: |
-          nuget pack ./GameEngine.Core/GameEngine.Core.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./GameEngine.Core/GameEngine.Core.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Pack GraphicsEngine
         run: |
-          nuget pack ./GraphicsEngine/GraphicsEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./GraphicsEngine/GraphicsEngine.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Pack PhysicsEngine
         run: |
-          nuget pack ./PhysicsEngine/PhysicsEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./PhysicsEngine/PhysicsEngine.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Pack SoundEngine
         run: |
-          nuget pack ./SoundEngine/SoundEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./SoundEngine/SoundEngine.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Pack InputEngine
         run: |
-          nuget pack ./InputEngine/InputEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+          nuget pack ./InputEngine/InputEngine.csproj -c Release /p:Version=1.2.3 -OutputDirectory=./nuget_packages
 
       - name: Publish NuGet packages
         run: |
