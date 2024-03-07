@@ -3,13 +3,14 @@ name: Pack and Publish NuGet Packages
 on:
   push:
     branches: [ main ]  # Trigger on pushes to the main branch
-env:
-  CURRENT_VERSION: 1.2.5
   
 jobs:
   pack-and-publish:
     runs-on: ubuntu-latest  # Or your preferred runner
-
+    
+    env:
+       CURRENT_VERSION: 1.2.5
+       
     steps:
       - uses: actions/checkout@v4  # Checkout code from repository
 
@@ -26,29 +27,28 @@ jobs:
     
       - name: Pack GameEngine
         run: |
-          dotnet pack ./GameEngine/GameEngine.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./GameEngine/GameEngine.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Pack GameEngine.Core
         run: |
-          dotnet pack ./GameEngine.Core/GameEngine.Core.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./GameEngine.Core/GameEngine.Core.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Pack GraphicsEngine
         run: |
-          dotnet pack ./GraphicsEngine/GraphicsEngine.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./GraphicsEngine/GraphicsEngine.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Pack PhysicsEngine
         run: |
-          dotnet pack ./PhysicsEngine/PhysicsEngine.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./PhysicsEngine/PhysicsEngine.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Pack SoundEngine
         run: |
-          dotnet pack ./SoundEngine/SoundEngine.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./SoundEngine/SoundEngine.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Pack InputEngine
         run: |
-          dotnet pack ./InputEngine/InputEngine.csproj /p:PackageVersion=${{ CURRENT_VERSION }} -o ./nuget_packages
+          dotnet pack ./InputEngine/InputEngine.csproj /p:PackageVersion=$CURRENT_VERSION -o ./nuget_packages
 
       - name: Publish NuGet packages
         run: |
-          echo ${{ secrets.NUGET_API_KEY }}
           nuget push ./nuget_packages/*.nupkg ${{ secrets.NUGET_API_KEY }} -src https://www.nuget.org/
