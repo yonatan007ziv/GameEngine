@@ -48,4 +48,4 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
-          nuget push ./nuget_packages/*.nupkg -Source ${{ secrets.NUGET_API_KEY }} -ApiKey ${{ secrets.NUGET_API_KEY }}
+          nuget push ./nuget_packages/*.nupkg ${{ secrets.NUGET_API_KEY }}
