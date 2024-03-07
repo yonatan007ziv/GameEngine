@@ -1,0 +1,54 @@
+name: Pack and Publish NuGet Packages
+
+on:
+  push:
+    branches: [ main ]  # Trigger on pushes to the main branch
+
+jobs:
+  pack-and-publish:
+    runs-on: ubuntu-latest  # Or your preferred runner
+
+    steps:
+      - uses: actions/checkout@v3  # Checkout code from repository
+
+      - name: Use NuGet CLI
+        uses: nuget/setup-nuget@v2  # Install the NuGet CLI
+
+      - name: Use Dotnet CLI
+        uses: actions/setup-dotnet@4 # Install the NuGet CLI
+        with:
+          dotnet-version: 8
+          
+      - name: Restore dependencies (optional, but recommended for stability)
+        run: nuget restore ./GameEngine.sln  # Replace with your solution file path
+
+      - name: Build Solution
+        run: dotnet build ./GameEngine.sln
+    
+      - name: Pack GameEngine
+          dotnet build
+          nuget pack ./GameEngine/GameEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Pack GameEngine.Core
+        run: |
+          nuget pack ./GameEngine.Core/GameEngine.Core.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Pack GraphicsEngine
+        run: |
+          nuget pack ./GraphicsEngine/GraphicsEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Pack PhysicsEngine
+        run: |
+          nuget pack ./PhysicsEngine/PhysicsEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Pack SoundEngine
+        run: |
+          nuget pack ./SoundEngine/SoundEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Pack InputEngine
+        run: |
+          nuget pack ./InputEngine/InputEngine.csproj -Version 1.2.3 -OutputDirectory ./nuget_packages
+
+      - name: Publish NuGet packages
+        run: |
+          nuget push ./nuget_packages/*.nupkg -Source ${{ secrets.NUGET_API_KEY }} -ApiKey ${{ secrets.NUGET_API_KEY }}
