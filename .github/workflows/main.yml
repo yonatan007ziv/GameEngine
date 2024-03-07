@@ -1,0 +1,46 @@
+name: Pack and Publish NuGet Packages
+
+on:
+  push:
+    branches: [ main ]  # Trigger on pushes to the main branch
+
+jobs:
+  pack-and-publish:
+    runs-on: ubuntu-latest  # Or your preferred runner
+
+    steps:
+      - uses: actions/checkout@v3  # Checkout code from repository
+
+      - name: Use NuGet CLI
+        uses: NuGet/setup-nuget@v1.1.7  # Install the NuGet CLI
+
+      - name: Restore dependencies (optional, but recommended for stability)
+        run: nuget restore ./sln_file.sln  # Replace with your solution file path
+
+      - name: Pack GameEngine
+        run: |
+          nuget pack ./GameEngine/GameEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Pack GameEngine.Core
+        run: |
+          nuget pack ./GameEngine.Core/GameEngine.Core.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Pack GraphicsEngine
+        run: |
+          nuget pack ./GraphicsEngine/GraphicsEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Pack PhysicsEngine
+        run: |
+          nuget pack ./PhysicsEngine/PhysicsEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Pack SoundEngine
+        run: |
+          nuget pack ./SoundEngine/SoundEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Pack InputEngine
+        run: |
+          nuget pack ./InputEngine/InputEngine.csproj -c Release -p:Version=1.2.3 -OutputDirectory=./nuget_packages
+
+      - name: Publish NuGet packages
+        run: |
+          nuget push ./nuget_packages/*.nupkg -Source ${{ secrets.NUGET_API_KEY }} -ApiKey ${{ secrets.NUGET_API_KEY }}
