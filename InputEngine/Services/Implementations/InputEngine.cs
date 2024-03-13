@@ -31,7 +31,7 @@ internal class InputEngine : IInputEngine
 	#endregion
 
 	private Vector2 mousePosition, lastMousePosition;
-	private string currentKeyboardInput = "";
+	private KeyboardButton? currentKeyboardButton;
 	private bool capsLockToggled = false;
 
 	public InputEngine(ILogger logger)
@@ -50,24 +50,28 @@ internal class InputEngine : IInputEngine
 		mouseAxes[MouseAxis.MouseVertical] = 0;
 
 		lastMousePosition = mousePosition;
-		currentKeyboardInput = "";
+		currentKeyboardButton = null;
 	}
 
 	public Vector2 GetMousePos()
 		=> mousePosition;
 
-	private void AddKeyboardButtonToCurrent(KeyboardButton keyboardButton, ref string keyboardInput)
+	private string ModifyWithCurrentKeyboardButton(string input)
 	{
+		// None pressed, input remains unchanged
+		if (currentKeyboardButton is null)
+			return input;
+
 		// Check for capitalization
 		bool capitalized = false;
 		if (keyboardButtons.Contains(KeyboardButton.LShift) || capsLockToggled)
 			capitalized = true;
 
-		int keyboardButtonValue = (int)keyboardButton;
+		int keyboardButtonValue = (int)currentKeyboardButton;
 		string received = "";
 
 		// Non-alphanumeric
-		switch (keyboardButton)
+		switch (currentKeyboardButton)
 		{
 			case KeyboardButton.Space:
 				received = " ";
@@ -98,20 +102,6 @@ internal class InputEngine : IInputEngine
 				break;
 		}
 
-		// Insertion / deletion
-		switch (keyboardButton)
-		{
-			case KeyboardButton.Enter:
-				break;
-			case KeyboardButton.Escape:
-				return;
-			case KeyboardButton.Backspace:
-				keyboardInput = keyboardInput.Substring(0, received.Length - 1);
-				return;
-			case KeyboardButton.Delete:
-				break;
-		}
-
 		// 0 - 9
 		if (48 <= keyboardButtonValue && keyboardButtonValue <= 57)
 			received = ((char)keyboardButtonValue).ToString();
@@ -123,7 +113,20 @@ internal class InputEngine : IInputEngine
 		if (!capitalized)
 			received = received.ToLower();
 
-		keyboardInput = keyboardInput + received;
+		// Insertion / deletion
+		switch (currentKeyboardButton)
+		{
+			case KeyboardButton.Enter:
+				received = "\n";
+				break;
+			// Backspace and delete no caret yet
+			case KeyboardButton.Backspace:
+				return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+			case KeyboardButton.Delete:
+				return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+		}
+
+		return input + received;
 	}
 
 	#region Get button pressed/down
@@ -175,8 +178,8 @@ internal class InputEngine : IInputEngine
 	public bool GetMouseButtonDown(MouseButton mouseButton)
 		=> mouseButtonsDownMask.Contains(mouseButton) && mouseButtons.Contains(mouseButton);
 
-	public string GetRecentKeyboardInput()
-		=> currentKeyboardInput;
+	public string CaptureKeyboardInput(string input)
+		=> ModifyWithCurrentKeyboardButton(input);
 	public bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 		=> keyboardButtons.Contains(keyboardButton);
 	public bool GetKeyboardButtonDown(KeyboardButton keyboardButton)
@@ -270,8 +273,7 @@ internal class InputEngine : IInputEngine
 
 		if (keyboardEvent.Pressed)
 		{
-			AddKeyboardButtonToCurrent(keyboardEvent.KeyboardButton, ref currentKeyboardInput);
-
+			currentKeyboardButton = keyboardEvent.KeyboardButton;
 			if (!keyboardButtons.Contains(keyboardEvent.KeyboardButton))
 			{
 				keyboardButtons.Add(keyboardEvent.KeyboardButton);

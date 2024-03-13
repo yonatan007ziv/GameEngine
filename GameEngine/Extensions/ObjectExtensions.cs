@@ -1,4 +1,5 @@
 ﻿using GameEngine.Components.Objects;
+using GameEngine.Components.UIComponents;
 using GameEngine.Core.Components;
 
 namespace GameEngine.Extensions;
@@ -13,6 +14,8 @@ internal static class ObjectExtensions
 			worldObject.ImpulseVelocities.ToList(), worldObject.ImpulseVelocitiesDirty);
 
 	public static UIObjectData TranslateUIObject(this UIObject uiObject)
-		=> new UIObjectData(uiObject.Id, uiObject.Transform.TranslateTransform(), uiObject.TransformDirty,
+	{
+		return new UIObjectData(uiObject.Id, uiObject.TextData, uiObject.Transform.TranslateTransform(), uiObject.TransformDirty,
 			uiObject.Meshes.ToList(), uiObject.MeshesDirty);
+	}
 }

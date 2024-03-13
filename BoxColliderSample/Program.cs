@@ -14,7 +14,7 @@ internal class Program
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Box Colliders";
 		GameEngine.FpsCap = 60;
-		GameEngine.LogFps = false;
+		GameEngine.LogFps = true;
 		GameEngine.LogInputs = false;
 		GameEngine.LogRenderingLogs = true;
 		GameEngine.MouseLocked = true;

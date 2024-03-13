@@ -27,7 +27,7 @@ internal class MaterialFactory : IFactory<string, Material>
 		{
 			if (materialName == "Default.mat")
 			{
-				logger.LogError("Failed falling back to default material", materialName);
+				logger.LogError("Failed falling back to default material");
 				material = default!;
 				return false;
 			}
@@ -37,12 +37,18 @@ internal class MaterialFactory : IFactory<string, Material>
 		}
 
 		(string shaderName, string textureName) = (mat[0], mat[1]);
+
+		// Tile property
+		bool tile = false;
+		if (mat.Length == 3 && mat[2] == "tile")
+			tile = true;
+
 		if (!shaderManager.GetShader(shaderName, out Shader shader))
 		{
 			logger.LogError("Shader \"{shader}\" not found, falling back to default shader", shaderName);
 			if (!shaderManager.GetShader(shaderName, out shader))
 			{
-				logger.LogCritical("Failed falling back to default shader", shaderName);
+				logger.LogCritical("Failed falling back to default shader");
 				material = default!;
 				return false;
 			}
@@ -53,13 +59,15 @@ internal class MaterialFactory : IFactory<string, Material>
 			logger.LogError("Texture \"{texture}\" not found, falling back to default texture", textureName);
 			if (!textureManager.GetTexture("Default.png", out texture))
 			{
-				logger.LogCritical("Failed falling back to default texture", textureName);
+				logger.LogCritical("Failed falling back to default texture");
 				material = default!;
 				return false;
 			}
 		}
 
 		material = new Material(shader, texture);
+		material.Tile = tile;
+
 		return true;
 	}
 }

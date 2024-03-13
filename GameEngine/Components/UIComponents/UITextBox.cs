@@ -2,9 +2,6 @@
 
 public class UITextBox : UIButton
 {
-	public string Text { get; set; } = "";
-	public float FontSize { get; set; } = 10;
-
 	private bool editingEnabled;
 
 	// Enable textbox editing
@@ -14,7 +11,7 @@ public class UITextBox : UIButton
 	}
 
 	// Enable textbox editing
-	private void OnDeselected()
+	protected override void OnDeselected()
 	{
 		editingEnabled = false;
 	}
@@ -29,12 +26,12 @@ public class UITextBox : UIButton
 	{
 		base.Update(deltaTime);
 
-		// Check if deselected
-		// OnDeselected()
-
 		if (editingEnabled)
 		{
-			Text += GetRecentKeyboardInput();
+			string prev = TextData.Txt;
+			TextData.Txt = CaptureKeyboardInput(TextData.Txt);
+			if (prev != TextData.Txt)
+				Console.WriteLine(TextData.Txt);
 		}
 	}
 }

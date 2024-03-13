@@ -16,4 +16,7 @@ internal class Texture
 
 	public void Bind() => textureBuffer.Bind();
 	public void Unbind() => textureBuffer.Unbind();
+
+	public void Tile(bool tile)
+		=> textureBuffer.Tile(tile);
 }

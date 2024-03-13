@@ -20,7 +20,7 @@ public interface IInputEngine
 	bool GetMouseButtonPressed(MouseButton mouseButton);
 	bool GetMouseButtonDown(MouseButton mouseButton);
 
-	string GetRecentKeyboardInput();
+	string CaptureKeyboardInput(string input);
 	bool GetKeyboardButtonPressed(KeyboardButton keyboardButton);
 	bool GetKeyboardButtonDown(KeyboardButton keyboardButton);
 

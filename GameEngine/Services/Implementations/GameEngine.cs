@@ -1,5 +1,6 @@
 ﻿using GameEngine.Components.Objects;
 using GameEngine.Components.Objects.Scriptable;
+using GameEngine.Components.UIComponents;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Physics;
@@ -25,7 +26,6 @@ internal class GameEngine : IGameEngine
 	public ISoundEngine SoundEngine { get; }
 	public IInputEngine InputEngine { get; }
 	public IPhysicsEngine PhysicsEngine { get; }
-
 
 	private readonly List<int> allObjectIds = new List<int>();
 
@@ -255,33 +255,40 @@ internal class GameEngine : IGameEngine
 			// Apply forces and collider constraints
 			ApplyPhysicsUpdates(physicsUpdates);
 
-			WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
-			foreach (WorldObject worldObject in worldObjects)
+			lock (worldObjects)
 			{
-				if (worldObject.ImpulseVelocitiesDirty)
-					worldObject.ImpulseVelocities.Clear(); // Reset impulse velocities
+				for (int i = 0; i < worldObjects.Keys.Count; i++)
+				{
+					WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
 
-				// Update components
-				foreach (WorldComponent worldComponent in worldObject.components)
-					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
-						scriptableWorldComponent.Update(TickDeltaTime);
+					if (worldObject.ImpulseVelocitiesDirty)
+						worldObject.ImpulseVelocities.Clear(); // Reset impulse velocities
 
-				// Update object
-				if (worldObject is ScriptableWorldObject scriptableWorldObject)
-					scriptableWorldObject.Update(TickDeltaTime);
+					// Update components
+					foreach (WorldComponent worldComponent in worldObject.components)
+						if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
+							scriptableWorldComponent.Update(TickDeltaTime);
+
+					// Update object
+					if (worldObject is ScriptableWorldObject scriptableWorldObject)
+						scriptableWorldObject.Update(TickDeltaTime);
+				}
 			}
 
-			UIObject[] uiObjects = this.uiObjects.Values.ToArray();
-			foreach (UIObject uiObject in uiObjects)
+			lock (uiObjects)
 			{
-				// Update components
-				foreach (UIComponent uiComponent in uiObject.components)
-					if (uiComponent is ScriptableUIComponent scriptableComponent)
-						scriptableComponent.Update(TickDeltaTime);
+				for (int i = 0; i < uiObjects.Keys.Count; i++)
+				{
+					UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
+					// Update components
+					foreach (UIComponent uiComponent in uiObject.components)
+						if (uiComponent is ScriptableUIComponent scriptableComponent)
+							scriptableComponent.Update(TickDeltaTime);
 
-				// Update object
-				if (uiObject is ScriptableUIObject scriptableUIObject)
-					scriptableUIObject.Update(TickDeltaTime);
+					// Update object
+					if (uiObject is ScriptableUIObject scriptableUIObject)
+						scriptableUIObject.Update(TickDeltaTime);
+				}
 			}
 
 			InputEngine.InputTickPass();

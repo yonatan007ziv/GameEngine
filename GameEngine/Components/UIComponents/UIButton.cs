@@ -11,6 +11,7 @@ public class UIButton : ScriptableUIObject
 
 	protected virtual void OnFullClicked() { }
 	protected virtual void OnDragClicked() { }
+	protected virtual void OnDeselected() { }
 	protected virtual void OnReleased() { }
 	protected virtual void OnEnter() { }
 	protected virtual void OnExit() { }
@@ -82,5 +83,9 @@ public class UIButton : ScriptableUIObject
 				_clicked = false;
 			}
 		}
+
+
+		if (!(insideX && insideY) && GetMouseButtonDown(MouseButton.Mouse0))
+			OnDeselected();
 	}
 }

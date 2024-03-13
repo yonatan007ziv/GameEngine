@@ -6,6 +6,8 @@ internal class RenderedUIObject
 {
 	public int Id { get; }
 
+	public string Text;
+
 	public List<MeshRenderer> Meshes { get; } = new List<MeshRenderer>();
 	public Transform Transform { get; }
 

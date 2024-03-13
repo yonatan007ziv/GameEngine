@@ -86,7 +86,14 @@ internal class GraphicsEngine : IGraphicsEngine
 
 			// Render UI Objects
 			foreach (RenderedUIObject uiObject in uiObjects)
+			{
 				uiObject.Render(camera);
+				if (uiObject is RenderedUITextHolder uiTextHolder)
+				{
+					// Render letters
+					logger.LogInformation("GraphicsEngine: Rendering text_{text}", uiTextHolder.Text);
+                }
+			}
 		}
 
 		internalRenderer.SwapBuffers();
@@ -138,6 +145,7 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		worldObject.Update();
 	}
+
 	public void UpdateUIObject(ref UIObjectData uiObjectData)
 	{
 		if (!allObjectIds.Contains(uiObjectData.Id))
@@ -189,6 +197,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldObjects.Add(worldObjectData.Id, worldObject);
 		allObjectIds.Add(worldObjectData.Id);
 	}
+	
 	public void AddWorldCamera(ref GameComponentData cameraData, ViewPort viewPort)
 	{
 		if (!allObjectIds.Contains(cameraData.ParentId))
@@ -208,6 +217,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldCameras.Add(cameraData.Id, camera);
 		allObjectIds.Add(cameraData.Id);
 	}
+	
 	public void AddUIObject(ref UIObjectData uiObjectData)
 	{
 		if (allObjectIds.Contains(uiObjectData.Id))
@@ -227,6 +237,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		uiObjects.Add(uiObjectData.Id, uiObject);
 		allObjectIds.Add(uiObjectData.Id);
 	}
+	
 	public void AddUICamera(ref GameComponentData cameraData, ViewPort viewPort)
 	{
 		if (!allObjectIds.Contains(cameraData.ParentId))
@@ -264,6 +275,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldObjects.Remove(worldObjectData.Id);
 		allObjectIds.Remove(worldObjectData.Id);
 	}
+	
 	public void RemoveWorldCamera(ref GameComponentData cameraData)
 	{
 		if (!allObjectIds.Contains(cameraData.Id))
@@ -280,6 +292,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldCameras.Remove(cameraData.Id);
 		allObjectIds.Remove(cameraData.Id);
 	}
+	
 	public void RemoveUIObject(ref UIObjectData uiObjectData)
 	{
 		if (!allObjectIds.Contains(uiObjectData.Id))
@@ -296,6 +309,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		uiObjects.Remove(uiObjectData.Id);
 		allObjectIds.Remove(uiObjectData.Id);
 	}
+	
 	public void RemoveUICamera(ref GameComponentData cameraData)
 	{
 		if (!allObjectIds.Contains(cameraData.Id))

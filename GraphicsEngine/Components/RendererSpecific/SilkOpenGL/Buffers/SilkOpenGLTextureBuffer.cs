@@ -47,6 +47,18 @@ internal class SilkOpenGLTextureBuffer : ITextureBuffer, IDisposable
 		Unbind();
 	}
 
+	public void Tile(bool tile)
+	{
+		TextureWrapMode wrapMode = TextureWrapMode.ClampToBorder;
+		if (tile)
+			wrapMode = TextureWrapMode.Repeat;
+
+		Bind();
+		glContext.TexParameterI(Target, TextureParameterName.TextureWrapS, new int[] { (int)wrapMode });
+		glContext.TexParameterI(Target, TextureParameterName.TextureWrapT, new int[] { (int)wrapMode });
+		Unbind();
+	}
+
 	public void Dispose()
 	{
 		throw new NotImplementedException();

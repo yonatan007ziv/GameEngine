@@ -37,6 +37,18 @@ internal class OpenTKTextureBuffer : ITextureBuffer
 		Unbind();
 	}
 
+	public void Tile(bool tile)
+	{
+		TextureWrapMode wrapMode = TextureWrapMode.ClampToBorder;
+		if (tile)
+			wrapMode = TextureWrapMode.Repeat;
+
+		Bind();
+		GL.TexParameterI(Target, TextureParameterName.TextureWrapS, new int[] { (int)wrapMode });
+		GL.TexParameterI(Target, TextureParameterName.TextureWrapT, new int[] { (int)wrapMode });
+		Unbind();
+	}
+
 	public void Dispose()
 	{
 		Unbind();

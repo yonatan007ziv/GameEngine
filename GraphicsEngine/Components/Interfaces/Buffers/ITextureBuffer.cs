@@ -7,4 +7,5 @@ internal interface ITextureBuffer
 	void Bind();
 	void Unbind();
 	void WriteData(TextureSource textureSrc);
+	void Tile(bool tile);
 }
