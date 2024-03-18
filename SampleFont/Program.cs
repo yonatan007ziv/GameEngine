@@ -1,8 +1,4 @@
 ﻿using GameEngine;
-using GameEngine.Core.Components.Fonts;
-using GameEngine.Core.SharedServices.Implementations;
-using GameEngine.Core.SharedServices.Implementations.FileReaders;
-using GameEngine.Core.SharedServices.Implementations.Loggers;
 using GameEngine.Services.Interfaces;
 using System.Drawing;
 

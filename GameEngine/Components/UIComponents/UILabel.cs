@@ -1,5 +1,5 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Core.Components.Fonts;
+﻿using GameEngine.Core.Components.Fonts;
+using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components.UIComponents;
 

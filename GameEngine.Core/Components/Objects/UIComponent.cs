@@ -1,7 +1,6 @@
-﻿using GameEngine.Core.Components;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
-namespace GameEngine.Components.Objects;
+namespace GameEngine.Core.Components.Objects;
 
 public class UIComponent
 {
@@ -20,10 +19,5 @@ public class UIComponent
 
 		Transform = parent.Transform;
 		Meshes = parent.Meshes;
-	}
-
-	public void Dispose()
-	{
-		throw new NotImplementedException();
 	}
 }

@@ -4,7 +4,6 @@ using InputEngine.Services.Implementations.Windows;
 using InputEngine.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 
 namespace InputEngine.Services;
@@ -49,7 +48,7 @@ internal class ServiceRegisterer
 
 	private void RegisterWindowsServices()
 	{
-		collection.AddSingleton<IClipboardManager, ClipboardManagerWindows>();	
+		collection.AddSingleton<IClipboardManager, ClipboardManagerWindows>();
 	}
 
 	private void RegisterLinuxServices()

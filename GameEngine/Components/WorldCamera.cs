@@ -1,5 +1,5 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Components.ScriptableObjects;
+using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components;
 

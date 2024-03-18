@@ -26,8 +26,7 @@ internal class MainScene : Scene
 		MapGamepadButton("Escape", GamepadButton.Start);
 
 		// Ground, temp solution
-		for (int i = 0; i < 5; i++)
-			WorldObjects.Add(new Ground(new Vector2(100, 100)));
+		WorldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Wall
 		Wall wall = new Wall(new Vector3(100, 100, 1));

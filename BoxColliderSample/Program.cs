@@ -13,8 +13,8 @@ internal class Program
 		GameEngine.SetResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Box Colliders";
-		GameEngine.FpsCap = 60;
-		GameEngine.LogFps = true;
+		GameEngine.FpsCap = 144;
+		GameEngine.LogFps = false;
 		GameEngine.LogInputs = false;
 		GameEngine.LogRenderingLogs = true;
 		GameEngine.MouseLocked = true;

@@ -1,4 +1,4 @@
-﻿using GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.Components;
 using GameEngine.Extensions;
 using System.Numerics;
@@ -16,7 +16,7 @@ internal class Player : ScriptableWorldObject
 	public Player()
 	{
 		camera = new PlayerCameraController(this);
-		BoxCollider = new BoxColliderData(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+		BoxCollider = new BoxCollider(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
 	}
 
 	public override void Update(float deltaTime)
@@ -35,7 +35,10 @@ internal class Player : ScriptableWorldObject
 		Transform.Position += movementVector * deltaTime;
 
 		if (GetButtonDown("Jump"))
+		{
+			Meshes.Add(new MeshData("Trex.obj", "Trex.mat"));
 			ImpulseVelocities.Add(new Vector3(0, jumpSpeed, 0));
+		}
 
 		if (GetButtonDown("Escape"))
 			MouseLocked = !MouseLocked;

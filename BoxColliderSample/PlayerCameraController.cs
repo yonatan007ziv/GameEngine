@@ -1,6 +1,6 @@
 ﻿using GameEngine.Components;
-using GameEngine.Components.Objects;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Objects;
 using System.Numerics;
 
 namespace BoxColliderSample;

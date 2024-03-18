@@ -1,4 +1,4 @@
-﻿using GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Buttons;
 using System.Numerics;
@@ -42,8 +42,8 @@ public class UIButton : ScriptableUIObject
 
 		Vector2 mousePos = GetUIMousePosition();
 
-		bool insideX = mousePos.X <= Transform.Position.X + Transform.Scale.X && mousePos.X >= Transform.Position.X - Transform.Scale.X;
-		bool insideY = mousePos.Y <= Transform.Position.Y + Transform.Scale.Y && mousePos.Y >= Transform.Position.Y - Transform.Scale.Y;
+		bool insideX = mousePos.X <= (Transform.Position.X + Transform.Scale.X) && mousePos.X >= (Transform.Position.X - Transform.Scale.X);
+		bool insideY = mousePos.Y <= (Transform.Position.Y + Transform.Scale.Y) && mousePos.Y >= (Transform.Position.Y - Transform.Scale.Y);
 
 		if (insideX && insideY)
 		{

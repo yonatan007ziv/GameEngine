@@ -1,6 +1,6 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Core.API;
+﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Objects;
 using System.Drawing;
 using System.Numerics;
 

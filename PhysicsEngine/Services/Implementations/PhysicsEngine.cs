@@ -1,7 +1,6 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Physics;
-using GameEngine.Extensions;
+using GameEngine.Core.Components.Objects;
 using PhysicsEngine.Components;
 using System.Numerics;
 
@@ -13,107 +12,78 @@ internal class PhysicsEngine : IPhysicsEngine
 	private readonly Dictionary<int, PhysicsObject> dynamicColliders = new Dictionary<int, PhysicsObject>();
 	private readonly Dictionary<int, PhysicsObject> staticColliders = new Dictionary<int, PhysicsObject>();
 
-	public PhysicsGameObjectUpdateData[] PhysicsPass(float deltaTime)
+	public void PhysicsTickPass(float deltaTime)
 	{
-		Dictionary<int, PhysicsGameObjectUpdateData> physicsUpdates = new Dictionary<int, PhysicsGameObjectUpdateData>();
-
-		PhysicsObject[] physicsObjects = this.physicsObjects.Values.ToArray();
-		PhysicsObject[] dynamicColliders = this.dynamicColliders.Values.ToArray();
-		PhysicsObject[] staticColliders = this.staticColliders.Values.ToArray();
-
 		// Apply forces
-		foreach (PhysicsObject physicsObject in physicsObjects)
+		foreach (PhysicsObject physicsObject in physicsObjects.Values)
 		{
 			if (physicsObject.NetForce != Vector3.Zero || physicsObject.Velocity != Vector3.Zero)
 			{
 				physicsObject.Velocity += physicsObject.NetForce * deltaTime;
 				physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;
-				physicsUpdates[physicsObject.Id] = new PhysicsGameObjectUpdateData(physicsObject.Id, physicsObject.Transform.TranslateTransform(), physicsObject.Velocity);
 			}
 		}
 
 		// Apply collisions after forces
-		foreach (PhysicsObject dynamicCollider in dynamicColliders)
-		{
-			bool collided = false;
-			foreach (PhysicsObject staticCollider in staticColliders)
-			{
+		foreach (PhysicsObject dynamicCollider in dynamicColliders.Values)
+			foreach (PhysicsObject staticCollider in staticColliders.Values)
 				if (CollidersOverlap(dynamicCollider, staticCollider, out Vector3 positionDelta))
-				{
 					dynamicCollider.Transform.Position += positionDelta;
-					collided = true;
-				}
-			}
-			if (collided)
-				physicsUpdates[dynamicCollider.Id] = new PhysicsGameObjectUpdateData(dynamicCollider.Id, dynamicCollider.Transform.TranslateTransform(), dynamicCollider.Velocity);
-		}
-
-		return physicsUpdates.Values.ToArray();
 	}
 
-	public void AddPhysicsObject(ref WorldObjectData gameObjectData)
+	public void AddPhysicsObject(WorldObject gameObject)
 	{
-		if (!physicsObjects.ContainsKey(gameObjectData.Id))
-			physicsObjects.Add(gameObjectData.Id, new PhysicsObject(gameObjectData.Id, gameObjectData.Transform.TranslateTransform(), gameObjectData.BoxCollider));
-	}
-
-	public void RemovePhysicsObject(ref WorldObjectData gameObjectData)
-	{
-		if (physicsObjects.ContainsKey(gameObjectData.Id))
-			physicsObjects.Remove(gameObjectData.Id);
-	}
-
-	public void UpdatePhysicsObject(ref WorldObjectData gameObjectData)
-	{
-		int updateId = gameObjectData.Id;
-		PhysicsObject? physicsObject = physicsObjects.ContainsKey(updateId) ? physicsObjects[updateId] : null;
-
-		if (physicsObject is not null)
+		if (!physicsObjects.ContainsKey(gameObject.Id))
 		{
-			if (gameObjectData.ForcesDirty)
-			{
-				physicsObject.NetForce = Vector3.Zero;
-				foreach (Vector3 force in gameObjectData.Forces)
-					physicsObject.AddForce(force);
-			}
+			PhysicsObject physicsObject = new PhysicsObject(gameObject);
+			physicsObjects.Add(gameObject.Id, physicsObject);
 
-			if (gameObjectData.ImpulseVelocitiesDirty)
+			if (gameObject.BoxCollider is not null)
 			{
-				Vector3 sum = Vector3.Zero;
-				foreach (Vector3 vel in gameObjectData.ImpulseVelocities)
-					sum += vel;
-				physicsObject.Velocity = sum;
-			}
-
-			if (gameObjectData.TransformDirty)
-			{
-				physicsObject.Transform.Position = gameObjectData.Transform.position;
-				physicsObject.Transform.Scale = gameObjectData.Transform.scale;
-			}
-
-			if (gameObjectData.BoxColliderDirty)
-			{
-				physicsObject.BoxCollider = gameObjectData.BoxCollider;
-				if (gameObjectData.BoxCollider.HasValue)
-					if (gameObjectData.BoxCollider.Value.StaticCollider)
-						staticColliders.Add(physicsObject.Id, physicsObject);
-					else
-						dynamicColliders.Add(physicsObject.Id, physicsObject);
+				if (gameObject.BoxCollider.StaticCollider)
+					staticColliders.Add(gameObject.Id, physicsObject);
 				else
-				{
-					staticColliders.Remove(physicsObject.Id);
-					dynamicColliders.Remove(physicsObject.Id);
-				}
+					dynamicColliders.Add(gameObject.Id, physicsObject);
 			}
 		}
 	}
 
-	public static bool CollidersOverlap(PhysicsObject colliderA, PhysicsObject colliderB, out Vector3 positionDelta)
+	public void RemovePhysicsObject(WorldObject gameObjectData)
+	{
+		physicsObjects.Remove(gameObjectData.Id);
+		staticColliders.Remove(gameObjectData.Id);
+		dynamicColliders.Remove(gameObjectData.Id);
+	}
+
+	public int[] GetTouchingColliderIds(int id)
+	{
+		if (!physicsObjects.TryGetValue(id, out PhysicsObject? obj) || obj.BoxCollider is not null)
+			return Array.Empty<int>();
+
+		Vector3 boundMaxA = obj.Transform.Position + obj.BoxCollider!.Max + Vector3.One;
+		Vector3 boundMinA = obj.Transform.Position + obj.BoxCollider!.Min - Vector3.One;
+
+		List<int> collisions = new List<int>();
+		foreach (PhysicsObject staticCollider in staticColliders.Values)
+		{
+			Vector3 boundMaxB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Max;
+			Vector3 boundMinB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Min;
+
+			if (boundMaxA.X >= boundMinB.X && boundMinA.X <= boundMaxB.X &&
+				   boundMaxA.Y >= boundMinB.Y && boundMinA.Y <= boundMaxB.Y &&
+				   boundMaxA.Z >= boundMinB.Z && boundMinA.Z <= boundMaxB.Z)
+				collisions.Add(staticCollider.Id);
+		}
+
+		return collisions.ToArray();
+	}
+
+	private static bool CollidersOverlap(PhysicsObject colliderA, PhysicsObject colliderB, out Vector3 positionDelta)
 	{
 		Vector3 positionA = colliderA.Transform.Position;
 		Vector3 positionB = colliderB.Transform.Position;
-		BoxColliderData boxA = colliderA.BoxCollider!.Value;
-		BoxColliderData boxB = colliderB.BoxCollider!.Value;
+		BoxCollider boxA = colliderA.BoxCollider!;
+		BoxCollider boxB = colliderB.BoxCollider!;
 
 		Vector3 boundMaxA = positionA + boxA.Max;
 		Vector3 boundMinA = positionA + boxA.Min;
@@ -141,29 +111,5 @@ internal class PhysicsEngine : IPhysicsEngine
 			positionDelta = new Vector3(0, 0, depthZ / 2);
 
 		return true; // Overlap detected and position adjusted
-	}
-
-	public int[] GetTouchingColliderIds(int id)
-	{
-		if (!physicsObjects.TryGetValue(id, out PhysicsObject? obj) || !obj!.BoxCollider.HasValue)
-			return Array.Empty<int>();
-
-		// Vector3.One / 10 is the tolerance
-		Vector3 boundMaxA = obj.Transform.Position + obj.BoxCollider.Value.Max + Vector3.One;
-		Vector3 boundMinA = obj.Transform.Position + obj.BoxCollider.Value.Min - Vector3.One;
-
-		List<int> collisions = new List<int>();
-		foreach (PhysicsObject staticCollider in staticColliders.Values)
-		{
-			Vector3 boundMaxB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Value.Max;
-			Vector3 boundMinB = staticCollider.Transform.Position + staticCollider.BoxCollider!.Value.Min;
-
-			if (boundMaxA.X >= boundMinB.X && boundMinA.X <= boundMaxB.X &&
-				   boundMaxA.Y >= boundMinB.Y && boundMinA.Y <= boundMaxB.Y &&
-				   boundMaxA.Z >= boundMinB.Z && boundMinA.Z <= boundMaxB.Z)
-				collisions.Add(staticCollider.Id);
-		}
-
-		return collisions.ToArray();
 	}
 }

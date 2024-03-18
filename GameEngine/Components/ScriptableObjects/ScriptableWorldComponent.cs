@@ -1,17 +1,18 @@
 ﻿using GameEngine.Core.Components.Input.Buttons;
+using GameEngine.Core.Components.Objects;
 using System.Drawing;
-using System.Numerics;
 
-namespace GameEngine.Components.Objects.Scriptable;
+namespace GameEngine.Components.ScriptableObjects;
 
-public abstract class ScriptableUIObject : UIObject
+public abstract class ScriptableWorldComponent : WorldComponent
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public static Vector2 GetUIMousePosition()
-		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
-	public static Vector2 GetMousePosition()
-		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMousePos();
+	public ScriptableWorldComponent(WorldObject parent)
+		: base(parent)
+	{
+
+	}
 
 	public static float GetAxis(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxis(axis);
@@ -24,12 +25,9 @@ public abstract class ScriptableUIObject : UIObject
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetButtonDown(buttonName);
 
 	public static bool GetMouseButtonPressed(MouseButton mouseButton)
-		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
+	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
 	public static bool GetMouseButtonDown(MouseButton mouseButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonDown(mouseButton);
-
-	public static string CaptureKeyboardInput(string input)
-		=> Services.Implementations.GameEngine.EngineContext.InputEngine.CaptureKeyboardInput(input);
 
 	public static bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetKeyboardButtonPressed(keyboardButton);

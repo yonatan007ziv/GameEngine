@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Events;
+using GameEngine.Core.Components.Objects;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -49,7 +50,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public void SetBackgroundColor(Color color)
 		=> internalRenderer.SetBackgroundColor(color);
 
-	public void LockMouse(bool lockMouse)
+	public void SetLockedMouse(bool lockMouse)
 	{
 		internalRenderer.SetMouseLocked(lockMouse);
 		internalRenderer.SetMousePosition(WindowSize / 2);
@@ -61,31 +62,25 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		internalRenderer.SetDepthTest(true);
 
-		WorldCamera[] worldCameras = this.worldCameras.Values.ToArray();
-		RenderedWorldObject[] worldObjects = this.worldObjects.Values.ToArray();
-
-		foreach (WorldCamera camera in worldCameras)
+		foreach (WorldCamera camera in worldCameras.Values)
 		{
 			camera.Update();
 			internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render world objects
-			foreach (RenderedWorldObject worldObject in worldObjects)
+			foreach (RenderedWorldObject worldObject in worldObjects.Values)
 				if (worldObject.Id != camera.ParentId)
 					worldObject.Render(camera);
 		}
 
 		internalRenderer.SetDepthTest(false);
 
-		UICamera[] uiCameras = this.uiCameras.Values.ToArray();
-		RenderedUIObject[] uiObjects = this.uiObjects.Values.ToArray();
-
-		foreach (UICamera camera in uiCameras)
+		foreach (UICamera camera in uiCameras.Values)
 		{
-			internalRenderer.SetViewport(camera.ViewPort);
+            internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render UI Objects
-			foreach (RenderedUIObject uiObject in uiObjects)
+			foreach (RenderedUIObject uiObject in uiObjects.Values)
 			{
 				uiObject.Render(camera);
 				logger.LogInformation("GraphicsEngine: Rendering text_{text}", uiObject.TextData.Text);
@@ -110,91 +105,22 @@ internal class GraphicsEngine : IGraphicsEngine
 	}
 
 	#region Objects management
-	public void UpdateWorldObject(ref WorldObjectData worldObjectData)
+	#region World object
+	public void AddWorldObject(WorldObject worldObject)
 	{
-		if (!allObjectIds.Contains(worldObjectData.Id))
+		if (allObjectIds.Contains(worldObject.Id))
 		{
-			logger.LogError("GraphicsEngine. Object id not found: {id}", worldObjectData.Id);
-			return;
-		}
-		if (!worldObjects.ContainsKey(worldObjectData.Id))
-		{
-			logger.LogError("GraphicsEngine. World object id not found: {id}", worldObjectData.Id);
+			logger.LogError("Id already taken: {id}", worldObject.Id);
 			return;
 		}
 
-		RenderedWorldObject worldObject = worldObjects[worldObjectData.Id];
 
-		if (worldObjectData.TransformDirty)
-			worldObject.Transform.CopyFrom(worldObjectData.Transform);
-
-
-		if (worldObjectData.MeshesDirty)
-		{
-			worldObject.Meshes.Clear();
-			for (int i = 0; i < worldObjectData.Meshes.Count; i++)
-				if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
-					worldObject.Meshes.Add(meshRenderer);
-				else
-					logger.LogError("Error creating MeshRenderer: {model}, {material}", worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material);
-		}
-
-		worldObject.Update();
+		RenderedWorldObject renderedWorldObject = new RenderedWorldObject(worldObject, internalRenderer.MeshFactory);
+		worldObjects.Add(worldObject.Id, renderedWorldObject);
+		allObjectIds.Add(worldObject.Id);
 	}
 
-	public void UpdateUIObject(ref UIObjectData uiObjectData)
-	{
-		if (!allObjectIds.Contains(uiObjectData.Id))
-		{
-			logger.LogError("Id not found: {id}", uiObjectData.Id);
-			return;
-		}
-		if (!uiObjects.ContainsKey(uiObjectData.Id))
-		{
-			logger.LogError("UI object id not found: {id}", uiObjectData.Id);
-			return;
-		}
-
-		RenderedUIObject uiObject = uiObjects[uiObjectData.Id];
-
-		if (uiObjectData.TransformDirty)
-			uiObject.Transform.CopyFrom(uiObjectData.Transform);
-
-		if (uiObjectData.MeshesDirty)
-		{
-			uiObject.Meshes.Clear();
-			for (int i = 0; i < uiObjectData.Meshes.Count; i++)
-				if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
-					uiObject.Meshes.Add(meshRenderer);
-				else
-					logger.LogError("Error creating MeshRenderer: {model}, {material}", uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material);
-		}
-
-		uiObject.Update();
-	}
-
-	#region Add object
-	public void AddWorldObject(ref WorldObjectData worldObjectData)
-	{
-		if (allObjectIds.Contains(worldObjectData.Id))
-		{
-			logger.LogError("Id already taken: {id}", worldObjectData.Id);
-			return;
-		}
-
-		List<MeshRenderer> meshes = new List<MeshRenderer>();
-		for (int i = 0; i < worldObjectData.Meshes.Count; i++)
-			if (internalRenderer.MeshFactory.Create(worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
-				meshes.Add(meshRenderer);
-			else
-				logger.LogError("Error creating MeshRenderer: {model}, {material}", worldObjectData.Meshes[i].Model, worldObjectData.Meshes[i].Material);
-
-		RenderedWorldObject worldObject = new RenderedWorldObject(worldObjectData.Id, new Transform(worldObjectData.Transform), meshes.ToArray());
-		worldObjects.Add(worldObjectData.Id, worldObject);
-		allObjectIds.Add(worldObjectData.Id);
-	}
-	
-	public void AddWorldCamera(ref GameComponentData cameraData, ViewPort viewPort)
+	public void AddWorldCamera(GameComponentData cameraData, ViewPort viewPort)
 	{
 		if (!allObjectIds.Contains(cameraData.ParentId))
 		{
@@ -213,8 +139,44 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldCameras.Add(cameraData.Id, camera);
 		allObjectIds.Add(cameraData.Id);
 	}
-	
-	public void AddUIObject(ref UIObjectData uiObjectData)
+
+	public void RemoveWorldObject(WorldObject worldObjectData)
+	{
+		if (!allObjectIds.Contains(worldObjectData.Id))
+		{
+			logger.LogError("World object id not found: {id}", worldObjectData.Id);
+			return;
+		}
+		if (!worldObjects.ContainsKey(worldObjectData.Id))
+		{
+			logger.LogError("World object id not found: {id}", worldObjectData.Id);
+			return;
+		}
+
+		worldObjects.Remove(worldObjectData.Id);
+		allObjectIds.Remove(worldObjectData.Id);
+	}
+
+	public void RemoveWorldCamera(GameComponentData cameraData)
+	{
+		if (!allObjectIds.Contains(cameraData.Id))
+		{
+			logger.LogError("Id not found: {id}", cameraData.Id);
+			return;
+		}
+		if (!worldCameras.ContainsKey(cameraData.Id))
+		{
+			logger.LogError("World camera id not found: {id}", cameraData.Id);
+			return;
+		}
+
+		worldCameras.Remove(cameraData.Id);
+		allObjectIds.Remove(cameraData.Id);
+	}
+	#endregion
+
+	#region UI object
+	public void AddUIObject(UIObject uiObjectData)
 	{
 		if (allObjectIds.Contains(uiObjectData.Id))
 		{
@@ -222,19 +184,12 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		List<MeshRenderer> meshes = new List<MeshRenderer>();
-		for (int i = 0; i < uiObjectData.Meshes.Count; i++)
-			if (internalRenderer.MeshFactory.Create(uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material, out MeshRenderer meshRenderer))
-				meshes.Add(meshRenderer);
-			else
-				logger.LogError("Error creating MeshRenderer: {model}, {material}", uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material);
-
-		RenderedUIObject uiObject = new RenderedUIObject(uiObjectData.Id, new Transform(uiObjectData.Transform), uiObjectData.TextData, meshes.ToArray());
+		RenderedUIObject uiObject = new RenderedUIObject(uiObjectData, internalRenderer.MeshFactory);
 		uiObjects.Add(uiObjectData.Id, uiObject);
 		allObjectIds.Add(uiObjectData.Id);
 	}
-	
-	public void AddUICamera(ref GameComponentData cameraData, ViewPort viewPort)
+
+	public void AddUICamera(GameComponentData cameraData, ViewPort viewPort)
 	{
 		if (!allObjectIds.Contains(cameraData.ParentId))
 		{
@@ -252,44 +207,8 @@ internal class GraphicsEngine : IGraphicsEngine
 		uiCameras.Add(cameraData.Id, camera);
 		allObjectIds.Add(cameraData.Id);
 	}
-	#endregion
 
-	#region Remove object
-	public void RemoveWorldObject(ref WorldObjectData worldObjectData)
-	{
-		if (!allObjectIds.Contains(worldObjectData.Id))
-		{
-			logger.LogError("World object id not found: {id}", worldObjectData.Id);
-			return;
-		}
-		if (!worldObjects.ContainsKey(worldObjectData.Id))
-		{
-			logger.LogError("World object id not found: {id}", worldObjectData.Id);
-			return;
-		}
-
-		worldObjects.Remove(worldObjectData.Id);
-		allObjectIds.Remove(worldObjectData.Id);
-	}
-	
-	public void RemoveWorldCamera(ref GameComponentData cameraData)
-	{
-		if (!allObjectIds.Contains(cameraData.Id))
-		{
-			logger.LogError("Id not found: {id}", cameraData.Id);
-			return;
-		}
-		if (!worldCameras.ContainsKey(cameraData.Id))
-		{
-			logger.LogError("World camera id not found: {id}", cameraData.Id);
-			return;
-		}
-
-		worldCameras.Remove(cameraData.Id);
-		allObjectIds.Remove(cameraData.Id);
-	}
-	
-	public void RemoveUIObject(ref UIObjectData uiObjectData)
+	public void RemoveUIObject(UIObject uiObjectData)
 	{
 		if (!allObjectIds.Contains(uiObjectData.Id))
 		{
@@ -305,8 +224,8 @@ internal class GraphicsEngine : IGraphicsEngine
 		uiObjects.Remove(uiObjectData.Id);
 		allObjectIds.Remove(uiObjectData.Id);
 	}
-	
-	public void RemoveUICamera(ref GameComponentData cameraData)
+
+	public void RemoveUICamera(GameComponentData cameraData)
 	{
 		if (!allObjectIds.Contains(cameraData.Id))
 		{

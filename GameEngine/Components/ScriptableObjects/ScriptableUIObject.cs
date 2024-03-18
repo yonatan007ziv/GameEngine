@@ -1,40 +1,19 @@
 ﻿using GameEngine.Core.Components.Input.Buttons;
+using GameEngine.Core.Components.Objects;
 using System.Drawing;
+using System.Numerics;
 
-namespace GameEngine.Components.Objects.Scriptable;
+namespace GameEngine.Components.ScriptableObjects;
 
-public abstract class ScriptableWorldObject : WorldObject
+public abstract class ScriptableUIObject : UIObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public static WorldObject? GetWorldObjectFromId(int id)
-		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
-	public static UIObject? GetUIObjectFromId(int id)
-		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
+	public static Vector2 GetUIMousePosition()
+		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
+	public static Vector2 GetMousePosition()
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMousePos();
 
-
-
-	#region Collider info
-	public bool TouchingColliderTag(string tag)
-	{
-		int[] touchingIds = GetTouchingColliderIds();
-		foreach (int id in touchingIds)
-		{
-			WorldObject? obj = GetWorldObjectFromId(id);
-
-			if (obj is null)
-				continue;
-
-			if (obj.Tag == tag)
-				return true;
-		}
-		return false;
-	}
-	public int[] GetTouchingColliderIds()
-		=> Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetTouchingColliderIds(Id);
-	#endregion
-
-	#region Input info
 	public static float GetAxis(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxis(axis);
 	public static float GetAxisRaw(string axis)
@@ -46,9 +25,12 @@ public abstract class ScriptableWorldObject : WorldObject
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetButtonDown(buttonName);
 
 	public static bool GetMouseButtonPressed(MouseButton mouseButton)
-	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonPressed(mouseButton);
 	public static bool GetMouseButtonDown(MouseButton mouseButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetMouseButtonDown(mouseButton);
+
+	public static string CaptureKeyboardInput(string input)
+		=> Services.Implementations.GameEngine.EngineContext.InputEngine.CaptureKeyboardInput(input);
 
 	public static bool GetKeyboardButtonPressed(KeyboardButton keyboardButton)
 	=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetKeyboardButtonPressed(keyboardButton);
@@ -59,7 +41,6 @@ public abstract class ScriptableWorldObject : WorldObject
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonPressed(joystickButton);
 	public static bool GetJoystickButtonDown(GamepadButton joystickButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonDown(joystickButton);
-	#endregion
 
 	public static void SetBackgroundColor(Color color)
 		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);

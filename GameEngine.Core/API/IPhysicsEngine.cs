@@ -1,15 +1,12 @@
-﻿using GameEngine.Core.Components;
-using GameEngine.Core.Components.Physics;
+﻿using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Core.API;
 
 public interface IPhysicsEngine
 {
-	void AddPhysicsObject(ref WorldObjectData gameObject);
-	void RemovePhysicsObject(ref WorldObjectData gameObject);
+	void PhysicsTickPass(float deltaTime);
 
-	void UpdatePhysicsObject(ref WorldObjectData gameObject);
-	PhysicsGameObjectUpdateData[] PhysicsPass(float deltaTime);
-
+	void AddPhysicsObject(WorldObject gameObject);
+	void RemovePhysicsObject(WorldObject gameObject);
 	int[] GetTouchingColliderIds(int id);
 }

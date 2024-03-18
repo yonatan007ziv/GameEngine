@@ -1,8 +1,7 @@
-﻿using GameEngine.Core.Components;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Numerics;
 
-namespace GameEngine.Components.Objects;
+namespace GameEngine.Core.Components.Objects;
 
 public abstract class WorldComponent
 {

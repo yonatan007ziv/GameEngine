@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.Components;
 using GameEngine.Core.Components.Input.Events;
+using GameEngine.Core.Components.Objects;
 using System.Drawing;
 using System.Numerics;
 
@@ -20,21 +21,18 @@ public interface IGraphicsEngine
 
 	void Run();
 
+	void SetLockedMouse(bool lockMouse);
 	void SetBackgroundColor(Color color);
 
 	void RenderFrame();
-	void UpdateWorldObject(ref WorldObjectData worldObjectData);
-	void UpdateUIObject(ref UIObjectData uiObjectData);
 
-	void AddWorldCamera(ref GameComponentData worldCameraData, ViewPort viewPort);
-	void AddUICamera(ref GameComponentData uiCameraData, ViewPort viewPort);
-	void RemoveWorldCamera(ref GameComponentData worldCameraData);
-	void RemoveUICamera(ref GameComponentData uiCameraData);
+	void AddWorldObject(WorldObject worldObjectData);
+	void RemoveWorldObject(WorldObject worldObjectData);
+	void AddUIObject(UIObject uiObjectData);
+	void RemoveUIObject(UIObject uiObjectData);
 
-	void AddWorldObject(ref WorldObjectData worldObjectData);
-	void AddUIObject(ref UIObjectData uiObjectData);
-	void RemoveWorldObject(ref WorldObjectData worldObjectData);
-	void RemoveUIObject(ref UIObjectData uiObjectData);
-
-	void LockMouse(bool lockMouse);
+	void AddWorldCamera(GameComponentData worldCameraData, ViewPort viewPort);
+	void RemoveWorldCamera(GameComponentData worldCameraData);
+	void AddUICamera(GameComponentData uiCameraData, ViewPort viewPort);
+	void RemoveUICamera(GameComponentData uiCameraData);
 }

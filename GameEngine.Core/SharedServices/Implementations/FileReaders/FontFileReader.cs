@@ -9,15 +9,15 @@ public class FontFileReader : IFileReader<Font>
 	private readonly TrueTypeFontFileReader trueTypeFontFileReader;
 
 	public FontFileReader(TrueTypeFontFileReader trueTypeFontFileReader)
-    {
+	{
 		this.trueTypeFontFileReader = trueTypeFontFileReader;
 	}
 
-    public bool ReadFile(string filePath, out Font result)
+	public bool ReadFile(string filePath, out Font result)
 	{
 		string extension = Path.GetExtension(filePath);
 
-		if(extension == "ttf")
+		if (extension == "ttf")
 		{
 
 		}
