@@ -1,8 +1,8 @@
-﻿using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
+﻿using GameEngine.Core.Components.Fonts.TrueTypeFont.Tables;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
-namespace GameEngine.Core.Components.Font.TrueTypeFont;
+namespace GameEngine.Core.Components.Fonts.TrueTypeFont;
 
 internal class TTFTableParser
 {

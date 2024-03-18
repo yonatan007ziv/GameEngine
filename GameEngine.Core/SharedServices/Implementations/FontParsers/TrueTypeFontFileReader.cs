@@ -1,14 +1,14 @@
 ﻿using GameEngine.Core.Components;
-using GameEngine.Core.Components.Font;
-using GameEngine.Core.Components.Font.TrueTypeFont;
-using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
+using GameEngine.Core.Components.Fonts;
+using GameEngine.Core.Components.Fonts.TrueTypeFont;
+using GameEngine.Core.Components.Fonts.TrueTypeFont.Tables;
 using GameEngine.Core.SharedServices.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
-namespace GameEngine.Core.SharedServices.Implementations.FileReaders;
+namespace GameEngine.Core.SharedServices.Implementations.FontParsers;
 
-public class TrueTypeFontFileReader : IFileReader<Font>
+public class TrueTypeFontFileReader
 {
 	private readonly ILogger logger;
 	private readonly IResourceDiscoverer resourceDiscoverer;

@@ -1,6 +1,6 @@
-﻿namespace GameEngine.Core.Components.Font;
+﻿namespace GameEngine.Core.Components.Fonts;
 
-internal class CharacterGlyf
+public class CharacterGlyf
 {
 	public CharacterContour[] CharacterContours { get; }
 

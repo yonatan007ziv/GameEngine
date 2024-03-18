@@ -1,6 +1,6 @@
-﻿using GameEngine.Core.Components.Font.TrueTypeFont.Tables;
+﻿using GameEngine.Core.Components.Fonts.TrueTypeFont.Tables;
 
-namespace GameEngine.Core.Components.Font;
+namespace GameEngine.Core.Components.Fonts;
 
 public class Font
 {
@@ -10,8 +10,7 @@ public class Font
 	public string Style { get; }
 	public string Version { get; }
 
-	// private readonly Dictionary<char, CharacterGlyf> internalCharacterMaps = new Dictionary<char, CharacterGlyf>();
-	// public Dictionary<char, byte[]> CharacterMaps { get; }
+	public IReadOnlyDictionary<char, CharacterGlyf> CharacterMaps { get; }
 
 	// TTF font constructor
 	internal Font(TTFHead head, TTFName name, TTFLoca loca, TTFGlyf glyf, TTFCmap cmap, TTFHhea hhea, TTFVhea vhea, TTFHmtx hmtx, TTFVmtx vmtx, TTFMaxp maxp)
@@ -25,5 +24,8 @@ public class Font
 		{
 			// CMAP and GLYF
 		}
+
+		KeyValuePair<char, CharacterGlyf>[] characterMaps = null;
+		CharacterMaps = new Dictionary<char, CharacterGlyf>(characterMaps);
 	}
 }

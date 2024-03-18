@@ -88,11 +88,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			foreach (RenderedUIObject uiObject in uiObjects)
 			{
 				uiObject.Render(camera);
-				if (uiObject is RenderedUITextHolder uiTextHolder)
-				{
-					// Render letters
-					logger.LogInformation("GraphicsEngine: Rendering text_{text}", uiTextHolder.Text);
-                }
+				logger.LogInformation("GraphicsEngine: Rendering text_{text}", uiObject.TextData.Text);
 			}
 		}
 
@@ -233,7 +229,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			else
 				logger.LogError("Error creating MeshRenderer: {model}, {material}", uiObjectData.Meshes[i].Model, uiObjectData.Meshes[i].Material);
 
-		RenderedUIObject uiObject = new RenderedUIObject(uiObjectData.Id, new Transform(uiObjectData.Transform), meshes.ToArray());
+		RenderedUIObject uiObject = new RenderedUIObject(uiObjectData.Id, new Transform(uiObjectData.Transform), uiObjectData.TextData, meshes.ToArray());
 		uiObjects.Add(uiObjectData.Id, uiObject);
 		allObjectIds.Add(uiObjectData.Id);
 	}

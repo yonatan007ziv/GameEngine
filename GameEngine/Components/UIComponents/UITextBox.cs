@@ -28,10 +28,10 @@ public class UITextBox : UIButton
 
 		if (editingEnabled)
 		{
-			string prev = TextData.Txt;
-			TextData.Txt = CaptureKeyboardInput(TextData.Txt);
-			if (prev != TextData.Txt)
-				Console.WriteLine(TextData.Txt);
+			string prev = TextData.Text;
+			TextData.Text = CaptureKeyboardInput(TextData.Text);
+			if (prev != TextData.Text)
+				Console.WriteLine(TextData.Text);
 		}
 	}
 }

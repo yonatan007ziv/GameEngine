@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Core.Components.Font.TrueTypeFont.Tables;
+﻿namespace GameEngine.Core.Components.Fonts.TrueTypeFont.Tables;
 
 internal class TTFMaxp
 {

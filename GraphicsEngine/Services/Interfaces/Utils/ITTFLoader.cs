@@ -1,4 +1,4 @@
-﻿using GameEngine.Core.Components.Font;
+﻿using GameEngine.Core.Components.Fonts;
 
 namespace GraphicsEngine.Services.Interfaces.Utils;
 

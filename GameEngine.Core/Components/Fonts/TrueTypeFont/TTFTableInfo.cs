@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Core.Components.Font.TrueTypeFont;
+﻿namespace GameEngine.Core.Components.Fonts.TrueTypeFont;
 
 internal struct TTFTableInfo
 {

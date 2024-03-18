@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 
-namespace GameEngine.Core.Components.Font;
+namespace GameEngine.Core.Components.Fonts;
 
-internal class CharacterContour
+public class CharacterContour
 {
 	public Vector2[] Points { get; }
 

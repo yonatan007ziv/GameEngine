@@ -1,5 +1,5 @@
 ﻿using GameEngine;
-using GameEngine.Core.Components.Font;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.SharedServices.Implementations;
 using GameEngine.Core.SharedServices.Implementations.FileReaders;
 using GameEngine.Core.SharedServices.Implementations.Loggers;

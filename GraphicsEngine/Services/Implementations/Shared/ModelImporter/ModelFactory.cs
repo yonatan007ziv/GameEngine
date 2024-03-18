@@ -38,11 +38,13 @@ internal class ModelFactory : IFactory<string, ModelData>
 
 		string modelType = modelName.Split('.')[1];
 		if (modelType == "obj")
+		{
 			modelData = objModelImporter.Import(data);
-		else
-			return false;
+			cachedModels[modelName] = modelData;
+			return true;
+		}
 
-		cachedModels[modelName] = modelData;
-		return true;
+		modelData = default!;
+		return false;
 	}
 }

@@ -2,6 +2,7 @@
 using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Input.Events;
 using InputEngine.Components;
+using InputEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
 
@@ -10,6 +11,7 @@ namespace InputEngine.Services.Implementations;
 internal class InputEngine : IInputEngine
 {
 	private readonly ILogger logger;
+	private readonly IClipboardManager clipboardManager;
 
 	public bool LogInputs { get; set; }
 
@@ -32,11 +34,12 @@ internal class InputEngine : IInputEngine
 
 	private Vector2 mousePosition, lastMousePosition;
 	private KeyboardButton? currentKeyboardButton;
-	private bool capsLockToggled = false;
+	private bool capsLockToggled;
 
-	public InputEngine(ILogger logger)
+	public InputEngine(ILogger logger, IClipboardManager clipboardManager)
 	{
 		this.logger = logger;
+		this.clipboardManager = clipboardManager;
 	}
 
 	public void InputTickPass()
@@ -56,6 +59,20 @@ internal class InputEngine : IInputEngine
 	public Vector2 GetMousePos()
 		=> mousePosition;
 
+	private void UpdateKeyboardState(KeyboardEventData keyboardEvent)
+	{
+		if (keyboardEvent.Pressed)
+		{
+			if (keyboardEvent.KeyboardButton == KeyboardButton.CapsLock)
+				capsLockToggled = !capsLockToggled;
+        }
+		else
+		{
+
+		}
+	}
+
+	private int caretIndex, textSelectionIndexLeft, textSelectionIndexRight;
 	private string ModifyWithCurrentKeyboardButton(string input)
 	{
 		// None pressed, input remains unchanged
@@ -114,6 +131,8 @@ internal class InputEngine : IInputEngine
 			received = received.ToLower();
 
 		// Insertion / deletion
+		bool backspace = false;
+		bool delete = false;
 		switch (currentKeyboardButton)
 		{
 			case KeyboardButton.Enter:
@@ -121,12 +140,88 @@ internal class InputEngine : IInputEngine
 				break;
 			// Backspace and delete no caret yet
 			case KeyboardButton.Backspace:
-				return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+				backspace = true;
+				break;
 			case KeyboardButton.Delete:
-				return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+				delete = true;
+				break;
 		}
 
-		return input + received;
+		bool ctrl = keyboardButtons.Contains(KeyboardButton.LCtrl) || keyboardButtons.Contains(KeyboardButton.RCtrl);
+
+		if (backspace)
+		{
+			if (ctrl)
+			{
+				// Check for words
+				int spaceIndex = 0;
+				for (int i = input.Length /* caretIndex - 1 */; i >= 0; i--)
+				{
+					if (input[i] == ' ')
+					{
+						spaceIndex = i;
+						for (int j = i - 1; j >= 0; j--)
+							if (input[i] == input[j])
+								spaceIndex = j;
+							else
+								break;
+						break;
+					}
+				}
+				caretIndex = spaceIndex;
+				return input.Substring(0, spaceIndex);
+			}
+
+			caretIndex--;
+			return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+		}
+		else if (delete)
+		{
+			caretIndex--;
+			return input.Substring(0, (input.Length == 0 ? 1 : input.Length) - 1);
+		}
+
+		// Modifiers such as ctrl + A, ctrl + C, ctrl + V
+		if (ctrl)
+		{
+
+		}
+
+
+		// Ctrl is a modifier, do not change input if pressed
+		if (ctrl)
+			return input;
+
+		// Caret movement
+		bool arrowRight = keyboardButtons.Contains(KeyboardButton.RightArrow);
+		bool arrowLeft = keyboardButtons.Contains(KeyboardButton.LeftArrow);
+		if (arrowRight)
+		{
+			if (caretIndex + 1 <= input.Length - 1)
+				caretIndex++;
+			return input;
+		}
+		if (arrowLeft)
+		{
+			if (caretIndex - 1 >= 0)
+				caretIndex--;
+			return input;
+		}
+
+		if (textSelectionIndexLeft != textSelectionIndexRight)
+		{
+			// Do stuff like copy ana aref
+			return input;
+		}
+
+		// Insert char at caret index
+		input += received;
+		//input = input.Substring(0, caretIndex) + received; // + ((caretIndex >= input.Length - 1) ? "" : input.Substring(caretIndex - 1));
+
+		// Forward caret;
+		// caretIndex++;
+
+		return input;
 	}
 
 	#region Get button pressed/down
@@ -271,6 +366,8 @@ internal class InputEngine : IInputEngine
 		if (LogInputs)
 			logger.LogInformation("Keyboard: {button} {pressed?}", keyboardEvent.KeyboardButton, keyboardEvent.Pressed ? "Pressed" : "Released");
 
+		UpdateKeyboardState(keyboardEvent);
+
 		if (keyboardEvent.Pressed)
 		{
 			currentKeyboardButton = keyboardEvent.KeyboardButton;
@@ -293,6 +390,7 @@ internal class InputEngine : IInputEngine
 			}
 		}
 	}
+
 	public void OnGamepadEvent(GamepadEventData gamepadEvent)
 	{
 		if (gamepadEvent.GamepadEventType == GamepadEventType.GamepadButton)
