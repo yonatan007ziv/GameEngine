@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.API;
 using GameEngine.Core.Components;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.Components.Objects;
 using GraphicsEngine.Components.Shared;
@@ -77,17 +78,39 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		foreach (UICamera camera in uiCameras.Values)
 		{
-            internalRenderer.SetViewport(camera.ViewPort);
+			internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render UI Objects
 			foreach (RenderedUIObject uiObject in uiObjects.Values)
 			{
 				uiObject.Render(camera);
-				logger.LogInformation("GraphicsEngine: Rendering text_{text}", uiObject.TextData.Text);
+
+				// Render text
+				//int offsetX = 0, offsetY = 0;
+				//foreach (char c in uiObject.TextData.Text)
+				//{
+				//	CharacterGlyf currentGlyf = uiObject.TextData.Font.CharacterMaps[c];
+				//
+				//	// Draw
+				//	DrawCharacterGlyf(currentGlyf, uiObject.Transform.Position + new Vector3(offsetX, offsetY, 0));
+				//
+				//	offsetX += currentGlyf.Width;
+				//	// If newline
+				//	if (c == '\n')
+				//	{
+				//		offsetX = 0;
+				//		offsetY += currentGlyf.Height;
+				//	}
+				//}
 			}
 		}
 
 		internalRenderer.SwapBuffers();
+	}
+
+	private void DrawCharacterGlyf(CharacterGlyf glyf, Vector3 position)
+	{
+		
 	}
 
 	private void WindowResized()

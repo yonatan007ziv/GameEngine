@@ -11,10 +11,12 @@ public class WorldObject
 	public readonly List<WorldComponent> components = new List<WorldComponent>();
 
 	public Transform Transform { get; }
-	public BoxCollider? BoxCollider { get; set; }
+
 	public ObservableCollection<MeshData> Meshes { get; }
 	public ObservableCollection<Vector3> Forces { get; }
-	public ObservableCollection<Vector3> ImpulseVelocities { get; }
+
+	public BoxCollider? BoxCollider { get; set; }
+	public Vector3 Velocity { get; set; }
 
 	public WorldObject()
 	{
@@ -23,6 +25,6 @@ public class WorldObject
 		Transform = new Transform();
 		Meshes = new ObservableCollection<MeshData>();
 		Forces = new ObservableCollection<Vector3>();
-		ImpulseVelocities = new ObservableCollection<Vector3>();
+		Velocity = new Vector3();
 	}
 }

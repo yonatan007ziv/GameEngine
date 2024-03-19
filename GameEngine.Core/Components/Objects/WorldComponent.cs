@@ -8,10 +8,10 @@ public abstract class WorldComponent
 	public int Id { get; }
 	public WorldObject Parent { get; }
 
-	protected Transform Transform;
-	protected ObservableCollection<MeshData> Meshes;
-	protected ObservableCollection<Vector3> Forces;
-	protected ObservableCollection<Vector3> ImpulseVelocities;
+	protected Transform Transform => Parent.Transform;
+	protected ObservableCollection<MeshData> Meshes => Parent.Meshes;
+	protected ObservableCollection<Vector3> Forces => Parent.Forces;
+	protected Vector3 Velocity => Parent.Velocity;
 
 	public WorldComponent(WorldObject parent)
 	{
@@ -19,10 +19,5 @@ public abstract class WorldComponent
 		Parent = parent;
 
 		parent.components.Add(this);
-
-		Transform = parent.Transform;
-		Meshes = parent.Meshes;
-		Forces = parent.Forces;
-		ImpulseVelocities = parent.ImpulseVelocities;
 	}
 }

@@ -9,6 +9,8 @@ internal class RenderedUIObject
 	private readonly UIObject uiObject;
 	private readonly IFactory<string, string, MeshRenderer> meshFactory;
 
+	private bool shouldUpdateMeshes;
+
 	public int Id => uiObject.Id;
 	public TextData TextData => uiObject.TextData;
 	public Transform Transform => uiObject.Transform;
@@ -20,13 +22,15 @@ internal class RenderedUIObject
 		this.uiObject = uiObject;
 		this.meshFactory = meshFactory;
 
-		UpdateMeshRenderers();
-		uiObject.Meshes.CollectionChanged += (s, e) => UpdateMeshRenderers();
+		// Occurs from the update thread, cannot update mesh renderers from here, hence the shouldUpdateMeshes flag
+		uiObject.Meshes.CollectionChanged += (s, e) => { shouldUpdateMeshes = true; };
+		uiObject.Transform.PropertyChanged += (s, e) => Update();
 
+		UpdateMeshes();
 		Update();
 	}
 
-	private void UpdateMeshRenderers()
+	private void UpdateMeshes()
 	{
 		Meshes.Clear();
 		for (int i = 0; i < uiObject.Meshes.Count; i++)
@@ -34,28 +38,24 @@ internal class RenderedUIObject
 				Meshes.Add(meshRenderer);
 			else
 				Console.WriteLine("Error creating MeshRenderer: {0}, {1}", uiObject.Meshes[i].Model, uiObject.Meshes[i].Material);
+		Update();
 	}
 
 	public void Render(UICamera camera)
 	{
-		RenderMeshes(camera);
-		RenderText(camera);
+		if (shouldUpdateMeshes)
+		{
+			UpdateMeshes();
+			shouldUpdateMeshes = false;
+		}
+
+		foreach (MeshRenderer meshRenderer in Meshes)
+			meshRenderer.Render(camera);
 	}
 
 	public void Update()
 	{
 		foreach (MeshRenderer meshRenderer in Meshes)
 			meshRenderer.Update(Transform);
-	}
-
-	private void RenderMeshes(UICamera camera)
-	{
-		foreach (MeshRenderer meshRenderer in Meshes)
-			meshRenderer.Render(camera);
-	}
-
-	private void RenderText(UICamera camera)
-	{
-
 	}
 }

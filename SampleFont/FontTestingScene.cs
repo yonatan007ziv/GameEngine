@@ -19,5 +19,9 @@ internal class FontTestingScene : Scene
 		boxB.Transform.Scale /= 4;
 		boxB.Transform.Position = new System.Numerics.Vector3(-0.75f, 0.5f, 0);
 		UIObjects.Add(boxB);
+
+		TestButton button = new TestButton();
+		button.Transform.Scale /= 4;
+		UIObjects.Add(button);
 	}
 }

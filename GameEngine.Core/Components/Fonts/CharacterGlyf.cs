@@ -1,11 +1,17 @@
-﻿namespace GameEngine.Core.Components.Fonts;
+﻿using System.Collections.ObjectModel;
+
+namespace GameEngine.Core.Components.Fonts;
 
 public class CharacterGlyf
 {
-	public CharacterContour[] CharacterContours { get; }
+	public int Width { get; }
+	public int Height { get; }
+	public ReadOnlyCollection<CharacterContour> CharacterContours { get; }
 
-	public CharacterGlyf(CharacterContour[] characterContours)
+	public CharacterGlyf(CharacterContour[] characterContours, int width, int height)
 	{
-		CharacterContours = characterContours;
+		CharacterContours = characterContours.AsReadOnly();
+		Width = width;
+		Height = height;
 	}
 }

@@ -94,7 +94,6 @@ internal class GameEngine : IGameEngine
 	public void Run()
 	{
 		new Thread(UpdateLoop).Start(); // Update Thread;
-		MouseLocked = true;
 		RenderLoop(); // Render Thread
 	}
 
