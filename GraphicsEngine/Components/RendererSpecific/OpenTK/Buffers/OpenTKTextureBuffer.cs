@@ -4,23 +4,24 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 
-internal class OpenTKTextureBuffer : ITextureBuffer
+internal class OpenTKTextureBuffer : OpenTKBuffer, ITextureBuffer
 {
 	private int Id { get; }
 	private TextureTarget Target { get; }
 
 	public OpenTKTextureBuffer()
+		: base(BufferTarget.TextureBuffer)
 	{
 		Id = GL.GenTexture();
 		Target = TextureTarget.Texture2D;
 	}
 
-	public void Bind()
+	public override void Bind()
 	{
 		GL.BindTexture(Target, Id);
 	}
 
-	public void Unbind()
+	public override void Unbind()
 	{
 		GL.BindTexture(Target, 0);
 	}
@@ -47,11 +48,5 @@ internal class OpenTKTextureBuffer : ITextureBuffer
 		GL.TexParameterI(Target, TextureParameterName.TextureWrapS, new int[] { (int)wrapMode });
 		GL.TexParameterI(Target, TextureParameterName.TextureWrapT, new int[] { (int)wrapMode });
 		Unbind();
-	}
-
-	public void Dispose()
-	{
-		Unbind();
-		GL.DeleteBuffer(Id);
 	}
 }

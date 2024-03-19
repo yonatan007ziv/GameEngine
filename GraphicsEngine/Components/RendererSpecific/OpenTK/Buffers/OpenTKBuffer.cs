@@ -1,12 +1,14 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using GraphicsEngine.Components.Interfaces.Buffers;
+using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 
-public abstract class OpenTKBuffer : IDisposable
+public abstract class OpenTKBuffer : IBuffer
 {
-	protected int Id { get; private set; }
+	public int Id { get; private set; }
 	protected BufferTarget Target { get; private set; }
+
 
 	public OpenTKBuffer(BufferTarget target)
 	{
@@ -30,32 +32,15 @@ public abstract class OpenTKBuffer : IDisposable
 		GL.BindBuffer(Target, 0);
 	}
 
-	#region Dispose pattern
-	private bool disposedValue;
+	public bool IsFinalized { get; private set; }
+
+	public void DeleteBuffer()
+	{
+		GL.DeleteBuffer(Id);
+	}
+
 	~OpenTKBuffer()
 	{
-		Dispose(disposing: false);
+		IsFinalized = true;
 	}
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-	protected virtual void Dispose(bool disposing)
-	{
-		if (!disposedValue)
-		{
-			if (disposing)
-			{
-
-			}
-
-			Console.WriteLine("OpenTK Buffer: fix dispose cleanup");
-			// Unbind();
-			// GL.DeleteBuffer(Id);
-
-			disposedValue = true;
-		}
-	}
-	#endregion
 }

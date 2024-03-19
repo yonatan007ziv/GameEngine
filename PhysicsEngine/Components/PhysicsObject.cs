@@ -11,7 +11,7 @@ internal class PhysicsObject
 	public int Id => worldObject.Id;
 	public Transform Transform => worldObject.Transform;
 	public BoxCollider? BoxCollider => worldObject.BoxCollider;
-	public Vector3 Velocity { get=> worldObject.Velocity; set => worldObject.Velocity = value; }
+	public Vector3 Velocity { get => worldObject.Velocity; set => worldObject.Velocity = value; }
 	public Vector3 NetForce { get; set; }
 
 	public PhysicsObject(WorldObject worldObject)

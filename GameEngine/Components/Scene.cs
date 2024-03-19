@@ -11,70 +11,76 @@ public class Scene : IInputMapper, IDisposable
 {
 	public static Scene LoadedScene { get; private set; } = null!;
 
-	private bool _loaded;
+	private bool _isLoaded;
 
-	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
 	public ObservableCollection<WorldObject> WorldObjects { get; } = new ObservableCollection<WorldObject>();
+	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
 
-	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
 	public ObservableCollection<UIObject> UIObjects { get; } = new ObservableCollection<UIObject>();
+	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
 
 	public Scene()
 	{
-		WorldCameras.CollectionChanged += WorldCamerasChanged;
 		WorldObjects.CollectionChanged += WorldObjectsChanged;
-		UICameras.CollectionChanged += UICamerasChanged;
+		WorldCameras.CollectionChanged += WorldCamerasChanged;
 		UIObjects.CollectionChanged += UIObjectsChanged;
+		UICameras.CollectionChanged += UICamerasChanged;
 	}
 
-	private void WorldCamerasChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		// Added a new camera
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Add)
-			foreach (object obj in e.NewItems!)
-				if (obj is (WorldCamera worldCamera, ViewPort viewPort))
-					Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, viewPort);
-
-		// Removed an existing camera
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Remove)
-			foreach (object obj in e.OldItems!)
-				if (obj is (WorldCamera worldCamera, _))
-					Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(worldCamera);
-	}
 	private void WorldObjectsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Remove)
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
+			foreach (object obj in e.NewItems!)
+				if (obj is WorldObject worldObject)
+					Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
+
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
 			foreach (object obj in e.OldItems!)
 				if (obj is WorldObject worldObject)
 					Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(worldObject);
 	}
+	private void WorldCamerasChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
+			foreach (object obj in e.NewItems!)
+				if (obj is (WorldCamera worldCamera, ViewPort viewPort))
+					Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, viewPort);
+
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
+			foreach (object obj in e.OldItems!)
+				if (obj is (WorldCamera worldCamera, _))
+					Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(worldCamera);
+	}
+	private void UIObjectsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
+			foreach (object obj in e.NewItems!)
+				if (obj is UIObject uiObject)
+					Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
+
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
+			foreach (object obj in e.OldItems!)
+				if (obj is UIObject uiObject)
+					Services.Implementations.GameEngine.EngineContext.RemoveUIObject(uiObject);
+	}
 	private void UICamerasChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
-		// Added a new camera
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Add)
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
 			foreach (object obj in e.NewItems!)
 				if (obj is (UICamera uiCamera, ViewPort viewPort))
 					Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
 
-		// Removed an existing camera
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Remove)
+		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
 			foreach (object obj in e.OldItems!)
 				if (obj is (UICamera uiCamera, _))
 					Services.Implementations.GameEngine.EngineContext.RemoveUICamera(uiCamera);
-	}
-	private void UIObjectsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		if (_loaded && e.Action == NotifyCollectionChangedAction.Remove)
-			foreach (object obj in e.OldItems!)
-				if (obj is UIObject uiObject)
-					Services.Implementations.GameEngine.EngineContext.RemoveUIObject(uiObject);
 	}
 
 	public async void LoadScene()
 	{
 		await Services.Implementations.GameEngine.EngineContext.EngineLoadingTask.Task;
 
-		if (_loaded)
+		if (_isLoaded)
 			return;
 
 		LoadedScene?.UnloadScene();
@@ -101,13 +107,13 @@ public class Scene : IInputMapper, IDisposable
 			else
 				Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
 
-		_loaded = true;
+		_isLoaded = true;
 		LoadedScene = this;
 	}
 
 	public void UnloadScene()
 	{
-		if (!_loaded)
+		if (!_isLoaded)
 			return;
 
 		foreach (WorldObject gameObject in WorldObjects)
@@ -115,7 +121,7 @@ public class Scene : IInputMapper, IDisposable
 		foreach ((WorldComponent camera, _) in WorldCameras)
 			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(camera);
 
-		_loaded = false;
+		_isLoaded = false;
 		LoadedScene = null!;
 	}
 

@@ -7,8 +7,6 @@ using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Core.SharedServices.Interfaces.Utils.Managers;
 using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
-using GraphicsEngine.Components.RendererSpecific.OpenTK;
-using GraphicsEngine.Components.RendererSpecific.SilkOpenGL;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Implementations.Direct11.Renderer;
@@ -37,28 +35,23 @@ internal class ServiceRegisterer
 	public ServiceRegisterer()
 	{
 		collection = new ServiceCollection();
-		RegisterServices();
+		RegisterShared();
 	}
 
 	public ServiceRegisterer(IServiceCollection collection)
 	{
 		this.collection = collection;
-		RegisterServices();
+		RegisterShared();
 	}
 
 	public IServiceProvider BuildProvider()
 		=> collection.BuildServiceProvider();
 
-	private void RegisterServices()
-	{
-		RegisterSilkOpenGL();
-		RegisterShared();
-	}
-
 	public ServiceRegisterer RegisterOpenTK()
 	{
 		collection.AddSingleton<IInternalGraphicsRenderer, OpenTKRenderer>();
-		collection.AddSingleton<IBufferGenerator, OpenTKBufferGenerator>();
+		collection.AddSingleton<IBufferSpecificGenerator, OpenTKBufferGenerator>();
+		collection.AddSingleton<IBufferSpecificDeletor, OpenTKBufferDeletor>();
 		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, OpenTKShaderProgramFactory>();
 
 		collection.AddSingleton<IDrawingCall, OpenTKDrawingCall>();
@@ -69,7 +62,8 @@ internal class ServiceRegisterer
 	public ServiceRegisterer RegisterSilkOpenGL()
 	{
 		collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
-		collection.AddSingleton<IBufferGenerator, SilkOpenGLBufferGenerator>();
+		collection.AddSingleton<IBufferSpecificGenerator, SilkOpenGLBufferGenerator>();
+		collection.AddSingleton<IBufferSpecificDeletor, SilkOpenGLBufferDeletor>();
 		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
 
 		collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
@@ -109,6 +103,10 @@ internal class ServiceRegisterer
 		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
 		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
 		collection.AddSingleton<IFactory<string, ModelData>, ModelFactory>();
+
+
+		collection.AddSingleton<IBufferDeletor, BufferDeletor>();
+		collection.AddSingleton<IBufferFactory, BufferFactory>();
 
 		// File Readers
 		collection.AddSingleton<IFileReader<string>, StringFileReader>();

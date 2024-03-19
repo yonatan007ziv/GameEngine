@@ -19,7 +19,7 @@ internal class PhysicsEngine : IPhysicsEngine
 		{
 			if (physicsObject.NetForce != Vector3.Zero || physicsObject.Velocity != Vector3.Zero)
 			{
-                physicsObject.Velocity += physicsObject.NetForce * deltaTime;
+				physicsObject.Velocity += physicsObject.NetForce * deltaTime;
 				physicsObject.Transform.Position += physicsObject.Velocity * deltaTime;
 			}
 		}
@@ -57,7 +57,7 @@ internal class PhysicsEngine : IPhysicsEngine
 
 	public int[] GetTouchingColliderIds(int id)
 	{
-		if (!physicsObjects.TryGetValue(id, out PhysicsObject? obj) || obj.BoxCollider is not null)
+		if (!physicsObjects.TryGetValue(id, out PhysicsObject? obj) || obj.BoxCollider is null)
 			return Array.Empty<int>();
 
 		Vector3 boundMaxA = obj.Transform.Position + obj.BoxCollider!.Max + Vector3.One;

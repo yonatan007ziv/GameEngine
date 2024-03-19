@@ -1,29 +1,29 @@
 ﻿using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
 using Silk.NET.OpenGL;
-using PixelFormat = Silk.NET.OpenGL.PixelFormat;
-using PixelType = Silk.NET.OpenGL.PixelType;
 
 namespace GraphicsEngine.Components.RendererSpecific.SilkOpenGL.Buffers;
 
-internal class SilkOpenGLTextureBuffer : ITextureBuffer, IDisposable
+internal class SilkOpenGLTextureBuffer : ITextureBuffer
 {
 	private readonly GL glContext;
 
-	private uint Id { get; }
+	public int Id => (int)_id;
+
+	private uint _id { get; }
 	private TextureTarget Target { get; }
 
 	public SilkOpenGLTextureBuffer(GL glContext)
 	{
 		this.glContext = glContext;
 
-		Id = glContext.GenTexture();
+		_id = glContext.GenTexture();
 		Target = TextureTarget.Texture2D;
 	}
 
 	public void Bind()
 	{
-		glContext.BindTexture(Target, Id);
+		glContext.BindTexture(Target, _id);
 	}
 
 	public void Unbind()
@@ -59,8 +59,8 @@ internal class SilkOpenGLTextureBuffer : ITextureBuffer, IDisposable
 		Unbind();
 	}
 
-	public void Dispose()
+	~SilkOpenGLTextureBuffer()
 	{
-		throw new NotImplementedException();
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedTextureBuffers.Add(Id);
 	}
 }

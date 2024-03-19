@@ -2,7 +2,7 @@
 
 namespace GraphicsEngine.Components.Shared.Data;
 
-internal readonly struct ModelData
+internal class ModelData
 {
 	public IVertexArray VertexArray { get; }
 	public uint IndicesCount { get; }
@@ -11,5 +11,10 @@ internal readonly struct ModelData
 	{
 		VertexArray = vertexArray;
 		IndicesCount = indicesCount;
+	}
+
+	~ModelData()
+	{
+		Console.WriteLine("Disposed ModelData");
 	}
 }

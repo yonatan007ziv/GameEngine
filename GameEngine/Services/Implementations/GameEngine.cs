@@ -97,6 +97,88 @@ internal class GameEngine : IGameEngine
 		RenderLoop(); // Render Thread
 	}
 
+	private void UpdateLoop()
+	{
+		Thread.CurrentThread.Name = "Update Thread";
+
+		float TickDeltaTime = TickRate / 1000f;
+		while (true)
+		{
+			updateStopwatch.Restart();
+
+			// Tps Limit
+			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
+			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
+
+			TickDeltaTime = TickDeltaTimeStopper;
+
+			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
+			for (int i = 0; i < worldObjects.Keys.Count; i++)
+			{
+				WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
+				// Update components
+				foreach (WorldComponent worldComponent in worldObject.components)
+					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
+						scriptableWorldComponent.Update(TickDeltaTime);
+
+				// Update object
+				if (worldObject is ScriptableWorldObject scriptableWorldObject)
+					scriptableWorldObject.Update(TickDeltaTime);
+			}
+			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
+
+			for (int i = 0; i < uiObjects.Keys.Count; i++)
+			{
+				UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
+				// Update components
+				foreach (UIComponent uiComponent in uiObject.components)
+					if (uiComponent is ScriptableUIComponent scriptableComponent)
+						scriptableComponent.Update(TickDeltaTime);
+
+				// Update object
+				if (uiObject is ScriptableUIObject scriptableUIObject)
+					scriptableUIObject.Update(TickDeltaTime);
+			}
+
+			InputEngine.InputTickPass();
+
+			if (LogTps)
+				logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
+		}
+	}
+
+	private void RenderLoop()
+	{
+		Thread.CurrentThread.Name = "Render Thread";
+
+		GraphicsEngine.Run();
+		float FpsDeltaTime = FpsCap / 1000f;
+		while (true)
+		{
+			renderStopwatch.Restart();
+
+			GraphicsEngine.RenderFrame();
+
+			if (updateMouseLocked)
+			{
+				GraphicsEngine.SetLockedMouse(mouseLocked);
+				updateMouseLocked = false;
+			}
+
+			// Fps Limit
+			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
+			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
+
+			// Clear buffers
+			GraphicsEngine.DeleteFinalizedBuffers();
+
+			FpsDeltaTime = FpsDeltaTimeStopper;
+
+			if (LogFps)
+				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);
+		}
+	}
+
 	public void SetResourceFolder(string path)
 		=> resourceDiscoverer.InitResourceFolder(path);
 
@@ -231,85 +313,6 @@ internal class GameEngine : IGameEngine
 		GraphicsEngine.MouseEvent += InputEngine.OnMouseEvent;
 		GraphicsEngine.KeyboardEvent += InputEngine.OnKeyboardEvent;
 		GraphicsEngine.GamepadEvent += InputEngine.OnGamepadEvent;
-	}
-
-	private void UpdateLoop()
-	{
-		Thread.CurrentThread.Name = "Update Thread";
-
-		float TickDeltaTime = TickRate / 1000f;
-		while (true)
-		{
-			updateStopwatch.Restart();
-
-			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
-
-			// Tps Limit
-			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
-			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
-
-			TickDeltaTime = TickDeltaTimeStopper;
-
-			for (int i = 0; i < worldObjects.Keys.Count; i++)
-			{
-				WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
-				// Update components
-				foreach (WorldComponent worldComponent in worldObject.components)
-					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
-						scriptableWorldComponent.Update(TickDeltaTime);
-
-				// Update object
-				if (worldObject is ScriptableWorldObject scriptableWorldObject)
-					scriptableWorldObject.Update(TickDeltaTime);
-			}
-
-			for (int i = 0; i < uiObjects.Keys.Count; i++)
-			{
-				UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
-				// Update components
-				foreach (UIComponent uiComponent in uiObject.components)
-					if (uiComponent is ScriptableUIComponent scriptableComponent)
-						scriptableComponent.Update(TickDeltaTime);
-
-				// Update object
-				if (uiObject is ScriptableUIObject scriptableUIObject)
-					scriptableUIObject.Update(TickDeltaTime);
-			}
-
-			InputEngine.InputTickPass();
-
-			if (LogTps)
-				logger.LogInformation("Tick update second: {tps}", 1 / TickDeltaTime);
-		}
-	}
-
-	private void RenderLoop()
-	{
-		Thread.CurrentThread.Name = "Render Thread";
-
-		GraphicsEngine.Run();
-		float FpsDeltaTime = FpsCap / 1000f;
-		while (true)
-		{
-			renderStopwatch.Restart();
-
-			GraphicsEngine.RenderFrame();
-
-			if (updateMouseLocked)
-			{
-				GraphicsEngine.SetLockedMouse(mouseLocked);
-				updateMouseLocked = false;
-			}
-
-			// Fps Limit
-			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
-			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
-
-			FpsDeltaTime = FpsDeltaTimeStopper;
-
-			if (LogFps)
-				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);
-		}
 	}
 
 	private static void AccurateSleep(double seconds, int expectedSchedulerPeriod)

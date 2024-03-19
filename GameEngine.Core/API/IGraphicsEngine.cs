@@ -25,6 +25,7 @@ public interface IGraphicsEngine
 	void SetBackgroundColor(Color color);
 
 	void RenderFrame();
+	void DeleteFinalizedBuffers();
 
 	void AddWorldObject(WorldObject worldObjectData);
 	void RemoveWorldObject(WorldObject worldObjectData);

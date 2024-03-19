@@ -6,12 +6,14 @@ using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 
-internal class OpenTKVertexArray : IVertexArray, IDisposable
+internal class OpenTKVertexArray : OpenTKBuffer, IVertexArray, IDisposable
 {
+
 	public int Id { get; private set; }
 	public VertexAttribPointerType Type { get; private set; }
 
 	public OpenTKVertexArray(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrtibutesLayout)
+		: base(BufferTarget.ArrayBuffer)
 	{
 		Id = GL.GenVertexArray();
 		Type = VertexAttribPointerType.Float;
@@ -19,12 +21,12 @@ internal class OpenTKVertexArray : IVertexArray, IDisposable
 		Link(vb, ib, arrtibutesLayout);
 	}
 
-	public void Bind()
+	public override void Bind()
 	{
 		GL.BindVertexArray(Id);
 	}
 
-	public void Unbind()
+	public override void Unbind()
 	{
 		GL.BindVertexArray(0);
 	}

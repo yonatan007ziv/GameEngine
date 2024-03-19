@@ -15,6 +15,9 @@ internal class GraphicsEngine : IGraphicsEngine
 {
 	private readonly ILogger logger;
 	private readonly IInternalGraphicsRenderer internalRenderer;
+	private readonly IBufferDeletor bufferDeletor;
+
+	public static GraphicsEngine EngineContext = null!;
 
 	public IntPtr WindowHandle => internalRenderer.WindowHandle;
 	public string Title { get => internalRenderer.Title; set => internalRenderer.Title = value; }
@@ -28,15 +31,23 @@ internal class GraphicsEngine : IGraphicsEngine
 	private readonly Dictionary<int, WorldCamera> worldCameras = new Dictionary<int, WorldCamera>();
 	private readonly Dictionary<int, UICamera> uiCameras = new Dictionary<int, UICamera>();
 
+	// Buffer ids
+	public List<int> FinalizedBuffers { get; } = new List<int>();
+	public List<int> FinalizedVertexArrayBuffers { get; } = new List<int>();
+	public List<int> FinalizedTextureBuffers { get; } = new List<int>();
+
 	public event Action? Load;
 	public event Action<MouseEventData>? MouseEvent;
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer)
+	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor)
 	{
+		EngineContext = this;
+
 		this.logger = logger;
 		this.internalRenderer = internalRenderer;
+		this.bufferDeletor = bufferDeletor;
 
 		internalRenderer.LoadEvent += () => { Load?.Invoke(); };
 		internalRenderer.ResizedEvent += WindowResized;
@@ -108,9 +119,25 @@ internal class GraphicsEngine : IGraphicsEngine
 		internalRenderer.SwapBuffers();
 	}
 
+	public void DeleteFinalizedBuffers()
+	{
+		for (int i = 0; i < FinalizedBuffers.Count; i++)
+			bufferDeletor.DeleteBuffer(FinalizedBuffers[i]);
+
+		for (int i = 0; i < FinalizedVertexArrayBuffers.Count; i++)
+			bufferDeletor.DeleteVertexArrayBuffer(FinalizedVertexArrayBuffers[i]);
+
+		for (int i = 0; i < FinalizedTextureBuffers.Count; i++)
+			bufferDeletor.DeleteTextureBuffer(FinalizedTextureBuffers[i]);
+
+		FinalizedBuffers.Clear();
+		FinalizedVertexArrayBuffers.Clear();
+		FinalizedTextureBuffers.Clear();
+	}
+
 	private void DrawCharacterGlyf(CharacterGlyf glyf, Vector3 position)
 	{
-		
+
 	}
 
 	private void WindowResized()

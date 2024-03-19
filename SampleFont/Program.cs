@@ -8,7 +8,7 @@ internal class Program
 {
 	public static void Main()
 	{
-		IGameEngine GameEngine = new GameEngineProvider().UseOpenTK().BuildEngine();
+		IGameEngine GameEngine = new GameEngineProvider().UseSilkOpenGL().BuildEngine();
 
 		GameEngine.SetResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
 		GameEngine.SetBackgroundColor(Color.LightBlue);

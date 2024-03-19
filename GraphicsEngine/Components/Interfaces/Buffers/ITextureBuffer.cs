@@ -2,7 +2,7 @@
 
 namespace GraphicsEngine.Components.Interfaces.Buffers;
 
-internal interface ITextureBuffer
+internal interface ITextureBuffer : IBuffer
 {
 	void Bind();
 	void Unbind();

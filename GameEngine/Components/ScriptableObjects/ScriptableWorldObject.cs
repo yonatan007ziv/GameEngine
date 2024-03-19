@@ -1,5 +1,7 @@
-﻿using GameEngine.Core.Components.Input.Buttons;
+﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Objects;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace GameEngine.Components.ScriptableObjects;
@@ -13,7 +15,10 @@ public abstract class ScriptableWorldObject : WorldObject
 	public static UIObject? GetUIObjectFromId(int id)
 		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
 
-
+	public ObservableCollection<WorldObject> WorldObjects => Scene.LoadedScene.WorldObjects;
+	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras => Scene.LoadedScene.WorldCameras;
+	public ObservableCollection<WorldObject> UIObjects => Scene.LoadedScene.WorldObjects;
+	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras => Scene.LoadedScene.UICameras;
 
 	#region Collider info
 	public bool TouchingColliderTag(string tag)

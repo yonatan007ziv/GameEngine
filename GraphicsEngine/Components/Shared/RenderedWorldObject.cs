@@ -55,4 +55,9 @@ internal class RenderedWorldObject
 		foreach (MeshRenderer meshRenderer in Meshes)
 			meshRenderer.Update(Transform);
 	}
+
+	~RenderedWorldObject()
+	{
+		Console.WriteLine($"Disposed RenderedWorldObject: {worldObject.Tag}");
+	}
 }

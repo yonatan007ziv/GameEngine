@@ -6,17 +6,19 @@ using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Components.RendererSpecific.SilkOpenGL.Buffers;
 
-internal class SilkOpenGLVertexArray : IVertexArray, IDisposable
+internal class SilkOpenGLVertexArray : IVertexArray
 {
 	private readonly GL glContext;
 
-	public uint Id { get; private set; }
+	public int Id => (int)_id;
+
+	protected uint _id { get; private set; }
 	public VertexAttribPointerType Type { get; private set; }
 
 	public SilkOpenGLVertexArray(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrtibutesLayout, GL glContext)
 	{
 		this.glContext = glContext;
-		Id = glContext.GenVertexArray();
+		_id = glContext.GenVertexArray();
 		Type = VertexAttribPointerType.Float;
 
 		Link(vb, ib, arrtibutesLayout);
@@ -24,7 +26,7 @@ internal class SilkOpenGLVertexArray : IVertexArray, IDisposable
 
 	public void Bind()
 	{
-		glContext.BindVertexArray(Id);
+		glContext.BindVertexArray(_id);
 	}
 
 	public void Unbind()
@@ -60,9 +62,8 @@ internal class SilkOpenGLVertexArray : IVertexArray, IDisposable
 		Unbind();
 	}
 
-	public void Dispose()
+	~SilkOpenGLVertexArray()
 	{
-		Unbind();
-		glContext.DeleteVertexArray(Id);
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedVertexArrayBuffers.Add(Id);
 	}
 }

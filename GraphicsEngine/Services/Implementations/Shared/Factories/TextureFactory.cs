@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
+using GraphicsEngine.Services.Interfaces;
 using GraphicsEngine.Services.Interfaces.Utils;
 
 namespace GraphicsEngine.Services.Implementations.Shared.Factories;
@@ -8,12 +9,12 @@ namespace GraphicsEngine.Services.Implementations.Shared.Factories;
 internal class TextureFactory : IFactory<string, ITextureBuffer>
 {
 	private readonly ITextureLoader textureLoader;
-	private readonly IBufferGenerator bufferGenerator;
+	private readonly IBufferFactory bufferFactory;
 
-	public TextureFactory(ITextureLoader textureLoader, IBufferGenerator bufferGenerator)
+	public TextureFactory(ITextureLoader textureLoader, IBufferFactory bufferFactory)
 	{
 		this.textureLoader = textureLoader;
-		this.bufferGenerator = bufferGenerator;
+		this.bufferFactory = bufferFactory;
 	}
 
 	public bool Create(string textureName, out ITextureBuffer texture)
@@ -24,7 +25,7 @@ internal class TextureFactory : IFactory<string, ITextureBuffer>
 			return false;
 		}
 
-		texture = bufferGenerator.GenerateTextureBuffer();
+		texture = bufferFactory.GenerateTextureBuffer();
 		texture.WriteData(textureSource);
 		return true;
 	}

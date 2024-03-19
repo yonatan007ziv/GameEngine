@@ -1,20 +1,23 @@
-﻿using Silk.NET.OpenGL;
+﻿using GraphicsEngine.Components.Interfaces.Buffers;
+using Silk.NET.OpenGL;
 using System.Runtime.InteropServices;
 
 namespace GraphicsEngine.Components.RendererSpecific.SilkOpenGL.Buffers;
 
-internal abstract class SilkOpenGLBuffer : IDisposable
+internal abstract class SilkOpenGLBuffer : IBuffer
 {
 	private readonly GL glContext;
 
-	protected uint Id { get; private set; }
+	public int Id => (int)_id;
+
+	protected uint _id { get; private set; }
 	protected BufferTargetARB Target { get; private set; }
 
 	public SilkOpenGLBuffer(BufferTargetARB target, GL glContext)
 	{
 		this.glContext = glContext;
 
-		Id = glContext.GenBuffer();
+		_id = glContext.GenBuffer();
 		Target = target;
 	}
 
@@ -32,7 +35,7 @@ internal abstract class SilkOpenGLBuffer : IDisposable
 
 	public virtual void Bind()
 	{
-		glContext.BindBuffer(Target, Id);
+		glContext.BindBuffer(Target, _id);
 	}
 
 	public virtual void Unbind()
@@ -40,32 +43,15 @@ internal abstract class SilkOpenGLBuffer : IDisposable
 		glContext.BindBuffer(Target, 0u);
 	}
 
-	#region Dispose pattern
-	private bool disposedValue;
+	public virtual void DeleteBuffer()
+	{
+		Console.WriteLine("SilkOpenGL Buffer: fix dispose cleanup");
+		Unbind();
+		glContext.DeleteBuffer(_id);
+	}
+
 	~SilkOpenGLBuffer()
 	{
-		Dispose(disposing: false);
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedBuffers.Add(Id);
 	}
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-	protected virtual void Dispose(bool disposing)
-	{
-		if (!disposedValue)
-		{
-			if (disposing)
-			{
-
-			}
-
-			Console.WriteLine("SilkOpenGL Buffer: fix dispose cleanup");
-			// Unbind();
-			// glContext.DeleteBuffer(Id);
-
-			disposedValue = true;
-		}
-	}
-	#endregion
 }

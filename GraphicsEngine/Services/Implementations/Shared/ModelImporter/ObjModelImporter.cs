@@ -1,17 +1,17 @@
 ﻿using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared.Data;
-using GraphicsEngine.Services.Interfaces.Utils;
+using GraphicsEngine.Services.Interfaces;
 using System.Numerics;
 
 namespace GraphicsEngine.Services.Implementations.Shared.ModelImporter;
 
 internal class ObjModelImporter
 {
-	private readonly IBufferGenerator bufferGenerator;
+	private readonly IBufferFactory bufferFactory;
 
-	public ObjModelImporter(IBufferGenerator bufferGenerator)
+	public ObjModelImporter(IBufferFactory bufferFactory)
 	{
-		this.bufferGenerator = bufferGenerator;
+		this.bufferFactory = bufferFactory;
 	}
 
 	public ModelData Import(string[] data)
@@ -101,13 +101,12 @@ internal class ObjModelImporter
 
 		// transform to proper buffer format
 		IVertexArray va;
-		IVertexBuffer vb = bufferGenerator.GenerateVertexBuffer();
-		IIndexBuffer ib = bufferGenerator.GenerateIndexBuffer();
+		IVertexBuffer vb = bufferFactory.GenerateVertexBuffer();
+		IIndexBuffer ib = bufferFactory.GenerateIndexBuffer();
 
-		// "Fatal error while logging another fatal error." ?
 		vb.WriteData(vertexBuffer);
 		ib.WriteData(indexBuffer);
-		va = bufferGenerator.GenerateVertexArray(vb, ib, attribList.ToArray());
+		va = bufferFactory.GenerateVertexArray(vb, ib, attribList.ToArray());
 
 		return new ModelData(va, (uint)indexBuffer.Length);
 	}
