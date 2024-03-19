@@ -1,18 +1,41 @@
 ﻿using GameEngine.Core.Components.Input.Buttons;
+using GameEngine.Core.Components.Objects;
 using System.Drawing;
 
-namespace GameEngine.Components.Objects.Scriptable;
+namespace GameEngine.Components.ScriptableObjects;
 
-public abstract class ScriptableWorldComponent : WorldComponent
+public abstract class ScriptableWorldObject : WorldObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public ScriptableWorldComponent(WorldObject parent)
-		: base(parent)
+	public static WorldObject? GetWorldObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
+	public static UIObject? GetUIObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
+
+
+
+	#region Collider info
+	public bool TouchingColliderTag(string tag)
 	{
+		int[] touchingIds = GetTouchingColliderIds();
+		foreach (int id in touchingIds)
+		{
+			WorldObject? obj = GetWorldObjectFromId(id);
 
+			if (obj is null)
+				continue;
+
+			if (obj.Tag == tag)
+				return true;
+		}
+		return false;
 	}
+	public int[] GetTouchingColliderIds()
+		=> Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetTouchingColliderIds(Id);
+	#endregion
 
+	#region Input info
 	public static float GetAxis(string axis)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetAxis(axis);
 	public static float GetAxisRaw(string axis)
@@ -37,6 +60,7 @@ public abstract class ScriptableWorldComponent : WorldComponent
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonPressed(joystickButton);
 	public static bool GetJoystickButtonDown(GamepadButton joystickButton)
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonDown(joystickButton);
+	#endregion
 
 	public static void SetBackgroundColor(Color color)
 		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);

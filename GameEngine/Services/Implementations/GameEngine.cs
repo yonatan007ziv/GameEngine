@@ -1,9 +1,7 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Components.Objects.Scriptable;
-using GameEngine.Components.UIComponents;
+﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Physics;
+using GameEngine.Core.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
 using GameEngine.Extensions;
 using GameEngine.Services.Interfaces;
@@ -53,8 +51,8 @@ internal class GameEngine : IGameEngine
 	public int TickRate { get; set; } = 128;
 	public int FpsCap { get; set; } = 144;
 
-	private bool _mouseLocked, _updateMouseLocked;
-	public bool MouseLocked { get => _mouseLocked; set { _mouseLocked = value; _updateMouseLocked = true; } }
+	private bool mouseLocked, updateMouseLocked;
+	public bool MouseLocked { get => mouseLocked; set { mouseLocked = value; updateMouseLocked = true; } }
 
 	public IntPtr WindowHandle => GraphicsEngine.WindowHandle;
 	public float FpsDeltaTimeStopper => (float)renderStopwatch.Elapsed.TotalSeconds;
@@ -122,9 +120,9 @@ internal class GameEngine : IGameEngine
 		worldObjects.Add(worldObject.Id, worldObject);
 		allObjectIds.Add(worldObject.Id);
 
-		WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
-		PhysicsEngine.AddPhysicsObject(ref worldObjectData);
-		GraphicsEngine.AddWorldObject(ref worldObjectData);
+		// Add to engines
+		PhysicsEngine.AddPhysicsObject(worldObject);
+		GraphicsEngine.AddWorldObject(worldObject);
 	}
 	public void AddWorldCamera(WorldComponent worldCamera, ViewPort viewport)
 	{
@@ -138,7 +136,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Add(worldCamera.Id);
 
 		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		GraphicsEngine.AddWorldCamera(ref worldCameraData, viewport);
+		GraphicsEngine.AddWorldCamera(worldCameraData, viewport);
 	}
 	public void AddUIObject(UIObject uiObject)
 	{
@@ -151,8 +149,8 @@ internal class GameEngine : IGameEngine
 		uiObjects.Add(uiObject.Id, uiObject);
 		allObjectIds.Add(uiObject.Id);
 
-		UIObjectData uiObjectData = uiObject.TranslateUIObject();
-		GraphicsEngine.AddUIObject(ref uiObjectData);
+		// Add to engines
+		GraphicsEngine.AddUIObject(uiObject);
 	}
 	public void AddUICamera(UIComponent uiCamera, ViewPort viewport)
 	{
@@ -166,7 +164,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Add(uiCamera.Id);
 
 		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		GraphicsEngine.AddUICamera(ref uiCameraData, viewport);
+		GraphicsEngine.AddUICamera(uiCameraData, viewport);
 	}
 
 	public void RemoveWorldObject(WorldObject worldObject)
@@ -180,8 +178,9 @@ internal class GameEngine : IGameEngine
 		worldObjects.Remove(worldObject.Id);
 		allObjectIds.Remove(worldObject.Id);
 
-		WorldObjectData worldCameraData = worldObject.TranslateWorldObject();
-		GraphicsEngine.RemoveWorldObject(ref worldCameraData);
+		// Remove from engines
+		PhysicsEngine.RemovePhysicsObject(worldObject);
+		GraphicsEngine.RemoveWorldObject(worldObject);
 	}
 	public void RemoveWorldCamera(WorldComponent worldCamera)
 	{
@@ -195,7 +194,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(worldCamera.Id);
 
 		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		GraphicsEngine.RemoveWorldCamera(ref worldCameraData);
+		GraphicsEngine.RemoveWorldCamera(worldCameraData);
 	}
 	public void RemoveUIObject(UIObject uiObject)
 	{
@@ -208,8 +207,8 @@ internal class GameEngine : IGameEngine
 		uiObjects.Remove(uiObject.Id);
 		allObjectIds.Remove(uiObject.Id);
 
-		UIObjectData worldCameraData = uiObject.TranslateUIObject();
-		GraphicsEngine.RemoveUIObject(ref worldCameraData);
+		// Remove from engines
+		GraphicsEngine.RemoveUIObject(uiObject);
 	}
 	public void RemoveUICamera(UIComponent uiCamera)
 	{
@@ -223,7 +222,7 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(uiCamera.Id);
 
 		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		GraphicsEngine.RemoveUICamera(ref uiCameraData);
+		GraphicsEngine.RemoveUICamera(uiCameraData);
 	}
 	#endregion
 
@@ -243,8 +242,7 @@ internal class GameEngine : IGameEngine
 		{
 			updateStopwatch.Restart();
 
-			SyncPhysicsSoundEngines();
-			PhysicsGameObjectUpdateData[] physicsUpdates = PhysicsEngine.PhysicsPass(TickDeltaTime);
+			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
 
 			// Tps Limit
 			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
@@ -252,43 +250,30 @@ internal class GameEngine : IGameEngine
 
 			TickDeltaTime = TickDeltaTimeStopper;
 
-			// Apply forces and collider constraints
-			ApplyPhysicsUpdates(physicsUpdates);
-
-			lock (worldObjects)
+			for (int i = 0; i < worldObjects.Keys.Count; i++)
 			{
-				for (int i = 0; i < worldObjects.Keys.Count; i++)
-				{
-					WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
+				WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
+				// Update components
+				foreach (WorldComponent worldComponent in worldObject.components)
+					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
+						scriptableWorldComponent.Update(TickDeltaTime);
 
-					if (worldObject.ImpulseVelocitiesDirty)
-						worldObject.ImpulseVelocities.Clear(); // Reset impulse velocities
-
-					// Update components
-					foreach (WorldComponent worldComponent in worldObject.components)
-						if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
-							scriptableWorldComponent.Update(TickDeltaTime);
-
-					// Update object
-					if (worldObject is ScriptableWorldObject scriptableWorldObject)
-						scriptableWorldObject.Update(TickDeltaTime);
-				}
+				// Update object
+				if (worldObject is ScriptableWorldObject scriptableWorldObject)
+					scriptableWorldObject.Update(TickDeltaTime);
 			}
 
-			lock (uiObjects)
+			for (int i = 0; i < uiObjects.Keys.Count; i++)
 			{
-				for (int i = 0; i < uiObjects.Keys.Count; i++)
-				{
-					UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
-					// Update components
-					foreach (UIComponent uiComponent in uiObject.components)
-						if (uiComponent is ScriptableUIComponent scriptableComponent)
-							scriptableComponent.Update(TickDeltaTime);
+				UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
+				// Update components
+				foreach (UIComponent uiComponent in uiObject.components)
+					if (uiComponent is ScriptableUIComponent scriptableComponent)
+						scriptableComponent.Update(TickDeltaTime);
 
-					// Update object
-					if (uiObject is ScriptableUIObject scriptableUIObject)
-						scriptableUIObject.Update(TickDeltaTime);
-				}
+				// Update object
+				if (uiObject is ScriptableUIObject scriptableUIObject)
+					scriptableUIObject.Update(TickDeltaTime);
 			}
 
 			InputEngine.InputTickPass();
@@ -308,8 +293,13 @@ internal class GameEngine : IGameEngine
 		{
 			renderStopwatch.Restart();
 
-			SyncRenderEngine();
 			GraphicsEngine.RenderFrame();
+
+			if (updateMouseLocked)
+			{
+				GraphicsEngine.SetLockedMouse(mouseLocked);
+				updateMouseLocked = false;
+			}
 
 			// Fps Limit
 			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
@@ -319,82 +309,6 @@ internal class GameEngine : IGameEngine
 
 			if (LogFps)
 				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);
-		}
-	}
-
-	private void ApplyPhysicsUpdates(PhysicsGameObjectUpdateData[] physicsUpdates)
-	{
-		foreach (PhysicsGameObjectUpdateData physicsUpdate in physicsUpdates)
-		{
-			if (!allObjectIds.Contains(physicsUpdate.Id))
-				continue;
-
-			WorldObject worldObject = worldObjects[physicsUpdate.Id];
-			if (worldObject is not null)
-			{
-				bool isDirtyBefore = worldObject.TransformDirty;
-				worldObject.Transform.Position = physicsUpdate.Transform.position;
-				worldObject.TransformDirty = isDirtyBefore;
-			}
-		}
-	}
-
-	private void SyncPhysicsSoundEngines()
-	{
-		WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
-		foreach (WorldObject worldObject in worldObjects)
-		{
-			if (!worldObject.SyncPhysics && !worldObject.SyncSound)
-				continue;
-
-			WorldObjectData comGameObject = worldObject.TranslateWorldObject();
-
-			// Physics Engine
-			if (worldObject.SyncPhysics)
-				PhysicsEngine.UpdatePhysicsObject(ref comGameObject);
-
-			// Sound Engine
-			if (worldObject.SyncSound)
-			{ }
-
-			worldObject.ResetPhysicsSoundDirty();
-		}
-	}
-
-	private void SyncRenderEngine()
-	{
-		if (_updateMouseLocked)
-		{
-			GraphicsEngine.LockMouse(_mouseLocked);
-			_updateMouseLocked = false;
-		}
-
-		WorldObject[] worldObjects = this.worldObjects.Values.ToArray();
-		foreach (WorldObject worldObject in worldObjects)
-		{
-			if (!worldObject.SyncGraphics)
-				continue;
-
-			WorldObjectData worldObjectData = worldObject.TranslateWorldObject();
-
-			// Graphics Engine
-			GraphicsEngine.UpdateWorldObject(ref worldObjectData);
-
-			worldObject.SyncGraphics = false;
-		}
-
-		UIObject[] uiObjects = this.uiObjects.Values.ToArray();
-		foreach (UIObject uiObject in uiObjects)
-		{
-			if (!uiObject.SyncGraphics)
-				continue;
-
-			UIObjectData uiObjectData = uiObject.TranslateUIObject();
-
-			// Graphics Engine
-			GraphicsEngine.UpdateUIObject(ref uiObjectData);
-
-			uiObject.SyncGraphics = false;
 		}
 	}
 

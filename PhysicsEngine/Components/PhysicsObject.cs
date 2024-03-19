@@ -1,21 +1,31 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Objects;
 using System.Numerics;
 
 namespace PhysicsEngine.Components;
 
 internal class PhysicsObject
 {
-	public int Id { get; }
-	public Transform Transform { get; set; }
-	public BoxColliderData? BoxCollider { get; set; }
-	public Vector3 Velocity { get; set; }
+	private readonly WorldObject worldObject;
+
+	public int Id => worldObject.Id;
+	public Transform Transform => worldObject.Transform;
+	public BoxCollider? BoxCollider => worldObject.BoxCollider;
+	public Vector3 Velocity { get=> worldObject.Velocity; set => worldObject.Velocity = value; }
 	public Vector3 NetForce { get; set; }
 
-	public PhysicsObject(int id, Transform transform, BoxColliderData? boxCollider)
+	public PhysicsObject(WorldObject worldObject)
 	{
-		Id = id;
-		Transform = transform;
-		BoxCollider = boxCollider;
+		this.worldObject = worldObject;
+
+		worldObject.Forces.CollectionChanged += (s, e) => UpdateForces();
+	}
+
+	private void UpdateForces()
+	{
+		NetForce = Vector3.Zero;
+		foreach (var force in worldObject.Forces)
+			AddForce(force);
 	}
 
 	public void AddForce(Vector3 force)

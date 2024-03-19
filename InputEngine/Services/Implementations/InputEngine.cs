@@ -65,7 +65,7 @@ internal class InputEngine : IInputEngine
 		{
 			if (keyboardEvent.KeyboardButton == KeyboardButton.CapsLock)
 				capsLockToggled = !capsLockToggled;
-        }
+		}
 		else
 		{
 

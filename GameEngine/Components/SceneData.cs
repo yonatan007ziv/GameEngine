@@ -1,8 +1,8 @@
-﻿using GameEngine.Core.Components;
+﻿using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components;
 
 internal class SceneData
 {
-	public List<WorldObjectData> GameObjects { get; set; } = new List<WorldObjectData>();
+	public List<WorldObject> GameObjects { get; set; } = new List<WorldObject>();
 }

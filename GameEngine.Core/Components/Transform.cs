@@ -11,11 +11,10 @@ public class Transform : INotifyPropertyChanged
 	public static Vector3 GlobalUp { get; set; } = Vector3.UnitY;
 	public static Vector3 GlobalFront { get; set; } = Vector3.UnitZ;
 
-
 	private Vector3 _position, _rotation, _scale = Vector3.One;
 
 	public Vector3 Position { get => _position; set { _position = value; OnPropertyChanged(); } }
-	public Vector3 Rotation { get => _rotation; set { _rotation = value.ClampYZTo360Degrees(); CalculateLocalVectors(); OnPropertyChanged(); } }
+	public Vector3 Rotation { get => _rotation; set { _rotation = value; CalculateLocalVectors(); OnPropertyChanged(); } }
 	public Vector3 Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
 
 	public Vector3 LocalRight { get; private set; } = GlobalRight;
@@ -23,21 +22,6 @@ public class Transform : INotifyPropertyChanged
 	public Vector3 LocalFront { get; private set; } = GlobalFront;
 
 	public Transform() { }
-	public Transform(TransformData transformData)
-		=> CopyFrom(transformData);
-
-	public void CopyFrom(TransformData transform)
-	{
-		Position = transform.position;
-		Rotation = transform.rotation;
-		Scale = transform.scale;
-	}
-
-	public event PropertyChangedEventHandler? PropertyChanged;
-	private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-	}
 
 	private void CalculateLocalVectors()
 	{
@@ -49,5 +33,11 @@ public class Transform : INotifyPropertyChanged
 		LocalRight = Vector3.Transform(GlobalRight, rotationMatrix);
 		LocalUp = Vector3.Transform(GlobalUp, rotationMatrix);
 		LocalFront = Vector3.Transform(GlobalFront, rotationMatrix);
+	}
+
+	public event PropertyChangedEventHandler? PropertyChanged;
+	private void OnPropertyChanged([CallerMemberName] string caller = "")
+	{
+		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
 	}
 }

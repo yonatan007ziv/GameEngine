@@ -1,4 +1,6 @@
-﻿namespace GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Core.Components.Objects;
+
+namespace GameEngine.Components.ScriptableObjects;
 
 public abstract class ScriptableUIComponent : UIComponent
 {

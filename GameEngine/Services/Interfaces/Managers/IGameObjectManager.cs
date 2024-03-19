@@ -1,4 +1,4 @@
-﻿using GameEngine.Components.Objects;
+﻿using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Services.Interfaces.Managers;
 

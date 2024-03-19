@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Components;
+﻿namespace GameEngine.Core.Components;
 
 internal static class IdGenerator
 {

@@ -1,8 +1,4 @@
 ﻿using GameEngine;
-using GameEngine.Core.Components.Fonts;
-using GameEngine.Core.SharedServices.Implementations;
-using GameEngine.Core.SharedServices.Implementations.FileReaders;
-using GameEngine.Core.SharedServices.Implementations.Loggers;
 using GameEngine.Services.Interfaces;
 using System.Drawing;
 
@@ -12,20 +8,16 @@ internal class Program
 {
 	public static void Main()
 	{
-		IGameEngine GameEngine = new GameEngineProvider().UseSilkOpenGL().BuildEngine();
+		IGameEngine GameEngine = new GameEngineProvider().UseOpenTK().BuildEngine();
 
 		GameEngine.SetResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Sample Font";
-		GameEngine.FpsCap = 60;
-		GameEngine.LogFps = false;
-		GameEngine.LogInputs = false;
+		GameEngine.FpsCap = 144;
 		GameEngine.LogRenderingLogs = true;
-		GameEngine.MouseLocked = true;
 
 		new FontTestingScene().LoadScene();
 
-		GameEngine.MouseLocked = false;
 		GameEngine.Run();
 	}
 }

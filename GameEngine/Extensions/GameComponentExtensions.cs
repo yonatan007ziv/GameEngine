@@ -1,5 +1,5 @@
-﻿using GameEngine.Components.Objects;
-using GameEngine.Core.Components;
+﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Extensions;
 

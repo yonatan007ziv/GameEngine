@@ -1,4 +1,4 @@
-﻿using GameEngine.Components.Objects.Scriptable;
+﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.Components;
 using GameEngine.Extensions;
 using System.Numerics;
@@ -7,7 +7,7 @@ namespace BoxColliderSample;
 
 internal class Player : ScriptableWorldObject
 {
-	private const float gravityMagnitude = 20;
+	private const float gravityMagnitude = 10;
 	private const float jumpSpeed = 20;
 	private const float movementSpeed = 25;
 
@@ -16,7 +16,7 @@ internal class Player : ScriptableWorldObject
 	public Player()
 	{
 		camera = new PlayerCameraController(this);
-		BoxCollider = new BoxColliderData(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+		BoxCollider = new BoxCollider(false, new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
 	}
 
 	public override void Update(float deltaTime)
@@ -24,8 +24,7 @@ internal class Player : ScriptableWorldObject
 		if (TouchingColliderTag("Ground"))
 		{
 			Forces.Clear();
-			// Temp, need to have a Velocity property instead of ImpulseVelocities and set the Y to 0
-			ImpulseVelocities.Clear();
+			Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
 		}
 		else if (Forces.Count == 0)
 			Forces.Add(new Vector3(0, -gravityMagnitude, 0));
@@ -35,7 +34,7 @@ internal class Player : ScriptableWorldObject
 		Transform.Position += movementVector * deltaTime;
 
 		if (GetButtonDown("Jump"))
-			ImpulseVelocities.Add(new Vector3(0, jumpSpeed, 0));
+			Velocity = Vector3.UnitY * jumpSpeed;
 
 		if (GetButtonDown("Escape"))
 			MouseLocked = !MouseLocked;
