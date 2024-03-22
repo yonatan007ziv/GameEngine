@@ -18,11 +18,89 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="EngineResources\Fonts\Arial.ttf" />
+    <None Remove="EngineResources\Materials\Default.mat" />
+    <None Remove="EngineResources\Materials\MissingTexture.mat" />
+    <None Remove="EngineResources\Models\Cube.obj" />
+    <None Remove="EngineResources\Models\MissingModel.obj" />
+    <None Remove="EngineResources\Models\Plane.obj" />
+    <None Remove="EngineResources\Models\Pyramid.obj" />
+    <None Remove="EngineResources\Models\UIRect.obj" />
+    <None Remove="EngineResources\Shaders\GLSL\DefaultFragment.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\DefaultVertex.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\GizmosFragment.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\GizmosVertex.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\LightTexturedFragment.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\LightTexturedVertex.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\TexturedFragment.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\TexturedVertex.glsl" />
+    <None Remove="EngineResources\Textures\MissingTexture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="EngineResources\Fonts\Arial.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Materials\Default.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Materials\MissingTexture.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Models\Cube.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Models\Plane.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Models\Pyramid.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Models\UIRect.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\DefaultFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\DefaultVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\GizmosFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\GizmosVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\LightTexturedFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\LightTexturedVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\TexturedFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\TexturedVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Textures\Black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Textures\MissingTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GameEngine.Core\GameEngine.Core.csproj" />
     <ProjectReference Include="..\GraphicsEngine\GraphicsEngine.csproj" />
     <ProjectReference Include="..\InputEngine\InputEngine.csproj" />
     <ProjectReference Include="..\PhysicsEngine\PhysicsEngine.csproj" />
     <ProjectReference Include="..\SoundEngine\SoundEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="EngineResources\Sounds\" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 
 public interface IResourceDiscoverer
 {
-	void InitResourceFolder(string folderPath);
+	void AddResourceFolder(string folderPath);
 	string GetResourcePath(string resource);
 	bool ResourceExists(string fontName);
 }

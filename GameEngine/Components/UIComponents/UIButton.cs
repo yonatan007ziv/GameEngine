@@ -9,16 +9,23 @@ public class UIButton : ScriptableUIObject
 {
 	private bool _onEnterCalled = true, _onExitCalled = true, _clicked = true, _released = true;
 
-	protected virtual void OnFullClicked() { }
-	protected virtual void OnDragClicked() { }
-	protected virtual void OnDeselected() { }
-	protected virtual void OnReleased() { }
-	protected virtual void OnEnter() { }
-	protected virtual void OnExit() { }
+	public event Action? OnFullClicked;
+	public event Action? OnDragClicked;
+	public event Action? OnDeselected;
+	public event Action? OnReleased;
+	public event Action? OnEnter;
+	public event Action? OnExit;
 
-	public UIButton(string materialName)
+	private void FullClicked() => OnFullClicked?.Invoke();
+	private void DragClicked() => OnFullClicked?.Invoke();
+	private void Deselected() => OnFullClicked?.Invoke();
+	private void Released() => OnFullClicked?.Invoke();
+	private void Enter() => OnFullClicked?.Invoke();
+	private void Exit() => OnFullClicked?.Invoke();
+
+	public UIButton(string material)
 	{
-		Meshes.Add(new MeshData("UIPlane.obj", $"{materialName}.mat"));
+		Meshes.Add(new MeshData("UIRect.obj", material));
 	}
 
 	public override void Update(float deltaTime)
@@ -27,13 +34,13 @@ public class UIButton : ScriptableUIObject
 		{
 			if (_clicked && !_released)
 			{
-				OnReleased();
+				Released();
 				_released = true;
 			}
 
 			if (_onEnterCalled && !_onExitCalled)
 			{
-				OnExit();
+				Exit();
 				_onExitCalled = true;
 			}
 
@@ -49,7 +56,7 @@ public class UIButton : ScriptableUIObject
 		{
 			if (!_onEnterCalled)
 			{
-				OnEnter();
+				Enter();
 				_onEnterCalled = true;
 			}
 			_onExitCalled = false;
@@ -58,7 +65,7 @@ public class UIButton : ScriptableUIObject
 		{
 			if (!_onExitCalled)
 			{
-				OnExit();
+				Exit();
 				_onExitCalled = true;
 			}
 			_onEnterCalled = false;
@@ -66,7 +73,7 @@ public class UIButton : ScriptableUIObject
 
 		if (insideX && insideY && GetMouseButtonDown(MouseButton.Mouse0))
 		{
-			OnDragClicked();
+			DragClicked();
 			_clicked = true;
 			_released = false;
 		}
@@ -76,9 +83,9 @@ public class UIButton : ScriptableUIObject
 			if (!_released && _clicked)
 			{
 				if (insideX && insideY)
-					OnFullClicked();
+					FullClicked();
 
-				OnReleased();
+				Released();
 				_released = true;
 				_clicked = false;
 			}
@@ -86,6 +93,6 @@ public class UIButton : ScriptableUIObject
 
 
 		if (!(insideX && insideY) && GetMouseButtonDown(MouseButton.Mouse0))
-			OnDeselected();
+			Deselected();
 	}
 }

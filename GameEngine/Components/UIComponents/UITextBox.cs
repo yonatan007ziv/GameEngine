@@ -4,22 +4,14 @@ public class UITextBox : UIButton
 {
 	private bool editingEnabled;
 
-	// Enable textbox editing
-	protected override void OnDragClicked()
-	{
-		editingEnabled = true;
-	}
-
-	// Enable textbox editing
-	protected override void OnDeselected()
-	{
-		editingEnabled = false;
-	}
-
 	public UITextBox(string materialName)
 		: base(materialName)
 	{
+		// Enable textbox editing
+		OnDragClicked += () => editingEnabled = true;
 
+		// Disable textbox editing
+		OnDeselected += () => editingEnabled = false;
 	}
 
 	public override void Update(float deltaTime)

@@ -66,6 +66,8 @@ internal class GameEngine : IGameEngine
 		this.logger = logger;
 		this.resourceDiscoverer = resourceDiscoverer;
 
+		resourceDiscoverer.AddResourceFolder(Directory.GetCurrentDirectory() + @"\EngineResources");
+
 		GraphicsEngine = renderer;
 		SoundEngine = soundEngine;
 		InputEngine = inputEngine;
@@ -180,7 +182,7 @@ internal class GameEngine : IGameEngine
 	}
 
 	public void SetResourceFolder(string path)
-		=> resourceDiscoverer.InitResourceFolder(path);
+		=> resourceDiscoverer.AddResourceFolder(path);
 
 	public void SetBackgroundColor(Color color)
 		=> GraphicsEngine.SetBackgroundColor(color);

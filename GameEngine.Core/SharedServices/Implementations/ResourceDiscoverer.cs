@@ -15,13 +15,16 @@ public class ResourceDiscoverer : IResourceDiscoverer
 		this.logger = logger;
 	}
 
-	public void InitResourceFolder(string folderPath)
+	public void AddResourceFolder(string folderPath)
 	{
 		// If resources folder doesn't exist
 		if (!Directory.Exists(folderPath))
-			Directory.CreateDirectory(folderPath);
+		{
+			logger.LogCritical("Resource path {folderPath} does not exist", folderPath);
+			return;
+		}
 
-		DiscoverResources(new DirectoryInfo(folderPath), @"Resources\");
+		DiscoverResources(new DirectoryInfo(folderPath));
 		initializedFolder = true;
 	}
 
@@ -47,12 +50,12 @@ public class ResourceDiscoverer : IResourceDiscoverer
 		return resourceNamePathDictionary.ContainsKey(resource);
 	}
 
-	private void DiscoverResources(DirectoryInfo directory, string depth)
+	private void DiscoverResources(DirectoryInfo directory)
 	{
 		foreach (FileInfo file in directory.GetFiles())
-			resourceNamePathDictionary.Add(file.Name, Path.Combine(depth, file.Name));
+			resourceNamePathDictionary.Add(file.Name, file.FullName);
 
 		foreach (DirectoryInfo subDirectory in directory.GetDirectories())
-			DiscoverResources(subDirectory, Path.Combine(depth, subDirectory.Name));
+			DiscoverResources(subDirectory);
 	}
 }
