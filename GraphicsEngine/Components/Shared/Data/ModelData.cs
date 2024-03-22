@@ -12,9 +12,4 @@ internal class ModelData
 		VertexArray = vertexArray;
 		IndicesCount = indicesCount;
 	}
-
-	~ModelData()
-	{
-		Console.WriteLine("Disposed ModelData");
-	}
 }

@@ -53,7 +53,10 @@ public class ResourceDiscoverer : IResourceDiscoverer
 	private void DiscoverResources(DirectoryInfo directory)
 	{
 		foreach (FileInfo file in directory.GetFiles())
-			resourceNamePathDictionary.Add(file.Name, file.FullName);
+			if (resourceNamePathDictionary.ContainsKey(file.Name))
+				logger.LogError("Resource with name {name} already exists", file.Name);
+			else
+				resourceNamePathDictionary.Add(file.Name, file.FullName);
 
 		foreach (DirectoryInfo subDirectory in directory.GetDirectories())
 			DiscoverResources(subDirectory);
