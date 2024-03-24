@@ -5,7 +5,7 @@ namespace SampleFont;
 internal class TestButton : UIButton
 {
 	public TestButton()
-		: base("Trex")
+		: base("Trex.mat")
 	{
 
 	}

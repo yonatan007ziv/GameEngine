@@ -92,7 +92,7 @@ internal class ServiceRegisterer
 		collection.AddSingleton<ObjModelImporter>();
 
 		// Managers
-		collection.AddSingleton<IShaderManager, ShaderManager>();
+		collection.AddSingleton<IShaderManager, GLShaderManager>();
 		collection.AddSingleton<IResourceManager, ContentResourceManager>();
 		collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
 		collection.AddSingleton<ITextureManager, TextureManager>();

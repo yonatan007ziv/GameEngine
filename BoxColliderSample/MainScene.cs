@@ -25,7 +25,13 @@ internal class MainScene : Scene
 		MapKeyboardButton("Escape", KeyboardButton.Escape);
 		MapGamepadButton("Escape", GamepadButton.Start);
 
-		// Ground, temp solution
+		UICameras.Add((new UICamera(), new ViewPort(0.5f, 0.5f, 1, 1)));
+		TestButton a = new TestButton();
+		a.Transform.Scale /= 5;
+		a.Transform.Position = new Vector3(0.9f - a.Transform.Scale.X, 0.9f - a.Transform.Scale.Y, 0);
+		UIObjects.Add(a);
+
+		// Ground
 		WorldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Wall
@@ -40,14 +46,7 @@ internal class MainScene : Scene
 		// Player
 		Player player = new Player();
 		player.Transform.Position += new Vector3(0, 10, 0);
-
 		WorldObjects.Add(player);
 		WorldCameras.Add((player.camera, new ViewPort(0.5f, 0.5f, 1, 1)));
-
-		UICameras.Add((new UICamera(), new ViewPort(0.5f, 0.5f, 1, 1)));
-		TestButton a = new TestButton();
-		a.Transform.Scale /= 5;
-		a.Transform.Position = new Vector3(0.9f - a.Transform.Scale.X, 0.9f - a.Transform.Scale.Y, 0);
-		UIObjects.Add(a);
 	}
 }

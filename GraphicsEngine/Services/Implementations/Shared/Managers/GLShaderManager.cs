@@ -4,12 +4,12 @@ using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces.Utils.Managers;
 namespace GraphicsEngine.Services.Implementations.Shared.Managers;
 
-public class ShaderManager : IShaderManager
+public class GLShaderManager : IShaderManager
 {
 	private readonly IFactory<string, string, IShaderProgram> shaderProgramFactory;
 	private readonly Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
 
-	public ShaderManager(IFactory<string, string, IShaderProgram> shaderProgramFactory)
+	public GLShaderManager(IFactory<string, string, IShaderProgram> shaderProgramFactory)
 	{
 		this.shaderProgramFactory = shaderProgramFactory;
 	}

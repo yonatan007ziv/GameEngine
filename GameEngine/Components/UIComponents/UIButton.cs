@@ -9,6 +9,20 @@ public class UIButton : ScriptableUIObject
 {
 	private bool _onEnterCalled = true, _onExitCalled = true, _clicked = true, _released = true;
 
+	private bool _enabled = true;
+	public bool Enabled
+	{
+		get => _enabled;
+		set
+		{
+			_enabled = value;
+			Meshes[0] = _enabled ? new MeshData("UIRect.obj", Material) : new MeshData("UIRect.obj", (DisabledMaterial == "" ? "Default.mat" : DisabledMaterial));
+		}
+	}
+
+	public string Material { get; } = "";
+	public string DisabledMaterial { get; set; } = "";
+
 	public event Action? OnFullClicked;
 	public event Action? OnDragClicked;
 	public event Action? OnDeselected;
@@ -26,10 +40,14 @@ public class UIButton : ScriptableUIObject
 	public UIButton(string material)
 	{
 		Meshes.Add(new MeshData("UIRect.obj", material));
+		Material = material;
 	}
 
 	public override void Update(float deltaTime)
 	{
+		if (!Enabled)
+			return;
+
 		if (MouseLocked)
 		{
 			if (_clicked && !_released)
