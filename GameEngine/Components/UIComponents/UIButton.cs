@@ -17,11 +17,11 @@ public class UIButton : ScriptableUIObject
 	public event Action? OnExit;
 
 	private void FullClicked() => OnFullClicked?.Invoke();
-	private void DragClicked() => OnFullClicked?.Invoke();
-	private void Deselected() => OnFullClicked?.Invoke();
-	private void Released() => OnFullClicked?.Invoke();
-	private void Enter() => OnFullClicked?.Invoke();
-	private void Exit() => OnFullClicked?.Invoke();
+	private void DragClicked() => OnDragClicked?.Invoke();
+	private void Deselected() => OnDeselected?.Invoke();
+	private void Released() => OnReleased?.Invoke();
+	private void Enter() => OnEnter?.Invoke();
+	private void Exit() => OnExit?.Invoke();
 
 	public UIButton(string material)
 	{
