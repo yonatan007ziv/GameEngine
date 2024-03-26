@@ -121,7 +121,47 @@ internal class InputEngine : IInputEngine
 
 		// 0 - 9
 		if (48 <= keyboardButtonValue && keyboardButtonValue <= 57)
-			received = ((char)keyboardButtonValue).ToString();
+		{
+			char gottenChar = (char)keyboardButtonValue;
+			if (keyboardButtons.Contains(KeyboardButton.LShift) || keyboardButtons.Contains(KeyboardButton.RShift))
+			{
+				// Shift modifier pressed
+				switch (gottenChar)
+				{
+					case '1':
+						gottenChar = '!';
+						break;
+					case '2':
+						gottenChar = '@';
+						break;
+					case '3':
+						gottenChar = '#';
+						break;
+					case '4':
+						gottenChar = '$';
+						break;
+					case '5':
+						gottenChar = '%';
+						break;
+					case '6':
+						gottenChar = '^';
+						break;
+					case '7':
+						gottenChar = '&';
+						break;
+					case '8':
+						gottenChar = '*';
+						break;
+					case '9':
+						gottenChar = ')';
+						break;
+					case '0':
+						gottenChar = ')';
+						break;
+				}
+			}
+			received = gottenChar.ToString();
+		}
 
 		// A - Z
 		if (65 <= keyboardButtonValue && keyboardButtonValue <= 90)

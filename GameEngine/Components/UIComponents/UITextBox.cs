@@ -19,11 +19,6 @@ public class UITextBox : UIButton
 		base.Update(deltaTime);
 
 		if (editingEnabled)
-		{
-			string prev = TextData.Text;
 			TextData.Text = CaptureKeyboardInput(TextData.Text);
-			if (prev != TextData.Text)
-				Console.WriteLine(TextData.Text);
-		}
 	}
 }

@@ -9,7 +9,6 @@ internal class FontTestingScene : Scene
 	{
 		UICameras.Add((new UICamera(), new GameEngine.Core.Components.ViewPort(0.5f, 0.5f, 1, 1)));
 
-
 		UITextBox box = new UITextBox("WhiteGrayBorder");
 		box.Transform.Scale /= 4;
 		box.Transform.Position = new System.Numerics.Vector3(0.75f, 0.5f, 0);

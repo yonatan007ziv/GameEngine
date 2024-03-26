@@ -48,9 +48,4 @@ internal class MeshRenderer
 
 		modelMatrix = rotationMatrix * Matrix4x4.CreateScale(transform.Scale) * Matrix4x4.CreateTranslation(transform.Position);
 	}
-
-	~MeshRenderer()
-	{
-		Console.WriteLine("Disposed MeshRenderer");
-	}
 }
