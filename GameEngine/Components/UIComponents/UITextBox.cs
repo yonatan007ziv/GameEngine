@@ -9,7 +9,7 @@ public class UITextBox : UIButton
 	{
 		// Enable textbox editing
 		OnDragClicked += () => editingEnabled = true;
-
+		
 		// Disable textbox editing
 		OnDeselected += () => editingEnabled = false;
 	}
@@ -18,7 +18,7 @@ public class UITextBox : UIButton
 	{
 		base.Update(deltaTime);
 
-		if (editingEnabled)
+        if (editingEnabled)
 			TextData.Text = CaptureKeyboardInput(TextData.Text);
 	}
 }

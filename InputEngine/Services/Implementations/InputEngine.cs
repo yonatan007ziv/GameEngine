@@ -93,6 +93,12 @@ internal class InputEngine : IInputEngine
 			case KeyboardButton.Space:
 				received = " ";
 				break;
+			case KeyboardButton.Period:
+				received = ".";
+				break;
+			case KeyboardButton.Comma:
+				received = ",";
+				break;
 			case KeyboardButton.Tab:
 				received = "\t";
 				break;
@@ -116,6 +122,12 @@ internal class InputEngine : IInputEngine
 				break;
 			case KeyboardButton.Backslash:
 				received = "\\";
+				break;
+			case KeyboardButton.LeftSquareBracket:
+				received = "[";
+				break;
+			case KeyboardButton.RightSquareBracket:
+				received = "]";
 				break;
 		}
 

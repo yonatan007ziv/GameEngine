@@ -60,6 +60,10 @@ internal static class SilkOpenGLInputExtensions
 
 			case Silk.NET.Input.Key.Space:
 				return KeyboardButton.Space;
+			case Silk.NET.Input.Key.Period:
+				return KeyboardButton.Period;
+			case Silk.NET.Input.Key.Comma:
+				return KeyboardButton.Comma;
 			case Silk.NET.Input.Key.Enter:
 				return KeyboardButton.Enter;
 			case Silk.NET.Input.Key.Tab:
@@ -82,6 +86,10 @@ internal static class SilkOpenGLInputExtensions
 				return KeyboardButton.Slash;
 			case Silk.NET.Input.Key.BackSlash:
 				return KeyboardButton.Backslash;
+			case Silk.NET.Input.Key.LeftBracket:
+				return KeyboardButton.LeftSquareBracket;
+			case Silk.NET.Input.Key.RightBracket:
+				return KeyboardButton.RightSquareBracket;
 			case Silk.NET.Input.Key.Backspace:
 				return KeyboardButton.Backspace;
 			case Silk.NET.Input.Key.Delete:

@@ -12,6 +12,8 @@ public enum KeyboardButton
 
 	// Special characters
 	Space,
+	Period,
+	Comma,
 	Tab,
 	Backtick,
 	Semicolon,
@@ -20,6 +22,8 @@ public enum KeyboardButton
 	Apostrophe,
 	Slash,
 	Backslash,
+	LeftSquareBracket,
+	RightSquareBracket,
 
 	// Special insertions
 	Enter,

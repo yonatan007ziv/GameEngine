@@ -60,6 +60,10 @@ internal static class OpenTKInputExtensions
 
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Space:
 				return KeyboardButton.Space;
+			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Period:
+				return KeyboardButton.Period;
+			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Comma:
+				return KeyboardButton.Comma;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Enter:
 				return KeyboardButton.Enter;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Tab:
@@ -82,6 +86,10 @@ internal static class OpenTKInputExtensions
 				return KeyboardButton.Slash;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backslash:
 				return KeyboardButton.Backslash;
+			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.LeftBracket:
+				return KeyboardButton.LeftSquareBracket;
+			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightBracket:
+				return KeyboardButton.RightSquareBracket;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace:
 				return KeyboardButton.Backspace;
 			case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Delete:
