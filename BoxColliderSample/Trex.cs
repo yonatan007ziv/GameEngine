@@ -15,7 +15,7 @@ internal class Trex : ScriptableWorldObject
 	public override void Update(float deltaTime)
 	{
 		if (GetKeyboardButtonDown(KeyboardButton.Delete))
-			WorldObjects.Remove(this);
+			Visible = !Visible;
 	}
 
 	~Trex()

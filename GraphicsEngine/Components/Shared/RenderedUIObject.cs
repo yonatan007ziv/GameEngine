@@ -49,8 +49,9 @@ internal class RenderedUIObject
 			shouldUpdateMeshes = false;
 		}
 
-		foreach (MeshRenderer meshRenderer in Meshes)
-			meshRenderer.Render(camera);
+		if (uiObject.Visible)
+			foreach (MeshRenderer meshRenderer in Meshes)
+				meshRenderer.Render(camera);
 	}
 
 	public void Update()

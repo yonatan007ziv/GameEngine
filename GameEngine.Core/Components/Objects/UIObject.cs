@@ -8,6 +8,7 @@ public abstract class UIObject
 	public readonly List<UIComponent> components = new List<UIComponent>();
 	public readonly TextData TextData;
 	public string Text { get => TextData.Text; set => TextData.Text = value; }
+	public bool Visible { get; set; } = true;
 
 	public Transform Transform { get; }
 	public ObservableCollection<MeshData> Meshes { get; }

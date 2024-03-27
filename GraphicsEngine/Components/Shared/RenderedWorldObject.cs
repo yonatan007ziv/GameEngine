@@ -46,7 +46,8 @@ internal class RenderedWorldObject
 			shouldUpdateMeshes = false;
 		}
 
-		foreach (MeshRenderer meshRenderer in Meshes)
+		if (worldObject.Visible)
+			foreach (MeshRenderer meshRenderer in Meshes)
 			meshRenderer.Render(camera);
 	}
 

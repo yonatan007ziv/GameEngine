@@ -7,6 +7,7 @@ public class WorldObject
 {
 	public int Id { get; }
 	public string Tag { get; protected set; } = "";
+	public bool Visible { get; set; } = true;
 
 	public readonly List<WorldComponent> components = new List<WorldComponent>();
 
