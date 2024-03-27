@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.API;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.SharedServices.Implementations;
 using GameEngine.Core.SharedServices.Implementations.FileReaders;
 using GameEngine.Core.SharedServices.Implementations.Loggers;
@@ -104,7 +105,10 @@ internal class ServiceRegisterer
 		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
 		collection.AddSingleton<IFactory<string, ModelData>, ModelFactory>();
 
+		// Font reader
+		collection.AddSingleton<IFileReader<Font>, FontFileReader>();
 
+		// Buffer managers
 		collection.AddSingleton<IBufferDeletor, BufferDeletor>();
 		collection.AddSingleton<IBufferFactory, BufferFactory>();
 

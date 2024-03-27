@@ -1,16 +1,14 @@
-﻿using GameEngine.Core.Components.Fonts;
-
-namespace GameEngine.Core.Components;
+﻿namespace GameEngine.Core.Components;
 
 public class TextData
 {
 	public string Text { get; set; } = "";
-	public Font Font { get; set; }
+	public string FontName { get; set; }
 	public int FontSize { get; set; }
 
-	public TextData(Font font, int fontSize = 12)
+	public TextData()
 	{
-		Font = font;
-		FontSize = fontSize;
+		FontName = "Arial.ttf";
+		FontSize = 10;
 	}
 }

@@ -18,7 +18,7 @@ public abstract class UIObject
 		Id = IdGenerator.GenerateNext();
 
 		// Default font
-		TextData = new TextData(default!);
+		TextData = new TextData();
 
 		Transform = new Transform();
 		Meshes = new ObservableCollection<MeshData>();

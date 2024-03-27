@@ -13,15 +13,14 @@ public class FontFileReader : IFileReader<Font>
 		this.trueTypeFontFileReader = trueTypeFontFileReader;
 	}
 
-	public bool ReadFile(string filePath, out Font result)
+	public bool ReadFile(string fontName, out Font result)
 	{
-		string extension = Path.GetExtension(filePath);
+		string extension = Path.GetExtension(fontName);
 
-		if (extension == "ttf")
-		{
+		if (extension == ".ttf")
+			return trueTypeFontFileReader.ReadFile(fontName, out result);
 
-		}
-
-		throw new Exception("Unkown font file");
+		result = default!;
+		return false;
 	}
 }

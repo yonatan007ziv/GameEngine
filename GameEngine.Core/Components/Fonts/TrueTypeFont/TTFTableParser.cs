@@ -149,8 +149,10 @@ internal class TTFTableParser
 					{
 						byte repeatCount = ReadUInt8(binaryReader);
 						for (int k = 0; k < repeatCount; k++)
-							flagsSimple[j + k] = flagsSimple[j];
-						j += repeatCount;
+						{
+							flagsSimple[j + 1] = flagsSimple[j - k];
+							j++;
+						}
 					}
 				}
 
@@ -217,9 +219,11 @@ internal class TTFTableParser
 
 		for (int i = 0; i < numberSubtables; i++)
 		{
-			ushort format = binaryReader.ReadUInt16();
+			ushort platformID = binaryReader.ReadUInt16();
+			ushort platformSpecificID = binaryReader.ReadUInt16();
+			uint offset = binaryReader.ReadUInt32();
 
-			switch (format)
+			switch (platformID)
 			{
 				default:
 					logger.LogError("TTF: Invalid CMAP format");
@@ -310,7 +314,7 @@ internal class TTFTableParser
 	{
 		binaryReader.BaseStream.Seek(vheaInfo.offset, SeekOrigin.Begin);
 
-		float version = ReadFixed32(binaryReader);
+		float version = ReadFixed1616(binaryReader);
 		short vertTypoAscender = ReadInt16(binaryReader);
 		short vertTypoDescender = ReadInt16(binaryReader);
 		short vertTypoLineGap = ReadInt16(binaryReader);

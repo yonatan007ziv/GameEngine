@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <None Remove="EngineResources\Fonts\Arial.ttf" />
+    <None Remove="EngineResources\Fonts\LoveDays.ttf" />
     <None Remove="EngineResources\Materials\Default.mat" />
     <None Remove="EngineResources\Materials\MissingTexture.mat" />
     <None Remove="EngineResources\Models\Cube.obj" />
@@ -39,6 +40,9 @@
 
   <ItemGroup>
     <Content Include="EngineResources\Fonts\Arial.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Fonts\LoveDays.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Materials\Default.mat">

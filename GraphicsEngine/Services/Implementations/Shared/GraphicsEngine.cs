@@ -3,6 +3,7 @@ using GameEngine.Core.Components;
 using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.Components.Objects;
+using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	private readonly ILogger logger;
 	private readonly IInternalGraphicsRenderer internalRenderer;
 	private readonly IBufferDeletor bufferDeletor;
+	private readonly IFileReader<Font> fontLoader;
 
 	public static GraphicsEngine EngineContext = null!;
 
@@ -23,6 +25,8 @@ internal class GraphicsEngine : IGraphicsEngine
 	public string Title { get => internalRenderer.Title; set => internalRenderer.Title = value; }
 	public Vector2 WindowSize { get => internalRenderer.WindowSize; }
 	public bool LogRenderingMessages { get => internalRenderer.LogRenderingMessages; set => internalRenderer.LogRenderingMessages = value; }
+
+	private readonly Dictionary<string, Font> fonts = new Dictionary<string, Font>();
 
 	private readonly List<int> allObjectIds = new List<int>();
 
@@ -41,13 +45,14 @@ internal class GraphicsEngine : IGraphicsEngine
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor)
+	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader)
 	{
 		EngineContext = this;
 
 		this.logger = logger;
 		this.internalRenderer = internalRenderer;
 		this.bufferDeletor = bufferDeletor;
+		this.fontLoader = fontLoader;
 
 		internalRenderer.LoadEvent += () => { Load?.Invoke(); };
 		internalRenderer.ResizedEvent += WindowResized;
@@ -97,22 +102,7 @@ internal class GraphicsEngine : IGraphicsEngine
 				uiObject.Render(camera);
 
 				// Render text
-				//int offsetX = 0, offsetY = 0;
-				//foreach (char c in uiObject.TextData.Text)
-				//{
-				//	CharacterGlyf currentGlyf = uiObject.TextData.Font.CharacterMaps[c];
-				//
-				//	// Draw
-				//	DrawCharacterGlyf(currentGlyf, uiObject.Transform.Position + new Vector3(offsetX, offsetY, 0));
-				//
-				//	offsetX += currentGlyf.Width;
-				//	// If newline
-				//	if (c == '\n')
-				//	{
-				//		offsetX = 0;
-				//		offsetY += currentGlyf.Height;
-				//	}
-				//}
+				DrawText(uiObject.TextData.Text, uiObject.TextData.FontName, uiObject.TextData.FontSize, uiObject.Transform.Position);
 			}
 		}
 
@@ -135,9 +125,67 @@ internal class GraphicsEngine : IGraphicsEngine
 		FinalizedTextureBuffers.Clear();
 	}
 
-	private void DrawCharacterGlyf(CharacterGlyf glyf, Vector3 position)
+	private void DrawText(string text, string fontName, int fontSize, Vector3 centeredPosition)
 	{
+		Font font;
 
+		if (!fonts.ContainsKey(fontName))
+		{
+			if (!fontLoader.ReadFile(fontName, out font))
+			{
+				logger.LogError("Font {fontName} could not be loaded", fontName);
+				return;
+			}
+
+			fonts[fontName] = font;
+		}
+
+		font = fonts[fontName];
+
+		string[] textLines = text.Split('\n');
+
+		// Compute total line width and height
+		int width = 0, height = 0;
+		foreach (string line in textLines)
+		{
+			int currentWidth = 0;
+			// Go through each letter, guaranteed to not be a newline
+			foreach (char c in line)
+				currentWidth += font.CharacterMaps[c].Width;
+
+			if (width < currentWidth)
+				width = currentWidth;
+
+			// Get the tallest letter's height
+			height += font.CharacterMaps['L'].Height;
+		}
+
+		// Starting position is the centered position minus half of the total line length
+		int x = (int)(centeredPosition.X - width / 2f);
+		int y = (int)(centeredPosition.Y - height / 2f);
+
+		foreach (char c in text)
+		{
+
+			// If newline
+			if (c == '\n')
+			{
+				// Reset the X coordinate
+				x = (int)(centeredPosition.X - width / 2f);
+
+				// Get the tallest letter's height and add to the y coordinate
+				y += font.CharacterMaps['L'].Height;
+
+				continue;
+			}
+
+			CharacterGlyf currentGlyf = font.CharacterMaps[c];
+
+			// Draw glyf
+			internalRenderer.DrawCharacterGlyf(currentGlyf, fontSize, new Vector2(x, y));
+
+			x += currentGlyf.Width;
+		}
 	}
 
 	private void WindowResized()

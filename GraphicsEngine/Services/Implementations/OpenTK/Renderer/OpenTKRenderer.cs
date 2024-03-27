@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
@@ -111,5 +112,10 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 				logger.LogTrace("GL-TRACE: {errorMsg}", msg);
 				break;
 		}
+	}
+
+	public void DrawCharacterGlyf(CharacterGlyf characterGlyf, int fontSize, Vector2 centeredPosition)
+	{
+		throw new NotImplementedException();
 	}
 }

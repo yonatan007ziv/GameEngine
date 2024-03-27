@@ -20,12 +20,25 @@ public class Font
 		FontSubFamily = name.Name[2];
 		Version = head.FontRevision.ToString();
 
+		List<KeyValuePair<char, CharacterGlyf>> characterMaps = new List<KeyValuePair<char, CharacterGlyf>>();
+
 		for (int i = 0; i < maxp.NumGlyphs; i++)
 		{
-			// CMAP and GLYF
+			//char characterCode = cmap.GetMapping(i); // Get character code from cmap
+			//
+			//int glyphIndex = loca.GetGlyphIndex(i); // Get glyph index from loca
+			//if (glyphIndex == -1)
+			//	continue; // Skip if glyph index is invalid
+			//
+			//int width = hmtx.GetAdvanceWidth(glyphIndex); // Get width from hmtx
+			//int height = vmtx.GetAdvanceHeight(glyphIndex); // Get height from vmtx
+			//
+			//CharacterContour[] contours = glyf.GetContours(glyphIndex); // Get contours from glyf
+			//
+			//CharacterGlyf characterGlyf = new CharacterGlyf(contours, width, height);
+			//characterMaps.Add(KeyValuePair.Create(characterCode, characterGlyf));
 		}
 
-		KeyValuePair<char, CharacterGlyf>[] characterMaps = null;
 		CharacterMaps = new Dictionary<char, CharacterGlyf>(characterMaps);
 	}
 }

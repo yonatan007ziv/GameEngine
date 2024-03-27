@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Shared;
@@ -24,6 +25,11 @@ internal class Direct12Renderer : IInternalGraphicsRenderer
 	public event Action<MouseEventData>? MouseEvent;
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
+
+	public void DrawCharacterGlyf(CharacterGlyf characterGlyf, int fontSize, Vector2 centeredPosition)
+	{
+		throw new NotImplementedException();
+	}
 
 	public void ProcessEvents()
 	{

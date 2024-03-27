@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Shared;
@@ -31,4 +32,5 @@ internal interface IInternalGraphicsRenderer
 	void SetBackgroundColor(Color color);
 	void SetDepthTest(bool enable);
 	void SetViewport(ViewPort viewport);
+	void DrawCharacterGlyf(CharacterGlyf characterGlyf, int fontSize, Vector2 centeredPosition);
 }

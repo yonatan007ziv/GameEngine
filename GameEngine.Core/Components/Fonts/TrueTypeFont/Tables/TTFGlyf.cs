@@ -42,6 +42,7 @@ internal class TTFGlyf
 			YMin = yMin;
 			XMax = xMax;
 			YMax = yMax;
+
 			EndPtsOfContours = endPtsOfContours;
 			InstructionLength = instructionLength;
 			Instructions = instructions;
