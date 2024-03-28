@@ -7,9 +7,9 @@ namespace GraphicsEngine.Services.Implementations.SilkOpenGL;
 
 internal class SilkOpenGLShaderProgramFactory : IFactory<ShaderSource, ShaderSource, IShaderProgram>
 {
-	public bool Create(ShaderSource vertexShader, ShaderSource fragmentShader, out IShaderProgram result)
-	{
-		result = new SilkOpenGLShaderProgram(vertexShader, fragmentShader, SilkOpenGLContext.Instance.silkOpenGLContext);
-		return true;
-	}
+    public bool Create(ShaderSource vertexShader, ShaderSource fragmentShader, out IShaderProgram result)
+    {
+        result = new SilkOpenGLShaderProgram(vertexShader, fragmentShader, SilkOpenGLContext.Instance.silkOpenGLContext);
+        return true;
+    }
 }

@@ -2,5 +2,5 @@
 
 public interface IFileReader<T>
 {
-	bool ReadFile(string filePath, out T result);
+    bool ReadFile(string filePath, out T result);
 }

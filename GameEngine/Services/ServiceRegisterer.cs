@@ -12,52 +12,52 @@ namespace GameEngine.Services;
 
 internal class ServiceRegisterer
 {
-	private readonly IServiceCollection collection = new ServiceCollection();
-	private bool registeredGraphicsEngine;
+    private readonly IServiceCollection collection = new ServiceCollection();
+    private bool registeredGraphicsEngine;
 
-	public IServiceProvider BuildProvider()
-	{
-		RegisterServices();
-		return collection.BuildServiceProvider();
-	}
+    public IServiceProvider BuildProvider()
+    {
+        RegisterServices();
+        return collection.BuildServiceProvider();
+    }
 
-	private void RegisterServices()
-	{
-		collection.AddSingleton<ILogger, ConsoleLogger>();
+    private void RegisterServices()
+    {
+        collection.AddSingleton<ILogger, ConsoleLogger>();
 
-		RegisterEngines();
-	}
+        RegisterEngines();
+    }
 
-	private void RegisterEngines()
-	{
-		if (!registeredGraphicsEngine)
-		{
-			Console.WriteLine("No graphics api registered");
-			Environment.Exit(1);
-		}
+    private void RegisterEngines()
+    {
+        if (!registeredGraphicsEngine)
+        {
+            Console.WriteLine("No graphics api registered");
+            Environment.Exit(1);
+        }
 
-		// Shared
-		collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
+        // Shared
+        collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
 
-		// Font parsers
-		collection.AddSingleton<IFileReader<Font>, FontFileReader>();
-		collection.AddSingleton<TrueTypeFontFileReader>();
+        // Font parsers
+        collection.AddSingleton<IFileReader<Font>, FontFileReader>();
+        collection.AddSingleton<TrueTypeFontFileReader>();
 
-		collection.AddSingleton<IGameEngine, Implementations.GameEngine>();
-		PhysicsEngine.PhysicsEngineProvider.RegisterEngine(collection);
-		SoundEngine.SoundEngineProvider.RegisterEngine(collection);
-		InputEngine.InputEngineProvider.RegisterEngine(collection);
-	}
+        collection.AddSingleton<IGameEngine, Implementations.GameEngine>();
+        PhysicsEngine.PhysicsEngineProvider.RegisterEngine(collection);
+        SoundEngine.SoundEngineProvider.RegisterEngine(collection);
+        InputEngine.InputEngineProvider.RegisterEngine(collection);
+    }
 
-	public void UseOpenTK()
-	{
-		GraphicsEngine.GraphicsEngineProvider.RegisterEngineOpenTK(collection);
-		registeredGraphicsEngine = true;
-	}
+    public void UseOpenTK()
+    {
+        GraphicsEngine.GraphicsEngineProvider.RegisterEngineOpenTK(collection);
+        registeredGraphicsEngine = true;
+    }
 
-	public void UseSilkOpenGL()
-	{
-		GraphicsEngine.GraphicsEngineProvider.RegisterEngineSilkOpenGL(collection);
-		registeredGraphicsEngine = true;
-	}
+    public void UseSilkOpenGL()
+    {
+        GraphicsEngine.GraphicsEngineProvider.RegisterEngineSilkOpenGL(collection);
+        registeredGraphicsEngine = true;
+    }
 }

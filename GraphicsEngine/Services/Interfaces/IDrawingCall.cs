@@ -4,5 +4,5 @@ namespace GraphicsEngine.Services.Interfaces;
 
 internal interface IDrawingCall
 {
-	void DrawCall(ModelData modelData);
+    void DrawCall(ModelData modelData);
 }

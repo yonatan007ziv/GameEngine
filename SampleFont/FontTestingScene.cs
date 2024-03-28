@@ -5,22 +5,21 @@ namespace SampleFont;
 
 internal class FontTestingScene : Scene
 {
-	public FontTestingScene()
-	{
-		UICameras.Add((new UICamera(), new GameEngine.Core.Components.ViewPort(0.5f, 0.5f, 1, 1)));
+    public FontTestingScene()
+    {
+        UICameras.Add((new UICamera(), new GameEngine.Core.Components.ViewPort(0.5f, 0.5f, 1, 1)));
 
-		UITextBox box = new UITextBox("WhiteGrayBorder");
-		box.Transform.Scale /= 4;
-		box.Transform.Position = new System.Numerics.Vector3(0.75f, 0.5f, 0);
-		UIObjects.Add(box);
+        int boxCount = 1;
+        for (int i = 0; i < boxCount; i++)
+        {
+            UITextBox box = new UITextBox("WhiteGrayBorder.mat");
+            box.Transform.Scale = new System.Numerics.Vector3(1, 1f / boxCount, 1);
+            box.Transform.Position = new System.Numerics.Vector3(0, (float)i / boxCount * 2 - 1 + 1f / boxCount, 0);
+            UIObjects.Add(box);
+        }
 
-		UITextBox boxB = new UITextBox("WhiteGrayBorder");
-		boxB.Transform.Scale /= 4;
-		boxB.Transform.Position = new System.Numerics.Vector3(-0.75f, 0.5f, 0);
-		UIObjects.Add(boxB);
-
-		TestButton button = new TestButton();
-		button.Transform.Scale /= 4;
-		UIObjects.Add(button);
-	}
+        // TestButton button = new TestButton();
+        // button.Transform.Scale /= 4;
+        // UIObjects.Add(button);
+    }
 }

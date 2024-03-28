@@ -5,16 +5,16 @@ namespace SampleFont;
 
 internal class TestButton : UIButton
 {
-	public TestButton()
-		: base("Trex.mat")
-	{
+    public TestButton()
+        : base("Trex.mat")
+    {
 
-	}
+    }
 
-	public override void Update(float deltaTime)
-	{
-		base.Update(deltaTime);
-		if (GetKeyboardButtonDown(KeyboardButton.A))
-			Visible = !Visible;
-	}
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+        if (GetKeyboardButtonDown(KeyboardButton.A))
+            Visible = !Visible;
+    }
 }

@@ -5,25 +5,25 @@ namespace SoundEngine.Services;
 
 internal class ServiceRegisterer
 {
-	private readonly IServiceCollection collection;
+    private readonly IServiceCollection collection;
 
-	public ServiceRegisterer()
-	{
-		collection = new ServiceCollection();
-		RegisterServices();
-	}
+    public ServiceRegisterer()
+    {
+        collection = new ServiceCollection();
+        RegisterServices();
+    }
 
-	public ServiceRegisterer(IServiceCollection collection)
-	{
-		this.collection = collection;
-		RegisterServices();
-	}
+    public ServiceRegisterer(IServiceCollection collection)
+    {
+        this.collection = collection;
+        RegisterServices();
+    }
 
-	public IServiceProvider BuildProvider()
-		=> collection.BuildServiceProvider();
+    public IServiceProvider BuildProvider()
+        => collection.BuildServiceProvider();
 
-	private void RegisterServices()
-	{
-		collection.AddSingleton<ISoundEngine, Implementations.DirectSoundEngine>();
-	}
+    private void RegisterServices()
+    {
+        collection.AddSingleton<ISoundEngine, Implementations.DirectSoundEngine>();
+    }
 }

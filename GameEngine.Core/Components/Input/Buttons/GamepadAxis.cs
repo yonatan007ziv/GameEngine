@@ -2,8 +2,8 @@
 
 public enum GamepadAxis
 {
-	None,
-	LeftAnalogHorizontal, LeftAnalogVertical,
-	RightAnalogHorizontal, RightAnalogVertical,
-	RightTrigger, LeftTrigger,
+    None,
+    LeftAnalogHorizontal, LeftAnalogVertical,
+    RightAnalogHorizontal, RightAnalogVertical,
+    RightTrigger, LeftTrigger,
 }

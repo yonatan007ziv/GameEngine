@@ -6,37 +6,37 @@ namespace GameEngine.Core.API;
 
 public interface IInputEngine
 {
-	bool LogInputs { get; set; }
+    bool LogInputs { get; set; }
 
-	void InputTickPass();
-	Vector2 GetMousePos();
+    void InputTickPass();
+    Vector2 GetMousePos();
 
-	float GetAxis(string axis);
-	float GetAxisRaw(string axis);
+    float GetAxis(string axis);
+    float GetAxisRaw(string axis);
 
-	bool GetButtonPressed(string buttonName);
-	bool GetButtonDown(string buttonName);
+    bool GetButtonPressed(string buttonName);
+    bool GetButtonDown(string buttonName);
 
-	bool GetMouseButtonPressed(MouseButton mouseButton);
-	bool GetMouseButtonDown(MouseButton mouseButton);
+    bool GetMouseButtonPressed(MouseButton mouseButton);
+    bool GetMouseButtonDown(MouseButton mouseButton);
 
-	string CaptureKeyboardInput(string input);
-	bool GetKeyboardButtonPressed(KeyboardButton keyboardButton);
-	bool GetKeyboardButtonDown(KeyboardButton keyboardButton);
+    string CaptureKeyboardInput(string input);
+    bool GetKeyboardButtonPressed(KeyboardButton keyboardButton);
+    bool GetKeyboardButtonDown(KeyboardButton keyboardButton);
 
-	bool GetGamepadButtonPressed(GamepadButton gamepadButton);
-	bool GetGamepadButtonDown(GamepadButton gamepadButton);
+    bool GetGamepadButtonPressed(GamepadButton gamepadButton);
+    bool GetGamepadButtonDown(GamepadButton gamepadButton);
 
-	void OnMouseEvent(MouseEventData mouseEvent);
-	void OnKeyboardEvent(KeyboardEventData keyboardEvent);
-	void OnGamepadEvent(GamepadEventData gamepadEvent);
+    void OnMouseEvent(MouseEventData mouseEvent);
+    void OnKeyboardEvent(KeyboardEventData keyboardEvent);
+    void OnGamepadEvent(GamepadEventData gamepadEvent);
 
-	// Input mapper
-	void MapMouseButton(string buttonName, MouseButton mouseButton);
-	void MapKeyboardButton(string buttonName, KeyboardButton keyboardButton);
-	void MapGamepadButton(string buttonName, GamepadButton gamepadButton);
+    // Input mapper
+    void MapMouseButton(string buttonName, MouseButton mouseButton);
+    void MapKeyboardButton(string buttonName, KeyboardButton keyboardButton);
+    void MapGamepadButton(string buttonName, GamepadButton gamepadButton);
 
-	void MapMouseAxis(string axis, MouseAxis movementType, float multiplier, float offset);
-	void MapKeyboardAxis(string axis, KeyboardButton positive, KeyboardButton negative, float multiplier, float offset);
-	void MapGamepadAxis(string axis, GamepadAxis analog, float multiplier, float offset);
+    void MapMouseAxis(string axis, MouseAxis movementType, float multiplier, float offset);
+    void MapKeyboardAxis(string axis, KeyboardButton positive, KeyboardButton negative, float multiplier, float offset);
+    void MapGamepadAxis(string axis, GamepadAxis analog, float multiplier, float offset);
 }

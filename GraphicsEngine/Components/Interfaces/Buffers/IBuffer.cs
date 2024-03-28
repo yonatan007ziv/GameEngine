@@ -2,5 +2,5 @@
 
 internal interface IBuffer
 {
-	int Id { get; }
+    int Id { get; }
 }

@@ -4,5 +4,5 @@ namespace GameEngine.Services.Interfaces.Managers;
 
 internal interface ISceneManager
 {
-	SceneData LoadScene(string sceneName);
+    SceneData LoadScene(string sceneName);
 }

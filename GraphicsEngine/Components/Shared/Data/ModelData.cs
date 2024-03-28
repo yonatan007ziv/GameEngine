@@ -4,12 +4,12 @@ namespace GraphicsEngine.Components.Shared.Data;
 
 internal class ModelData
 {
-	public IVertexArray VertexArray { get; }
-	public uint IndicesCount { get; }
+    public IVertexArray VertexArray { get; }
+    public uint IndicesCount { get; }
 
-	public ModelData(IVertexArray vertexArray, uint indicesCount)
-	{
-		VertexArray = vertexArray;
-		IndicesCount = indicesCount;
-	}
+    public ModelData(IVertexArray vertexArray, uint indicesCount)
+    {
+        VertexArray = vertexArray;
+        IndicesCount = indicesCount;
+    }
 }

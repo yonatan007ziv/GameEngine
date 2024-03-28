@@ -2,6 +2,6 @@
 
 internal interface IInputHandler
 {
-	string Name { get; }
-	void Disconnect();
+    string Name { get; }
+    void Disconnect();
 }

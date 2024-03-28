@@ -2,6 +2,6 @@
 
 public enum MouseAxis
 {
-	None,
-	MouseHorizontal, MouseVertical,
+    None,
+    MouseHorizontal, MouseVertical,
 }

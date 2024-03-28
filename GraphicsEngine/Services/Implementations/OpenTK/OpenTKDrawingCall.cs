@@ -6,10 +6,10 @@ namespace GraphicsEngine.Services.Implementations.OpenTK;
 
 internal class OpenTKDrawingCall : IDrawingCall
 {
-	public void DrawCall(ModelData modelData)
-	{
-		modelData.VertexArray.Bind();
-		GL.DrawElements(PrimitiveType.Triangles, (int)modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
-		modelData.VertexArray.Unbind();
-	}
+    public void DrawCall(ModelData modelData)
+    {
+        modelData.VertexArray.Bind();
+        GL.DrawElements(PrimitiveType.Triangles, (int)modelData.IndicesCount, DrawElementsType.UnsignedInt, 0);
+        modelData.VertexArray.Unbind();
+    }
 }

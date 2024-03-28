@@ -4,5 +4,5 @@ namespace GraphicsEngine.Services.Interfaces.Utils;
 
 public interface ITextureLoader
 {
-	bool LoadTexture(string path, out TextureSource textureSource);
+    bool LoadTexture(string path, out TextureSource textureSource);
 }

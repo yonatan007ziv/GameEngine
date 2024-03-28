@@ -4,8 +4,8 @@ namespace GameEngine.Services.Interfaces.Managers;
 
 internal interface IGameObjectManager
 {
-	List<WorldObject> GameObjects { get; }
+    List<WorldObject> GameObjects { get; }
 
-	WorldObject CreateGameObject();
-	void RemoveGameObject(WorldObject gameObject);
+    WorldObject CreateGameObject();
+    void RemoveGameObject(WorldObject gameObject);
 }

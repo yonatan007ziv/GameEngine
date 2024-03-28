@@ -2,5 +2,5 @@
 
 public interface IComponent
 {
-	void Update(float deltaTime);
+    void Update(float deltaTime);
 }

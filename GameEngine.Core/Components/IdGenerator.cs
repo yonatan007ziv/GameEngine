@@ -2,8 +2,8 @@
 
 internal static class IdGenerator
 {
-	private static int currentId = 0;
+    private static int currentId = 0;
 
-	public static int GenerateNext()
-		=> currentId++;
+    public static int GenerateNext()
+        => currentId++;
 }

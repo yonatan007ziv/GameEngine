@@ -7,43 +7,43 @@ namespace GameEngine.Core.SharedServices.Implementations;
 
 public class PerformanceAnalyzer : IPerformanceAnalyzer
 {
-	private readonly ILogger logger;
-	private readonly List<Stopwatch> sw;
+    private readonly ILogger logger;
+    private readonly List<Stopwatch> sw;
 
-	public bool Logging { get; set; }
+    public bool Logging { get; set; }
 
-	public PerformanceAnalyzer(ILogger logger)
-	{
-		this.logger = logger;
+    public PerformanceAnalyzer(ILogger logger)
+    {
+        this.logger = logger;
 
-		sw = new List<Stopwatch>();
-	}
+        sw = new List<Stopwatch>();
+    }
 
-	public void Log([CallerMemberName] string callerName = "")
-	{
-		if (Logging)
-			for (int i = 0; i < sw.Count; i++)
-				logger.LogDebug("{caller} Segment {segment} Time: {timePassed}", callerName, i, sw[i].ElapsedMilliseconds);
-	}
+    public void Log([CallerMemberName] string callerName = "")
+    {
+        if (Logging)
+            for (int i = 0; i < sw.Count; i++)
+                logger.LogDebug("{caller} Segment {segment} Time: {timePassed}", callerName, i, sw[i].ElapsedMilliseconds);
+    }
 
-	public void StartSegment(int segment)
-	{
-		if (sw.Count == segment)
-			sw.Add(new Stopwatch());
-		sw[segment].Start();
-	}
+    public void StartSegment(int segment)
+    {
+        if (sw.Count == segment)
+            sw.Add(new Stopwatch());
+        sw[segment].Start();
+    }
 
-	public void RestartSegment(int segment)
-	{
-		if (sw.Count == segment)
-			sw.Add(new Stopwatch());
-		sw[segment].Restart();
-	}
+    public void RestartSegment(int segment)
+    {
+        if (sw.Count == segment)
+            sw.Add(new Stopwatch());
+        sw[segment].Restart();
+    }
 
-	public void StopSegment(int segment)
-	{
-		if (sw.Count == segment)
-			sw.Add(new Stopwatch());
-		sw[segment].Stop();
-	}
+    public void StopSegment(int segment)
+    {
+        if (sw.Count == segment)
+            sw.Add(new Stopwatch());
+        sw[segment].Stop();
+    }
 }

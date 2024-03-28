@@ -12,8 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EngineResources\Sounds\**" />
     <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="EngineResources\Sounds\**" />
     <EmbeddedResource Remove="Resources\**" />
+    <None Remove="EngineResources\Sounds\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
 
@@ -98,10 +101,6 @@
     <ProjectReference Include="..\InputEngine\InputEngine.csproj" />
     <ProjectReference Include="..\PhysicsEngine\PhysicsEngine.csproj" />
     <ProjectReference Include="..\SoundEngine\SoundEngine.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="EngineResources\Sounds\" />
   </ItemGroup>
 
 </Project>

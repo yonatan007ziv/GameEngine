@@ -31,89 +31,89 @@ namespace GraphicsEngine.Services;
 
 internal class ServiceRegisterer
 {
-	private readonly IServiceCollection collection;
+    private readonly IServiceCollection collection;
 
-	public ServiceRegisterer()
-	{
-		collection = new ServiceCollection();
-		RegisterShared();
-	}
+    public ServiceRegisterer()
+    {
+        collection = new ServiceCollection();
+        RegisterShared();
+    }
 
-	public ServiceRegisterer(IServiceCollection collection)
-	{
-		this.collection = collection;
-		RegisterShared();
-	}
+    public ServiceRegisterer(IServiceCollection collection)
+    {
+        this.collection = collection;
+        RegisterShared();
+    }
 
-	public IServiceProvider BuildProvider()
-		=> collection.BuildServiceProvider();
+    public IServiceProvider BuildProvider()
+        => collection.BuildServiceProvider();
 
-	public ServiceRegisterer RegisterOpenTK()
-	{
-		collection.AddSingleton<IInternalGraphicsRenderer, OpenTKRenderer>();
-		collection.AddSingleton<IBufferSpecificGenerator, OpenTKBufferGenerator>();
-		collection.AddSingleton<IBufferSpecificDeletor, OpenTKBufferDeletor>();
-		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, OpenTKShaderProgramFactory>();
+    public ServiceRegisterer RegisterOpenTK()
+    {
+        collection.AddSingleton<IInternalGraphicsRenderer, OpenTKRenderer>();
+        collection.AddSingleton<IBufferSpecificGenerator, OpenTKBufferGenerator>();
+        collection.AddSingleton<IBufferSpecificDeletor, OpenTKBufferDeletor>();
+        collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, OpenTKShaderProgramFactory>();
 
-		collection.AddSingleton<IDrawingCall, OpenTKDrawingCall>();
+        collection.AddSingleton<IDrawingCall, OpenTKDrawingCall>();
 
-		return this;
-	}
+        return this;
+    }
 
-	public ServiceRegisterer RegisterSilkOpenGL()
-	{
-		collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
-		collection.AddSingleton<IBufferSpecificGenerator, SilkOpenGLBufferGenerator>();
-		collection.AddSingleton<IBufferSpecificDeletor, SilkOpenGLBufferDeletor>();
-		collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
+    public ServiceRegisterer RegisterSilkOpenGL()
+    {
+        collection.AddSingleton<IInternalGraphicsRenderer, SilkOpenGLRenderer>();
+        collection.AddSingleton<IBufferSpecificGenerator, SilkOpenGLBufferGenerator>();
+        collection.AddSingleton<IBufferSpecificDeletor, SilkOpenGLBufferDeletor>();
+        collection.AddSingleton<IFactory<ShaderSource, ShaderSource, IShaderProgram>, SilkOpenGLShaderProgramFactory>();
 
-		collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
+        collection.AddSingleton<IDrawingCall, SilkOpenGLDrawingCall>();
 
-		return this;
-	}
+        return this;
+    }
 
-	private void RegisterSilkDirect11()
-	{
-		collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
-	}
-	private void RegisterSilkDirect12()
-	{
-		collection.AddSingleton<IInternalGraphicsRenderer, Direct12Renderer>();
-	}
+    private void RegisterSilkDirect11()
+    {
+        collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
+    }
+    private void RegisterSilkDirect12()
+    {
+        collection.AddSingleton<IInternalGraphicsRenderer, Direct12Renderer>();
+    }
 
-	private void RegisterShared()
-	{
-		collection.AddSingleton<IGraphicsEngine, Implementations.Shared.GraphicsEngine>();
+    private void RegisterShared()
+    {
+        collection.AddSingleton<IGraphicsEngine, Implementations.Shared.GraphicsEngine>();
 
-		collection.AddSingleton<ILogger, ConsoleLogger>();
+        collection.AddSingleton<ILogger, ConsoleLogger>();
 
-		collection.AddSingleton<ITextureLoader, StbTextureLoader>();
-		collection.AddTransient<IPerformanceAnalyzer, PerformanceAnalyzer>();
+        collection.AddSingleton<ITextureLoader, StbTextureLoader>();
+        collection.AddTransient<IPerformanceAnalyzer, PerformanceAnalyzer>();
 
-		collection.AddSingleton<ObjModelImporter>();
+        collection.AddSingleton<ObjModelImporter>();
 
-		// Managers
-		collection.AddSingleton<IShaderManager, GLShaderManager>();
-		collection.AddSingleton<IResourceManager, ContentResourceManager>();
-		collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
-		collection.AddSingleton<ITextureManager, TextureManager>();
+        // Managers
+        collection.AddSingleton<IShaderManager, GLShaderManager>();
+        collection.AddSingleton<IResourceManager, ContentResourceManager>();
+        collection.AddSingleton<IResourceDiscoverer, ResourceDiscoverer>();
+        collection.AddSingleton<ITextureManager, TextureManager>();
 
-		// Factories
-		collection.AddSingleton<IFactory<string, Material>, MaterialFactory>();
-		collection.AddSingleton<IFactory<string, string, IShaderProgram>, ShaderProgramFactory>();
-		collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
-		collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
-		collection.AddSingleton<IFactory<string, ModelData>, ModelFactory>();
+        // Factories
+        collection.AddSingleton<IFactory<string, Material>, MaterialFactory>();
+        collection.AddSingleton<IFactory<string, string, IShaderProgram>, ShaderProgramFactory>();
+        collection.AddSingleton<IFactory<string, ShaderSource>, ShaderSourceFactory>();
+        collection.AddSingleton<IFactory<string, ITextureBuffer>, TextureFactory>();
+        collection.AddSingleton<IFactory<string, ModelData>, ModelFactory>();
 
-		// Font reader
-		collection.AddSingleton<IFileReader<Font>, FontFileReader>();
+        // Font reader
+        collection.AddSingleton<IFileReader<Font>, FontFileReader>();
 
-		// Buffer managers
-		collection.AddSingleton<IBufferDeletor, BufferDeletor>();
-		collection.AddSingleton<IBufferFactory, BufferFactory>();
+        // Buffer managers
+        collection.AddSingleton<IBufferDeletor, BufferDeletor>();
+        collection.AddSingleton<IBufferFactory, BufferFactory>();
 
-		// File Readers
-		collection.AddSingleton<IFileReader<string>, StringFileReader>();
-		collection.AddSingleton<IFileReader<FileStream>, FileStreamFileReader>();
-	}
+        // File Readers
+        collection.AddSingleton<IFileReader<string>, StringFileReader>();
+        collection.AddSingleton<IFileReader<FileStream>, FileStreamFileReader>();
+    }
 }

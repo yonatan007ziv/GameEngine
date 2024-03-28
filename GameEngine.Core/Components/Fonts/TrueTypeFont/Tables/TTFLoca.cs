@@ -2,10 +2,10 @@
 
 internal class TTFLoca
 {
-	public uint[] Offsets { get; }
+    public uint[] Offsets { get; }
 
-	public TTFLoca(uint[] offsets)
-	{
-		Offsets = offsets;
-	}
+    public TTFLoca(uint[] offsets)
+    {
+        Offsets = offsets;
+    }
 }
