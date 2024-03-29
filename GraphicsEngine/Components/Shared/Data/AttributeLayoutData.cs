@@ -2,12 +2,12 @@
 
 public struct AttributeLayout
 {
-    public AttributeLayout(Type type, int size)
-    {
-        Type = type;
-        Size = size;
-    }
+	public AttributeLayout(Type type, int size)
+	{
+		Type = type;
+		Size = size;
+	}
 
-    public Type Type;
-    public int Size;
+	public Type Type;
+	public int Size;
 }

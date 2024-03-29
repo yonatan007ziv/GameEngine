@@ -2,6 +2,6 @@
 
 internal interface IClipboardManager
 {
-    string GetClipboardText();
-    void SetClipboardText(string text);
+	string GetClipboardText();
+	void SetClipboardText(string text);
 }

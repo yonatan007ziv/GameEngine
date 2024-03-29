@@ -5,138 +5,146 @@ namespace GameEngine.Core.Components.Fonts;
 
 public class CharacterContour
 {
-    private readonly Vector2[] rawPoints; // Raw points representing both on curve and control points
-    private readonly int[] controlPointIndexes; // All of the control points indexes in the rawPoints
-    private readonly float parentGlyphWidth;
-    private readonly float parentGlyphfHeight;
-    private readonly int maxX = 0, minX = 0, maxY = 0, minY = 0;
-    private Vector2[] transformedPoints; // Points after resolution (bezier curves) procedure
-    private float rawCenterXCoordinate => (maxX + minX) / 2f;
-    private float rawCenterYCoordinate => (maxY + minY) / 2f;
+	private readonly Vector2[] rawPoints; // Raw points representing both on curve and control points
+	private readonly int[] controlPointIndexes; // All of the control points indexes in the rawPoints
+	private readonly float parentGlyphWidth;
+	private readonly float parentGlyphHeight;
+	private readonly float parentCenterXCoordinate;
+	private readonly float parentCenterYCoordinate;
+	private readonly int maxX = 0, minX = 0, maxY = 0, minY = 0;
+	private Vector2[] transformedCenteredPoints; // Points after resolution (bezier curves) procedure
 
-    // Backing fields
-    private int _resolution;
-    private float _fontSize;
+	// Backing fields
+	private int _resolution;
+	private float _fontSize;
 
-    public IReadOnlyCollection<Vector2> Points { get; private set; }
-    public int Resolution { get => _resolution; set { if (_resolution != value) { _resolution = value; RecalculatePoints(); RecalculateScale(); } } }
-    public float FontSize { get => _fontSize; set { if (_fontSize != value) { _fontSize = value; RecalculateScale(); } } }
-    public bool Clockwise { get; }
+	public IReadOnlyCollection<Vector2> Points { get; private set; }
+	public int Resolution { get => _resolution; set { if (_resolution != value) { _resolution = value; RecalculatePoints(); RecalculateScale(); } } }
+	public float FontSize { get => _fontSize; set { if (_fontSize != value) { _fontSize = value; RecalculateScale(); } } }
+	public bool Clockwise { get; }
 
-    public CharacterContour(Vector2[] rawPoints, int[] controlPointIndexes, float parentGlyphWidth, float parentGlyphfHeight, int resolution = 1, float fontSize = 1)
-    {
-        this.rawPoints = rawPoints;
-        this.controlPointIndexes = controlPointIndexes;
-        this.parentGlyphWidth = parentGlyphWidth;
-        this.parentGlyphfHeight = parentGlyphfHeight;
-        this._resolution = resolution;
-        this._fontSize = fontSize;
-        this.Clockwise = IsClockwise();
+	public CharacterContour(Vector2[] rawPoints, int[] controlPointIndexes, float parentGlyphWidth, float parentGlyphHeight, float parentCenterXCoordinate, float parentCenterYCoordinate, int resolution = 5, float fontSize = 1)
+	{
+		this.rawPoints = rawPoints;
+		this.controlPointIndexes = controlPointIndexes;
+		this.parentGlyphWidth = parentGlyphWidth;
+		this.parentGlyphHeight = parentGlyphHeight;
+		this.parentCenterXCoordinate = parentCenterXCoordinate;
+		this.parentCenterYCoordinate = parentCenterYCoordinate;
+		this._resolution = resolution;
+		this._fontSize = fontSize;
+		this.Clockwise = IsClockwise();
 
-        transformedPoints = null!;
-        Points = null!;
-        Resolution = _resolution; // Calls the property set method
+		transformedCenteredPoints = null!;
+		Points = null!;
 
-        // Raw contour height and width
-        maxX = (int)rawPoints[0].X;
-        minX = (int)rawPoints[0].X;
-        maxY = (int)rawPoints[0].Y;
-        minY = (int)rawPoints[0].Y;
+		// Raw contour height and width
+		maxX = (int)rawPoints[0].X;
+		minX = (int)rawPoints[0].X;
+		maxY = (int)rawPoints[0].Y;
+		minY = (int)rawPoints[0].Y;
 
-        foreach (Vector2 vec in rawPoints)
-        {
-            int x = (int)vec.X;
-            int y = (int)vec.Y;
+		foreach (Vector2 vec in rawPoints)
+		{
+			int x = (int)vec.X;
+			int y = (int)vec.Y;
 
-            maxX = Math.Max(maxX, x);
-            minX = Math.Min(minX, x);
-            maxY = Math.Max(maxY, y);
-            minY = Math.Min(minY, y);
-        }
+			maxX = Math.Max(maxX, x);
+			minX = Math.Min(minX, x);
+			maxY = Math.Max(maxY, y);
+			minY = Math.Min(minY, y);
+		}
 
-        RecalculatePoints();
-        RecalculateScale();
-    }
+		RecalculatePoints();
+		RecalculateScale();
+	}
 
-    private void RecalculatePoints()
-    {
-        List<Vector2> points = new List<Vector2>();
+	private void RecalculatePoints()
+	{
+		List<Vector2> points = new List<Vector2>();
 
-        for (int i = 0; i < rawPoints.Length; i++)
-        {
-            // Control point
-            if (controlPointIndexes.Contains(i))
-            {
-                // Resolution
-                int segmentsPerControlPoint = _resolution + 1;
-                for (int j = 0; j < segmentsPerControlPoint; j++)
-                {
-                    int t = (int)((j + 1) * (1f / segmentsPerControlPoint));
+		for (int i = 0; i < rawPoints.Length; i++)
+		{
+			// Control point
+			if (controlPointIndexes.Contains(i))
+			{
+				// Resolution for bezier curves
+				for (int j = 0; j < _resolution; j++)
+				{
+					// Interpolation value t
+					float t = (j + 1) * (1f / (_resolution + 1));
 
-                    int x;
-                    int y;
+					int x;
+					int y;
 
-                    // Previous and next points also a control point
-                    if (controlPointIndexes.Contains(i - 1) && controlPointIndexes.Contains(i + 1))
-                    {
-                        Vector2 averageBefore = (rawPoints[i - 1] + rawPoints[i]) / 2;
-                        Vector2 averageAfter = (rawPoints[i] + rawPoints[(i + 1) % rawPoints.Length]) / 2;
+					// Both include wrapping forward and backwards
+					int previousPointIndex = (i - 1 + rawPoints.Length) % rawPoints.Length;
+					int nextPointIndex = (i + 1) % rawPoints.Length;
 
-                        x = (int)MathHelper.QBez(averageBefore.X, rawPoints[i].X, averageAfter.X, t);
-                        y = (int)MathHelper.QBez(averageBefore.Y, rawPoints[i].Y, averageAfter.Y, t);
-                    }
-                    // Previous point also a control point
-                    else if (controlPointIndexes.Contains(i - 1))
-                    {
-                        Vector2 averageBefore = (rawPoints[i - 1] + rawPoints[i]) / 2;
+					Vector2 before = rawPoints[previousPointIndex];
+					Vector2 currentControlPoint = rawPoints[i];
+					Vector2 after = rawPoints[nextPointIndex];
 
-                        x = (int)MathHelper.QBez(averageBefore.X, rawPoints[i].X, rawPoints[(i + 1) % rawPoints.Length].X, t);
-                        y = (int)MathHelper.QBez(averageBefore.Y, rawPoints[i].Y, rawPoints[(i + 1) % rawPoints.Length].X, t);
-                    }
-                    // Next point also a control point
-                    else if (controlPointIndexes.Contains(i + 1))
-                    {
-                        Vector2 averageAfter = (rawPoints[i] + rawPoints[(i + 1) % rawPoints.Length]) / 2;
+					Vector2 averageBefore = (rawPoints[previousPointIndex] + rawPoints[i]) / 2;
+					Vector2 averageAfter = (rawPoints[i] + rawPoints[nextPointIndex]) / 2;
 
-                        x = (int)MathHelper.QBez(rawPoints[(i == 0 ? rawPoints.Length : i) - 1].X, rawPoints[i].X, averageAfter.X, t);
-                        y = (int)MathHelper.QBez(rawPoints[(i == 0 ? rawPoints.Length : i) - 1].Y, rawPoints[i].Y, averageAfter.Y, t);
-                    }
-                    // Control point surrounded by oncurve points
-                    else
-                    {
-                        x = (int)MathHelper.QBez(rawPoints[(i == 0 ? rawPoints.Length : i) - 1].X, rawPoints[i].X, rawPoints[(i + 1) % rawPoints.Length].X, t);
-                        y = (int)MathHelper.QBez(rawPoints[(i == 0 ? rawPoints.Length : i) - 1].Y, rawPoints[i].Y, rawPoints[(i + 1) % rawPoints.Length].Y, t);
-                    }
-                    points.Add(new Vector2(x, y));
-                }
-            }
-            else
-                points.Add(rawPoints[i]);
-        }
+					// Previous and next points also a control point
+					if (controlPointIndexes.Contains(previousPointIndex) && controlPointIndexes.Contains(nextPointIndex))
+					{
+						x = (int)MathHelper.QBez(averageBefore.X, currentControlPoint.X, averageAfter.X, t);
+						y = (int)MathHelper.QBez(averageBefore.Y, currentControlPoint.Y, averageAfter.Y, t);
+					}
+					// Previous point also a control point
+					else if (controlPointIndexes.Contains(i - 1))
+					{
+						x = (int)MathHelper.QBez(averageBefore.X, currentControlPoint.X, after.X, t);
+						y = (int)MathHelper.QBez(averageBefore.Y, currentControlPoint.Y, after.Y, t);
+					}
+					// Next point also a control point
+					else if (controlPointIndexes.Contains(i + 1))
+					{
+						x = (int)MathHelper.QBez(before.X, currentControlPoint.X, averageAfter.X, t);
+						y = (int)MathHelper.QBez(before.Y, currentControlPoint.Y, averageAfter.Y, t);
+					}
+					// Control point surrounded by oncurve points
+					else
+					{
+						x = (int)MathHelper.QBez(before.X, currentControlPoint.X, after.X, t);
+						y = (int)MathHelper.QBez(before.Y, currentControlPoint.Y, after.Y, t);
+					}
+					points.Add(new Vector2(x - parentCenterXCoordinate, y - parentCenterYCoordinate));
+				}
+			}
+			else
+				points.Add(rawPoints[i] - new Vector2(parentCenterXCoordinate, parentCenterYCoordinate));
+		}
 
-        transformedPoints = points.ToArray();
-    }
+		transformedCenteredPoints = points.ToArray();
+	}
 
-    private void RecalculateScale()
-    {
-        Vector2[] points = new Vector2[transformedPoints.Length];
-        for (int i = 0; i < transformedPoints.Length; i++)
-            points[i] = new Vector2((transformedPoints[i].X - rawCenterXCoordinate) / parentGlyphWidth, (transformedPoints[i].Y - rawCenterYCoordinate) / parentGlyphfHeight) * _fontSize;
-        Points = points;
-    }
+	private void RecalculateScale()
+	{
+		float length = (float)Math.Sqrt(Math.Pow(parentGlyphWidth, 2) + Math.Pow(parentGlyphHeight, 2));
 
-    private bool IsClockwise()
-    {
-        // Implement shoelace theorem to check for clockwise orientation
-        double shoelaceSum = 0;
-        for (int i = 0; i < rawPoints.Length; i++)
-        {
-            Vector2 p1 = rawPoints[i];
-            Vector2 p2 = rawPoints[(i + 1) % rawPoints.Length]; // Wrap around for last point
+		Vector2[] points = new Vector2[transformedCenteredPoints.Length];
+		for (int i = 0; i < transformedCenteredPoints.Length; i++)
+			points[i] = new Vector2(transformedCenteredPoints[i].X, transformedCenteredPoints[i].Y) / length * _fontSize;
 
-            shoelaceSum += p1.X * p2.Y - p2.X * p1.Y;
-        }
+		Points = points;
+	}
 
-        return shoelaceSum > 0; // Clockwise if positive, counter-clockwise otherwise
-    }
+	private bool IsClockwise()
+	{
+		// Implement shoelace theorem to check for clockwise orientation
+		double shoelaceSum = 0;
+		for (int i = 0; i < rawPoints.Length; i++)
+		{
+			Vector2 p1 = rawPoints[i];
+			Vector2 p2 = rawPoints[(i + 1) % rawPoints.Length]; // Wrap around for last point
+
+			shoelaceSum += p1.X * p2.Y - p2.X * p1.Y;
+		}
+
+		return shoelaceSum > 0; // Clockwise if positive, counter-clockwise otherwise
+	}
 }

@@ -7,22 +7,22 @@ namespace GraphicsEngine.Services.Implementations.Shared.Factories;
 
 internal class BufferFactory : IBufferFactory
 {
-    private readonly IBufferSpecificGenerator bufferGenerator;
+	private readonly IBufferSpecificGenerator bufferGenerator;
 
-    public BufferFactory(IBufferSpecificGenerator bufferGenerator)
-    {
-        this.bufferGenerator = bufferGenerator;
-    }
+	public BufferFactory(IBufferSpecificGenerator bufferGenerator)
+	{
+		this.bufferGenerator = bufferGenerator;
+	}
 
-    public IIndexBuffer GenerateIndexBuffer()
-        => bufferGenerator.GenerateIndexBuffer();
+	public IIndexBuffer GenerateIndexBuffer()
+		=> bufferGenerator.GenerateIndexBuffer();
 
-    public ITextureBuffer GenerateTextureBuffer()
-        => bufferGenerator.GenerateTextureBuffer();
+	public ITextureBuffer GenerateTextureBuffer()
+		=> bufferGenerator.GenerateTextureBuffer();
 
-    public IVertexArray GenerateVertexArray(IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, AttributeLayout[] attributesLayouts)
-        => bufferGenerator.GenerateVertexArray(vertexBuffer, indexBuffer, attributesLayouts);
+	public IVertexArray GenerateVertexArray(IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, AttributeLayout[] attributesLayouts)
+		=> bufferGenerator.GenerateVertexArray(vertexBuffer, indexBuffer, attributesLayouts);
 
-    public IVertexBuffer GenerateVertexBuffer()
-        => bufferGenerator.GenerateVertexBuffer();
+	public IVertexBuffer GenerateVertexBuffer()
+		=> bufferGenerator.GenerateVertexBuffer();
 }

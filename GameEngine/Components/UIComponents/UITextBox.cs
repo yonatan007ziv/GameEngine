@@ -2,23 +2,23 @@
 
 public class UITextBox : UIButton
 {
-    private bool editingEnabled;
+	private bool editingEnabled;
 
-    public UITextBox(string materialName)
-        : base(materialName)
-    {
-        // Enable textbox editing
-        OnDragClicked += () => editingEnabled = true;
+	public UITextBox(string materialName)
+		: base(materialName)
+	{
+		// Enable textbox editing
+		OnDragClicked += () => editingEnabled = true;
 
-        // Disable textbox editing
-        OnDeselected += () => editingEnabled = false;
-    }
+		// Disable textbox editing
+		OnDeselected += () => editingEnabled = false;
+	}
 
-    public override void Update(float deltaTime)
-    {
-        base.Update(deltaTime);
+	public override void Update(float deltaTime)
+	{
+		base.Update(deltaTime);
 
-        if (editingEnabled)
-            TextData.Text = CaptureKeyboardInput(TextData.Text);
-    }
+		if (editingEnabled)
+			TextData.Text = CaptureKeyboardInput(TextData.Text);
+	}
 }

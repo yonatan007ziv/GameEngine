@@ -7,9 +7,9 @@ namespace GraphicsEngine.Services.Implementations.OpenTK;
 
 internal class OpenTKShaderProgramFactory : IFactory<ShaderSource, ShaderSource, IShaderProgram>
 {
-    public bool Create(ShaderSource vertexShader, ShaderSource fragmentShader, out IShaderProgram result)
-    {
-        result = new OpenTKShaderProgram(vertexShader, fragmentShader);
-        return true;
-    }
+	public bool Create(ShaderSource vertexShader, ShaderSource fragmentShader, out IShaderProgram result)
+	{
+		result = new OpenTKShaderProgram(vertexShader, fragmentShader);
+		return true;
+	}
 }

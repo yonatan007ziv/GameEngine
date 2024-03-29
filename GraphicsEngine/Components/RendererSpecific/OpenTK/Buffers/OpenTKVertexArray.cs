@@ -9,55 +9,55 @@ namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 internal class OpenTKVertexArray : OpenTKBuffer, IVertexArray, IDisposable
 {
 
-    public int Id { get; private set; }
-    public VertexAttribPointerType Type { get; private set; }
+	public int Id { get; private set; }
+	public VertexAttribPointerType Type { get; private set; }
 
-    public OpenTKVertexArray(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrtibutesLayout)
-        : base(BufferTarget.ArrayBuffer)
-    {
-        Id = GL.GenVertexArray();
-        Type = VertexAttribPointerType.Float;
+	public OpenTKVertexArray(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrtibutesLayout)
+		: base(BufferTarget.ArrayBuffer)
+	{
+		Id = GL.GenVertexArray();
+		Type = VertexAttribPointerType.Float;
 
-        Link(vb, ib, arrtibutesLayout);
-    }
+		Link(vb, ib, arrtibutesLayout);
+	}
 
-    public override void Bind()
-    {
-        GL.BindVertexArray(Id);
-    }
+	public override void Bind()
+	{
+		GL.BindVertexArray(Id);
+	}
 
-    public override void Unbind()
-    {
-        GL.BindVertexArray(0);
-    }
+	public override void Unbind()
+	{
+		GL.BindVertexArray(0);
+	}
 
-    public void Dispose()
-    {
-        Unbind();
-        GL.DeleteVertexArray(Id);
-    }
+	public void Dispose()
+	{
+		Unbind();
+		GL.DeleteVertexArray(Id);
+	}
 
-    private void Link(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrayLayout)
-    {
-        Bind();
+	private void Link(IVertexBuffer vb, IIndexBuffer ib, AttributeLayout[] arrayLayout)
+	{
+		Bind();
 
-        ib.Bind();
-        vb.Bind();
+		ib.Bind();
+		vb.Bind();
 
-        // Calculate Stride Between Attributes
-        IntPtr totalStride = IntPtr.Zero;
-        foreach (AttributeLayout layout in arrayLayout)
-            totalStride += Marshal.SizeOf(layout.Type) * layout.Size;
+		// Calculate Stride Between Attributes
+		IntPtr totalStride = IntPtr.Zero;
+		foreach (AttributeLayout layout in arrayLayout)
+			totalStride += Marshal.SizeOf(layout.Type) * layout.Size;
 
-        IntPtr offset = IntPtr.Zero;
-        for (int i = 0; i < arrayLayout.Length; i++)
-        {
-            GL.VertexAttribPointer(i, arrayLayout[i].Size, arrayLayout[i].Type.ToOpenTKType(), false, totalStride.ToInt32(), offset);
-            GL.EnableVertexAttribArray(i);
+		IntPtr offset = IntPtr.Zero;
+		for (int i = 0; i < arrayLayout.Length; i++)
+		{
+			GL.VertexAttribPointer(i, arrayLayout[i].Size, arrayLayout[i].Type.ToOpenTKType(), false, totalStride.ToInt32(), offset);
+			GL.EnableVertexAttribArray(i);
 
-            offset += Marshal.SizeOf(arrayLayout[i].Type) * arrayLayout[i].Size;
-        }
+			offset += Marshal.SizeOf(arrayLayout[i].Type) * arrayLayout[i].Size;
+		}
 
-        Unbind();
-    }
+		Unbind();
+	}
 }

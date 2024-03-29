@@ -4,9 +4,9 @@ namespace GameEngine.Core.API;
 
 public interface IPhysicsEngine
 {
-    void PhysicsTickPass(float deltaTime);
+	void PhysicsTickPass(float deltaTime);
 
-    void AddPhysicsObject(WorldObject gameObject);
-    void RemovePhysicsObject(WorldObject gameObject);
-    int[] GetTouchingColliderIds(int id);
+	void AddPhysicsObject(WorldObject gameObject);
+	void RemovePhysicsObject(WorldObject gameObject);
+	int[] GetTouchingColliderIds(int id);
 }

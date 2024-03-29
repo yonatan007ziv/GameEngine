@@ -2,10 +2,10 @@
 
 public enum MouseButton
 {
-    None = 0,
-    Mouse0,
-    Mouse1,
-    Mouse2,
-    MoveHorizontal,
-    MoveVertical,
+	None = 0,
+	Mouse0,
+	Mouse1,
+	Mouse2,
+	MoveHorizontal,
+	MoveVertical,
 }

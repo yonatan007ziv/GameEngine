@@ -4,9 +4,9 @@ namespace BoxColliderSample;
 
 internal class TestButton : UIButton
 {
-    public TestButton()
-        : base("Trex.mat")
-    {
+	public TestButton()
+		: base("Trex.mat")
+	{
 
-    }
+	}
 }

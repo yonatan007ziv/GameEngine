@@ -2,6 +2,6 @@
 
 internal interface IVertexArray : IBuffer
 {
-    void Bind();
-    void Unbind();
+	void Bind();
+	void Unbind();
 }

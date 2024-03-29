@@ -5,12 +5,12 @@ namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 
 internal class OpenTKIndexBuffer : OpenTKBuffer, IIndexBuffer
 {
-    public OpenTKIndexBuffer()
-        : base(BufferTarget.ElementArrayBuffer)
-    {
+	public OpenTKIndexBuffer()
+		: base(BufferTarget.ElementArrayBuffer)
+	{
 
-    }
+	}
 
-    public void WriteData(uint[] indexes)
-        => WriteBuffer(indexes, BufferUsageHint.StaticDraw);
+	public void WriteData(uint[] indexes)
+		=> WriteBuffer(indexes, BufferUsageHint.StaticDraw);
 }

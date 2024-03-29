@@ -6,25 +6,25 @@ namespace PhysicsEngine.Services;
 
 internal class ServiceRegisterer
 {
-    private readonly IServiceCollection collection = new ServiceCollection();
+	private readonly IServiceCollection collection = new ServiceCollection();
 
-    public ServiceRegisterer()
-    {
-        collection = new ServiceCollection();
-        RegisterServices();
-    }
+	public ServiceRegisterer()
+	{
+		collection = new ServiceCollection();
+		RegisterServices();
+	}
 
-    public ServiceRegisterer(IServiceCollection collection)
-    {
-        this.collection = collection;
-        RegisterServices();
-    }
+	public ServiceRegisterer(IServiceCollection collection)
+	{
+		this.collection = collection;
+		RegisterServices();
+	}
 
-    public IServiceProvider BuildProvider()
-        => collection.BuildServiceProvider();
+	public IServiceProvider BuildProvider()
+		=> collection.BuildServiceProvider();
 
-    private void RegisterServices()
-    {
-        collection.AddSingleton<IPhysicsEngine, Implementations.PhysicsEngine>();
-    }
+	private void RegisterServices()
+	{
+		collection.AddSingleton<IPhysicsEngine, Implementations.PhysicsEngine>();
+	}
 }
