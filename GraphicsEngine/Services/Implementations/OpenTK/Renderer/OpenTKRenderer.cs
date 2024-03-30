@@ -121,6 +121,9 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 
 	public void DrawGlyf(CharacterGlyf glyph, Vector2 centeredPosition)
 	{
+		bool prevLogRenderingMessages = LogRenderingMessages;
+
+		LogRenderingMessages = false;
 		foreach (CharacterContour contour in glyph.CharacterContours)
 		{
 			if (contour.Clockwise)
@@ -151,5 +154,7 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 			bufferDeletor.DeleteBuffer(indexBuffer.Id);
 			bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
 		}
+
+		LogRenderingMessages = prevLogRenderingMessages;
 	}
 }

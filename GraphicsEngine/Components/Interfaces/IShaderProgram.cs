@@ -8,4 +8,5 @@ public interface IShaderProgram : IDisposable
 	void Bind();
 	void Unbind();
 	void SetMatrix4Uniform(Matrix4x4 value, string uniformName);
+	void SetFloat4Uniform(Vector4 value, string uniformName);
 }

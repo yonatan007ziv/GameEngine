@@ -59,6 +59,12 @@ internal class SilkOpenGLShaderProgram : IShaderProgram
 		glContext.UniformMatrix4(loc, true, span);
 	}
 
+	public void SetFloat4Uniform(Vector4 value, string uniformName)
+	{
+		int loc = glContext.GetUniformLocation((uint)Id, uniformName);
+		glContext.Uniform4(loc, ref value);
+	}
+
 	#region Dispose pattern
 	private bool disposedValue;
 	~SilkOpenGLShaderProgram()

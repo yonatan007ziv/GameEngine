@@ -78,4 +78,10 @@ public class OpenTKShaderProgram : IShaderProgram
 		int loc = GL.GetUniformLocation(Id, uniformName);
 		GL.UniformMatrix4(loc, true, ref matrix);
 	}
+
+	public void SetFloat4Uniform(System.Numerics.Vector4 value, string uniformName)
+	{
+		int loc = GL.GetUniformLocation((uint)Id, uniformName);
+		GL.Uniform4(loc, value.X, value.Y, value.Z, value.W);
+	}
 }

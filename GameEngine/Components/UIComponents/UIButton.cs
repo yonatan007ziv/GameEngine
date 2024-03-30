@@ -45,7 +45,8 @@ public class UIButton : ScriptableUIObject
 
 	public override void Update(float deltaTime)
 	{
-		if (!Enabled)
+		// Disabled or not visible
+		if (!Enabled || !Visible || !(Parent?.Visible ?? true))
 			return;
 
 		if (MouseLocked)

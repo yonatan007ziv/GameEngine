@@ -36,8 +36,10 @@
     <None Remove="EngineResources\Shaders\GLSL\GizmosVertex.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\LightTexturedFragment.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\LightTexturedVertex.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\TextFragment.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\TexturedFragment.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\TexturedVertex.glsl" />
+    <None Remove="EngineResources\Shaders\GLSL\TextVertex.glsl" />
     <None Remove="EngineResources\Textures\MissingTexture.png" />
   </ItemGroup>
 
@@ -84,10 +86,16 @@
     <Content Include="EngineResources\Shaders\GLSL\LightTexturedVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="EngineResources\Shaders\GLSL\TextFragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="EngineResources\Shaders\GLSL\TexturedFragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Shaders\GLSL\TexturedVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Shaders\GLSL\TextVertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Textures\MissingTexture.png">

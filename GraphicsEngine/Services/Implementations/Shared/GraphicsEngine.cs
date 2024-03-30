@@ -4,6 +4,7 @@ using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,8 @@ internal class GraphicsEngine : IGraphicsEngine
 	private readonly IInternalGraphicsRenderer internalRenderer;
 	private readonly IBufferDeletor bufferDeletor;
 	private readonly IFileReader<Font> fontLoader;
-
+	private readonly IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory;
+	private readonly IFactory<string, ShaderSource> shaderSourceFactory;
 	public static GraphicsEngine EngineContext = null!;
 
 	public IntPtr WindowHandle => internalRenderer.WindowHandle;
@@ -26,6 +28,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public Vector2 WindowSize { get => internalRenderer.WindowSize; }
 	public bool LogRenderingMessages { get => internalRenderer.LogRenderingMessages; set => internalRenderer.LogRenderingMessages = value; }
 
+	private IShaderProgram textShader;
 	private readonly Dictionary<string, Font> loadedFonts = new Dictionary<string, Font>();
 
 	private readonly List<int> allObjectIds = new List<int>();
@@ -45,7 +48,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader)
+	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader, IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory, IFactory<string, ShaderSource> shaderSourceFactory)
 	{
 		EngineContext = this;
 
@@ -53,12 +56,38 @@ internal class GraphicsEngine : IGraphicsEngine
 		this.internalRenderer = internalRenderer;
 		this.bufferDeletor = bufferDeletor;
 		this.fontLoader = fontLoader;
+		this.shaderProgramFactory = shaderProgramFactory;
+		this.shaderSourceFactory = shaderSourceFactory;
 
-		internalRenderer.LoadEvent += () => { Load?.Invoke(); };
+		internalRenderer.LoadEvent += OnInternalEngineLoad;
 		internalRenderer.ResizedEvent += WindowResized;
 		internalRenderer.MouseEvent += (mouseEvent) => { MouseEvent?.Invoke(mouseEvent); };
 		internalRenderer.KeyboardEvent += (keyboardEvent) => { KeyboardEvent?.Invoke(keyboardEvent); };
 		internalRenderer.GamepadEvent += (joystickEvent) => { GamepadEvent?.Invoke(joystickEvent); };
+	}
+
+	private void OnInternalEngineLoad()
+	{
+		Load?.Invoke();
+
+		// Create text shader program
+		if (!shaderSourceFactory.Create("TextVertex.glsl", out ShaderSource textVertexSource))
+		{
+			logger.LogCritical("Text shader not created successfully");
+			return;
+		}
+
+		if (!shaderSourceFactory.Create("TextFragment.glsl", out ShaderSource textFragmentSource))
+		{
+			logger.LogCritical("Text shader not created successfully");
+			return;
+		}
+
+		if (!shaderProgramFactory.Create(textVertexSource, textFragmentSource, out textShader))
+		{
+			logger.LogCritical("Text shader not created successfully");
+			return;
+		}
 	}
 
 	public void Run()
@@ -93,7 +122,7 @@ internal class GraphicsEngine : IGraphicsEngine
 				if (!camera.RenderingMask.InMask(worldObject.WorldObject.Tag)) // Exclude rendering mask
 					worldObject.Render(camera);
 
-				// Render object's children
+				// Render objects' children
 				foreach (RenderedWorldObject child in worldObject.Children)
 					if (child.WorldObject.Visible)
 						child.Render(camera);
@@ -106,14 +135,32 @@ internal class GraphicsEngine : IGraphicsEngine
 		{
 			internalRenderer.SetViewport(camera.ViewPort);
 
-			// Render UI Objects
+			// Render UI objects' meshes
 			foreach (RenderedUIObject uiObject in uiObjects.Values)
 			{
-				if (!uiObject.UIObject.Visible)
+				// Exclude invisible objects and rendering mask
+				if (!uiObject.UIObject.Visible || camera.RenderingMask.InMask(uiObject.UIObject.Tag))
 					continue;
 
-				if (!camera.RenderingMask.InMask(uiObject.UIObject.Tag)) // Exclude rendering mask
-					uiObject.Render(camera);
+				uiObject.Render(camera);
+				foreach (RenderedUIObject child in uiObject.Children)
+				{
+					// Exclude invisible objects and rendering mask
+					if (!child.UIObject.Visible || camera.RenderingMask.InMask(child.UIObject.Tag))
+						continue;
+
+					// Render meshes
+					child.Render(camera);
+				}
+			}
+
+			// Render UI objects' text
+			textShader.Bind();
+			foreach (RenderedUIObject uiObject in uiObjects.Values)
+			{
+				// Exclude invisible objects and rendering mask
+				if (!uiObject.UIObject.Visible || camera.RenderingMask.InMask(uiObject.UIObject.Tag))
+					continue;
 
 				// Text boundary
 				BoxData uiRect = new BoxData(uiObject.UIObject.Transform.Position, uiObject.UIObject.Transform.Scale);
@@ -124,11 +171,9 @@ internal class GraphicsEngine : IGraphicsEngine
 				// Render object's children (text and meshes)
 				foreach (RenderedUIObject child in uiObject.Children)
 				{
-					if (!child.UIObject.Visible)
+					// Exclude invisible objects and rendering mask
+					if (!child.UIObject.Visible || camera.RenderingMask.InMask(child.UIObject.Tag))
 						continue;
-
-					// Render meshes
-					child.Render(camera);
 
 					// Get relative bouding box to parent
 					// In order to confine children elements inside the parent
@@ -139,6 +184,7 @@ internal class GraphicsEngine : IGraphicsEngine
 					DrawText(child.UIObject.TextData, childRect);
 				}
 			}
+			textShader.Unbind();
 		}
 
 		internalRenderer.SwapBuffers();
@@ -163,6 +209,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	private void DrawText(TextData textData, BoxData textArea)
 	{
 		string text = textData.Text;
+		Color textColor = textData.TextColor;
 		string fontName = textData.FontName;
 		float fontSize = textData.FontSize;
 
@@ -263,6 +310,10 @@ internal class GraphicsEngine : IGraphicsEngine
 		float x = textArea.Postion.X - textWidth / 2;
 		float y = textArea.Postion.Y + (linesHeight - font.CharacterMaps['L'].Height) / 2;
 
+		// Set the text color uniform
+		textShader.SetFloat4Uniform(new Vector4((float)textColor.R / 0xFF, (float)textColor.G / 0xFF, (float)textColor.B / 0xFF, 1), "textColor");
+
+		// Draw the text
 		foreach (char c in text)
 		{
 			// Newline

@@ -10,8 +10,6 @@ using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Components.Shared.Data;
-using GraphicsEngine.Services.Implementations.Direct11.Renderer;
-using GraphicsEngine.Services.Implementations.Direct12;
 using GraphicsEngine.Services.Implementations.OpenTK;
 using GraphicsEngine.Services.Implementations.OpenTK.Renderer;
 using GraphicsEngine.Services.Implementations.Shared;
@@ -74,11 +72,11 @@ internal class ServiceRegisterer
 
 	private void RegisterSilkDirect11()
 	{
-		collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
+		// collection.AddSingleton<IInternalGraphicsRenderer, Direct11Renderer>();
 	}
 	private void RegisterSilkDirect12()
 	{
-		collection.AddSingleton<IInternalGraphicsRenderer, Direct12Renderer>();
+		// collection.AddSingleton<IInternalGraphicsRenderer, Direct12Renderer>();
 	}
 
 	private void RegisterShared()

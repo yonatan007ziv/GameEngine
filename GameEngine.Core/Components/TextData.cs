@@ -1,8 +1,11 @@
-﻿namespace GameEngine.Core.Components;
+﻿using System.Drawing;
+
+namespace GameEngine.Core.Components;
 
 public class TextData
 {
 	public string Text { get; set; } = "";
+	public Color TextColor { get; set; } = Color.DarkCyan;
 	public string FontName { get; set; }
 	public float FontSize { get; set; }
 
