@@ -62,9 +62,8 @@ internal class RenderedWorldObject
 			shouldUpdateChildren = false;
 		}
 
-		if (WorldObject.Visible && (Parent?.Visible ?? true))
-			foreach (MeshRenderer meshRenderer in Meshes)
-				meshRenderer.Render(camera);
+		foreach (MeshRenderer meshRenderer in Meshes)
+			meshRenderer.Render(camera);
 	}
 
 	public void Update()

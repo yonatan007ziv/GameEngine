@@ -87,12 +87,16 @@ internal class GraphicsEngine : IGraphicsEngine
 			// Render world objects
 			foreach (RenderedWorldObject worldObject in worldObjects.Values)
 			{
+				if (!worldObject.WorldObject.Visible)
+					continue;
+
 				if (!camera.RenderingMask.InMask(worldObject.WorldObject.Tag)) // Exclude rendering mask
 					worldObject.Render(camera);
 
 				// Render object's children
 				foreach (RenderedWorldObject child in worldObject.Children)
-					child.Render(camera);
+					if (child.WorldObject.Visible)
+						child.Render(camera);
 			}
 		}
 
@@ -105,6 +109,9 @@ internal class GraphicsEngine : IGraphicsEngine
 			// Render UI Objects
 			foreach (RenderedUIObject uiObject in uiObjects.Values)
 			{
+				if (!uiObject.UIObject.Visible)
+					continue;
+
 				if (!camera.RenderingMask.InMask(uiObject.UIObject.Tag)) // Exclude rendering mask
 					uiObject.Render(camera);
 
@@ -112,11 +119,15 @@ internal class GraphicsEngine : IGraphicsEngine
 				BoxData uiRect = new BoxData(uiObject.UIObject.Transform.Position, uiObject.UIObject.Transform.Scale);
 
 				// Render text
-				DrawText(uiObject.UIObject.TextData.Text, uiObject.UIObject.TextData.FontName, uiObject.UIObject.TextData.FontSize, uiRect);
+				DrawText(uiObject.UIObject.TextData, uiRect);
 
 				// Render object's children (text and meshes)
 				foreach (RenderedUIObject child in uiObject.Children)
 				{
+					if (!child.UIObject.Visible)
+						continue;
+
+					// Render meshes
 					child.Render(camera);
 
 					// Get relative bouding box to parent
@@ -125,7 +136,7 @@ internal class GraphicsEngine : IGraphicsEngine
 					BoxData childRect = new BoxData(relativePosition, relativeScale);
 
 					// Render text
-					DrawText(child.UIObject.TextData.Text, child.UIObject.TextData.FontName, child.UIObject.TextData.FontSize, childRect);
+					DrawText(child.UIObject.TextData, childRect);
 				}
 			}
 		}
@@ -149,10 +160,13 @@ internal class GraphicsEngine : IGraphicsEngine
 		FinalizedTextureBuffers.Clear();
 	}
 
-	private void DrawText(string text, string fontName, float fontSize, BoxData textArea)
+	private void DrawText(TextData textData, BoxData textArea)
 	{
-		Font font;
+		string text = textData.Text;
+		string fontName = textData.FontName;
+		float fontSize = textData.FontSize;
 
+		Font font;
 		if (!loadedFonts.ContainsKey(fontName))
 		{
 			if (!fontLoader.ReadFile(fontName, out font))
