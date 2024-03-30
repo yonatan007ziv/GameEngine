@@ -63,7 +63,7 @@ internal class RenderedUIObject
 			shouldUpdateChildren = false;
 		}
 
-		if (UIObject.Visible)
+		if (UIObject.Visible && (Parent?.Visible ?? true))
 			foreach (MeshRenderer meshRenderer in Meshes)
 				meshRenderer.Render(camera);
 	}
