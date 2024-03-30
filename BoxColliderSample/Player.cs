@@ -22,6 +22,8 @@ internal class Player : ScriptableWorldObject
 
 		// Gravity
 		Forces.Add(new Vector3(0, -gravityMagnitude, 0));
+
+		Children.Add(camera);
 	}
 
 	public override void Update(float deltaTime)

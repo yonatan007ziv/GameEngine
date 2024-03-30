@@ -32,8 +32,8 @@ public interface IGraphicsEngine
 	void AddUIObject(UIObject uiObjectData);
 	void RemoveUIObject(UIObject uiObjectData);
 
-	void AddWorldCamera(GameComponentData worldCameraData, ViewPort viewPort);
-	void RemoveWorldCamera(GameComponentData worldCameraData);
-	void AddUICamera(GameComponentData uiCameraData, ViewPort viewPort);
-	void RemoveUICamera(GameComponentData uiCameraData);
+	void AddWorldCamera(WorldObject worldCamera, CameraRenderingMask<string> renderingMask, ViewPort viewPort);
+	void RemoveWorldCamera(WorldObject worldCamera);
+	void AddUICamera(UIObject uiCamera, CameraRenderingMask<string> renderingMask, ViewPort viewPort);
+	void RemoveUICamera(UIObject uiCamera);
 }

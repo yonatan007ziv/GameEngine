@@ -13,6 +13,7 @@ internal class PlayerCameraController : WorldCamera
 	public PlayerCameraController(WorldObject parent)
 		: base(parent)
 	{
+		Transform = parent.Transform;
 		Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
 	}
 

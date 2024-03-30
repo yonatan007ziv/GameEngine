@@ -151,6 +151,9 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 
 	public void DrawGlyf(CharacterGlyf glyph, Vector2 centeredPosition)
 	{
+		bool prevLogRenderingMessages = LogRenderingMessages;
+
+		LogRenderingMessages = false;
 		foreach (CharacterContour contour in glyph.CharacterContours)
 		{
 			if (contour.Clockwise)
@@ -182,5 +185,7 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 			bufferDeletor.DeleteBuffer(indexBuffer.Id);
 			bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
 		}
+
+		LogRenderingMessages = prevLogRenderingMessages;
 	}
 }

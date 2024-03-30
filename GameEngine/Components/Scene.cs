@@ -44,7 +44,7 @@ public class Scene : IInputMapper, IDisposable
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
 			foreach (object obj in e.NewItems!)
 				if (obj is (WorldCamera worldCamera, ViewPort viewPort))
-					Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, viewPort);
+					Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
 
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
 			foreach (object obj in e.OldItems!)
@@ -68,7 +68,7 @@ public class Scene : IInputMapper, IDisposable
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
 			foreach (object obj in e.NewItems!)
 				if (obj is (UICamera uiCamera, ViewPort viewPort))
-					Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
+					Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
 
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Remove)
 			foreach (object obj in e.OldItems!)
@@ -88,24 +88,12 @@ public class Scene : IInputMapper, IDisposable
 		foreach (WorldObject worldObject in WorldObjects)
 			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
 		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCameras)
-			if (worldCamera.Standalone)
-			{
-				Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldCamera.Parent);
-				Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, viewPort);
-			}
-			else
-				Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, viewPort);
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort); // Camera must have a parent
 
 		foreach (UIObject uiObject in UIObjects)
 			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
 		foreach ((UICamera uiCamera, ViewPort viewPort) in UICameras)
-			if (uiCamera.Standalone)
-			{
-				Services.Implementations.GameEngine.EngineContext.AddUIObject(uiCamera.Parent);
-				Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
-			}
-			else
-				Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, viewPort);
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort); // Camera must have a parent
 
 		_isLoaded = true;
 		LoadedScene = this;
@@ -118,7 +106,7 @@ public class Scene : IInputMapper, IDisposable
 
 		foreach (WorldObject gameObject in WorldObjects)
 			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(gameObject);
-		foreach ((WorldComponent camera, _) in WorldCameras)
+		foreach ((WorldObject camera, _) in WorldCameras)
 			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(camera);
 
 		_isLoaded = false;

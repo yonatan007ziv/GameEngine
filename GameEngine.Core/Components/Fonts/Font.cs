@@ -63,10 +63,6 @@ public class Font
 					contourPoints.Add(new Vector2(x, y));
 				}
 
-				if (j == 37)
-				{
-
-				}
 				characterContours[j] = new CharacterContour(contourPoints.ToArray(), controlPointIndexes.ToArray(), glyphWidth, glyphHeight, glyphCenterX, glyphCenterY);
 			}
 

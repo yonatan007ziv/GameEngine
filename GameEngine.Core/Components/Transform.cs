@@ -7,9 +7,10 @@ namespace GameEngine.Core.Components;
 
 public class Transform : INotifyPropertyChanged
 {
-	public static Vector3 GlobalRight { get; set; } = Vector3.UnitX;
-	public static Vector3 GlobalUp { get; set; } = Vector3.UnitY;
-	public static Vector3 GlobalFront { get; set; } = Vector3.UnitZ;
+	public static Transform Identity { get; } = new Transform(Vector3.Zero, Vector3.Zero, Vector3.One);
+	public static Vector3 GlobalRight { get; } = Vector3.UnitX;
+	public static Vector3 GlobalUp { get; } = Vector3.UnitY;
+	public static Vector3 GlobalFront { get; } = Vector3.UnitZ;
 
 	private Vector3 _position, _rotation, _scale = Vector3.One;
 
@@ -22,6 +23,14 @@ public class Transform : INotifyPropertyChanged
 	public Vector3 LocalFront { get; private set; } = GlobalFront;
 
 	public Transform() { }
+	public Transform(Vector3 position, Vector3 rotation, Vector3 scale) { Position = position; Rotation = rotation; Scale = scale; }
+
+	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeTransform(Transform relativeTo)
+	{
+		return (relativeTo.Position + Position * relativeTo.Scale,
+			relativeTo.Rotation + Rotation,
+			relativeTo.Scale * Scale);
+	}
 
 	private void CalculateLocalVectors()
 	{

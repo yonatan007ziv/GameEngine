@@ -20,6 +20,10 @@ public abstract class ScriptableWorldObject : WorldObject
 	public ObservableCollection<WorldObject> UIObjects => Scene.LoadedScene.WorldObjects;
 	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras => Scene.LoadedScene.UICameras;
 
+	public ScriptableWorldObject() { }
+	public ScriptableWorldObject(WorldObject parent)
+		: base(parent) { }
+
 	#region Collider info
 	public bool TouchingColliderTag(string tag)
 	{

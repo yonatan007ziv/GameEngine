@@ -4,7 +4,6 @@ using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
-using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -27,20 +26,14 @@ internal class GraphicsEngine : IGraphicsEngine
 	public Vector2 WindowSize { get => internalRenderer.WindowSize; }
 	public bool LogRenderingMessages { get => internalRenderer.LogRenderingMessages; set => internalRenderer.LogRenderingMessages = value; }
 
-	private readonly Dictionary<string, Font> fonts = new Dictionary<string, Font>();
-
-	// Character glyph buffers
-	private readonly IVertexArray glyphVertexArray;
-	private readonly IVertexBuffer glyphVertexBuffer;
-	private readonly IIndexBuffer glyphIndexBuffer;
-
+	private readonly Dictionary<string, Font> loadedFonts = new Dictionary<string, Font>();
 
 	private readonly List<int> allObjectIds = new List<int>();
 
 	private readonly Dictionary<int, RenderedWorldObject> worldObjects = new Dictionary<int, RenderedWorldObject>();
 	private readonly Dictionary<int, RenderedUIObject> uiObjects = new Dictionary<int, RenderedUIObject>();
-	private readonly Dictionary<int, WorldCamera> worldCameras = new Dictionary<int, WorldCamera>();
-	private readonly Dictionary<int, UICamera> uiCameras = new Dictionary<int, UICamera>();
+	private readonly Dictionary<int, RenderingWorldCamera> worldCameras = new Dictionary<int, RenderingWorldCamera>();
+	private readonly Dictionary<int, RenderingUICamera> uiCameras = new Dictionary<int, RenderingUICamera>();
 
 	// Buffer ids
 	public List<int> FinalizedBuffers { get; } = new List<int>();
@@ -86,33 +79,54 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		internalRenderer.SetDepthTest(true);
 
-		foreach (WorldCamera camera in worldCameras.Values)
+		foreach (RenderingWorldCamera camera in worldCameras.Values)
 		{
 			camera.Update();
 			internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render world objects
 			foreach (RenderedWorldObject worldObject in worldObjects.Values)
-				if (worldObject.Id != camera.ParentId)
+			{
+				if (!camera.RenderingMask.InMask(worldObject.WorldObject.Tag)) // Exclude rendering mask
 					worldObject.Render(camera);
+
+				// Render object's children
+				foreach (RenderedWorldObject child in worldObject.Children)
+					child.Render(camera);
+			}
 		}
 
 		internalRenderer.SetDepthTest(false);
 
-		foreach (UICamera camera in uiCameras.Values)
+		foreach (RenderingUICamera camera in uiCameras.Values)
 		{
 			internalRenderer.SetViewport(camera.ViewPort);
 
 			// Render UI Objects
 			foreach (RenderedUIObject uiObject in uiObjects.Values)
 			{
-				uiObject.Render(camera);
+				if (!camera.RenderingMask.InMask(uiObject.UIObject.Tag)) // Exclude rendering mask
+					uiObject.Render(camera);
 
 				// Text boundary
-				BoxData uiRect = new BoxData(uiObject.Transform.Position, uiObject.Transform.Scale);
+				BoxData uiRect = new BoxData(uiObject.UIObject.Transform.Position, uiObject.UIObject.Transform.Scale);
 
 				// Render text
-				DrawText(uiObject.TextData.Text, uiObject.TextData.FontName, uiObject.TextData.FontSize, uiObject.Transform.Position, uiRect);
+				DrawText(uiObject.UIObject.TextData.Text, uiObject.UIObject.TextData.FontName, uiObject.UIObject.TextData.FontSize, uiRect);
+
+				// Render object's children (text and meshes)
+				foreach (RenderedUIObject child in uiObject.Children)
+				{
+					child.Render(camera);
+
+					// Get relative bouding box to parent
+					// In order to confine children elements inside the parent
+					(Vector3 relativePosition, Vector3 relativeRotation, Vector3 relativeScale) = child.UIObject.Transform.GetRelativeTransform(uiObject.UIObject.Transform);
+					BoxData childRect = new BoxData(relativePosition, relativeScale);
+
+					// Render text
+					DrawText(child.UIObject.TextData.Text, child.UIObject.TextData.FontName, child.UIObject.TextData.FontSize, childRect);
+				}
 			}
 		}
 
@@ -135,11 +149,11 @@ internal class GraphicsEngine : IGraphicsEngine
 		FinalizedTextureBuffers.Clear();
 	}
 
-	private void DrawText(string text, string fontName, float fontSize, Vector3 centeredPosition, BoxData boundary)
+	private void DrawText(string text, string fontName, float fontSize, BoxData textArea)
 	{
 		Font font;
 
-		if (!fonts.ContainsKey(fontName))
+		if (!loadedFonts.ContainsKey(fontName))
 		{
 			if (!fontLoader.ReadFile(fontName, out font))
 			{
@@ -147,10 +161,10 @@ internal class GraphicsEngine : IGraphicsEngine
 				return;
 			}
 
-			fonts[fontName] = font;
+			loadedFonts[fontName] = font;
 		}
 
-		font = fonts[fontName];
+		font = loadedFonts[fontName];
 		font.FontSize = fontSize;
 
 		// Check if all of the characters are supported
@@ -194,14 +208,14 @@ internal class GraphicsEngine : IGraphicsEngine
 		// Shrink to fit
 		float originalFontSize = font.FontSize;
 
-		bool shrinkHorizontally = textWidth >= boundary.Scale.X * 2;
-		bool shrinkVertically = linesHeight >= boundary.Scale.Y * 2;
+		bool shrinkHorizontally = textWidth >= textArea.Scale.X * 2;
+		bool shrinkVertically = linesHeight >= textArea.Scale.Y * 2;
 
 		if (shrinkHorizontally || shrinkVertically)
 		{
 			// Compute maximum allowed font size
-			float horizontalMaximumFont = boundary.Scale.X * 2 / longestLineLength;
-			float verticalMaximumFont = boundary.Scale.Y * 2 / textLines.Length;
+			float horizontalMaximumFont = textArea.Scale.X * 2 / longestLineLength;
+			float verticalMaximumFont = textArea.Scale.Y * 2 / textLines.Length;
 
 			// Meet both horizontal and vertical constraints
 			font.FontSize = Math.Min(horizontalMaximumFont, verticalMaximumFont);
@@ -232,8 +246,8 @@ internal class GraphicsEngine : IGraphicsEngine
 		}
 
 		// Starting position is the centered position minus half of the total line length
-		float x = centeredPosition.X - textWidth / 2;
-		float y = centeredPosition.Y + (linesHeight - font.CharacterMaps['L'].Height) / 2;
+		float x = textArea.Postion.X - textWidth / 2;
+		float y = textArea.Postion.Y + (linesHeight - font.CharacterMaps['L'].Height) / 2;
 
 		foreach (char c in text)
 		{
@@ -241,7 +255,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			if (c == '\n')
 			{
 				// Reset the X coordinate
-				x = centeredPosition.X - textWidth / 2;
+				x = textArea.Postion.X - textWidth / 2;
 
 				// Get the tallest letter's height and subtract it from the y coordinate
 				y -= font.CharacterMaps['L'].Height;
@@ -272,12 +286,12 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	private void WindowResized()
 	{
-		foreach (WorldCamera camera in worldCameras.Values)
+		foreach (RenderingWorldCamera camera in worldCameras.Values)
 		{
 			camera.Width = WindowSize.X;
 			camera.Height = WindowSize.Y;
 		}
-		foreach (UICamera camera in uiCameras.Values)
+		foreach (RenderingUICamera camera in uiCameras.Values)
 		{
 			camera.Width = WindowSize.X;
 			camera.Height = WindowSize.Y;
@@ -294,30 +308,28 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-
 		RenderedWorldObject renderedWorldObject = new RenderedWorldObject(worldObject, internalRenderer.MeshFactory);
 		worldObjects.Add(worldObject.Id, renderedWorldObject);
 		allObjectIds.Add(worldObject.Id);
 	}
 
-	public void AddWorldCamera(GameComponentData cameraData, ViewPort viewPort)
+	public void AddWorldCamera(WorldObject camera, CameraRenderingMask<string> renderingMask, ViewPort viewPort)
 	{
-		if (!allObjectIds.Contains(cameraData.ParentId))
+		if (camera.Parent is not null && !allObjectIds.Contains(camera.Parent.Id))
 		{
-			logger.LogError("Parent id not found: {id}", cameraData.ParentId);
+			logger.LogError("Parent id not found: {id}", camera.Parent.Id);
 			return;
 		}
-		if (allObjectIds.Contains(cameraData.Id))
+		if (allObjectIds.Contains(camera.Id))
 		{
-			logger.LogError("Id already taken: {id}", cameraData.Id);
+			logger.LogError("Id already taken: {id}", camera.Id);
 			return;
 		}
 
-		// Find parent
-		RenderedWorldObject parent = worldObjects[cameraData.ParentId];
-		WorldCamera camera = new WorldCamera(cameraData.Id, cameraData.ParentId, parent.Transform, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
-		worldCameras.Add(cameraData.Id, camera);
-		allObjectIds.Add(cameraData.Id);
+		RenderingWorldCamera renderingCamera = new RenderingWorldCamera(camera, renderingMask, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
+
+		worldCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
+		allObjectIds.Add(renderingCamera.CameraObject.Id);
 	}
 
 	public void RemoveWorldObject(WorldObject worldObjectData)
@@ -337,89 +349,88 @@ internal class GraphicsEngine : IGraphicsEngine
 		allObjectIds.Remove(worldObjectData.Id);
 	}
 
-	public void RemoveWorldCamera(GameComponentData cameraData)
+	public void RemoveWorldCamera(WorldObject camera)
 	{
-		if (!allObjectIds.Contains(cameraData.Id))
+		if (!allObjectIds.Contains(camera.Id))
 		{
-			logger.LogError("Id not found: {id}", cameraData.Id);
+			logger.LogError("Id not found: {id}", camera.Id);
 			return;
 		}
-		if (!worldCameras.ContainsKey(cameraData.Id))
+		if (!worldCameras.ContainsKey(camera.Id))
 		{
-			logger.LogError("World camera id not found: {id}", cameraData.Id);
+			logger.LogError("World camera id not found: {id}", camera.Id);
 			return;
 		}
 
-		worldCameras.Remove(cameraData.Id);
-		allObjectIds.Remove(cameraData.Id);
+		worldCameras.Remove(camera.Id);
+		allObjectIds.Remove(camera.Id);
 	}
 	#endregion
 
 	#region UI object
-	public void AddUIObject(UIObject uiObjectData)
+	public void AddUIObject(UIObject uiObject)
 	{
-		if (allObjectIds.Contains(uiObjectData.Id))
+		if (allObjectIds.Contains(uiObject.Id))
 		{
-			logger.LogError("Id already taken: {id}", uiObjectData.Id);
+			logger.LogError("Id already taken: {id}", uiObject.Id);
 			return;
 		}
 
-		RenderedUIObject uiObject = new RenderedUIObject(uiObjectData, internalRenderer.MeshFactory);
-		uiObjects.Add(uiObjectData.Id, uiObject);
-		allObjectIds.Add(uiObjectData.Id);
+		RenderedUIObject renderedUIObject = new RenderedUIObject(uiObject, internalRenderer.MeshFactory);
+		uiObjects.Add(uiObject.Id, renderedUIObject);
+		allObjectIds.Add(uiObject.Id);
 	}
 
-	public void AddUICamera(GameComponentData cameraData, ViewPort viewPort)
+	public void AddUICamera(UIObject camera, CameraRenderingMask<string> renderingMask, ViewPort viewPort)
 	{
-		if (!allObjectIds.Contains(cameraData.ParentId))
+		if (camera.Parent is not null && !allObjectIds.Contains(camera.Parent.Id))
 		{
-			logger.LogError("Parent id not found: {id}", cameraData.ParentId);
+			logger.LogError("Parent id not found: {id}", camera.Parent.Id);
 			return;
 		}
-		if (allObjectIds.Contains(cameraData.Id))
+		if (allObjectIds.Contains(camera.Id))
 		{
-			logger.LogError("Id already taken: {id}", cameraData.Id);
+			logger.LogError("Id already taken: {id}", camera.Id);
 			return;
 		}
 
-		// Find parent
-		UICamera camera = new UICamera(cameraData.Id, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
-		uiCameras.Add(cameraData.Id, camera);
-		allObjectIds.Add(cameraData.Id);
+		RenderingUICamera renderingCamera = new RenderingUICamera(camera, renderingMask, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
+		uiCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
+		allObjectIds.Add(renderingCamera.CameraObject.Id);
 	}
 
-	public void RemoveUIObject(UIObject uiObjectData)
+	public void RemoveUIObject(UIObject uiObject)
 	{
-		if (!allObjectIds.Contains(uiObjectData.Id))
+		if (!allObjectIds.Contains(uiObject.Id))
 		{
-			logger.LogError("UI object id not found: {id}", uiObjectData.Id);
+			logger.LogError("UI object id not found: {id}", uiObject.Id);
 			return;
 		}
-		if (!uiObjects.ContainsKey(uiObjectData.Id))
+		if (!uiObjects.ContainsKey(uiObject.Id))
 		{
-			logger.LogError("UI object id not found: {id}", uiObjectData.Id);
+			logger.LogError("UI object id not found: {id}", uiObject.Id);
 			return;
 		}
 
-		uiObjects.Remove(uiObjectData.Id);
-		allObjectIds.Remove(uiObjectData.Id);
+		uiObjects.Remove(uiObject.Id);
+		allObjectIds.Remove(uiObject.Id);
 	}
 
-	public void RemoveUICamera(GameComponentData cameraData)
+	public void RemoveUICamera(UIObject camera)
 	{
-		if (!allObjectIds.Contains(cameraData.Id))
+		if (!allObjectIds.Contains(camera.Id))
 		{
-			logger.LogError("Id not found: {id}", cameraData.Id);
+			logger.LogError("Id not found: {id}", camera.Id);
 			return;
 		}
-		if (!uiCameras.ContainsKey(cameraData.Id))
+		if (!uiCameras.ContainsKey(camera.Id))
 		{
-			logger.LogError("UI camera id not found: {id}", cameraData.Id);
+			logger.LogError("UI camera id not found: {id}", camera.Id);
 			return;
 		}
 
-		uiCameras.Remove(cameraData.Id);
-		allObjectIds.Remove(cameraData.Id);
+		uiCameras.Remove(camera.Id);
+		allObjectIds.Remove(camera.Id);
 	}
 	#endregion
 	#endregion

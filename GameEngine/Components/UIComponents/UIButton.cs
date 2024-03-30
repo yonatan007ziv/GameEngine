@@ -67,8 +67,9 @@ public class UIButton : ScriptableUIObject
 
 		Vector2 mousePos = GetUIMousePosition();
 
-		bool insideX = mousePos.X <= (Transform.Position.X + Transform.Scale.X) && mousePos.X >= (Transform.Position.X - Transform.Scale.X);
-		bool insideY = mousePos.Y <= (Transform.Position.Y + Transform.Scale.Y) && mousePos.Y >= (Transform.Position.Y - Transform.Scale.Y);
+		(Vector3 relativePosition, Vector3 relativeRotation, Vector3 relativeScale) = Transform.GetRelativeTransform(Parent?.Transform ?? Transform.Identity);
+		bool insideX = mousePos.X <= (relativePosition.X + relativeScale.X) && mousePos.X >= (relativePosition.X - relativeScale.X);
+		bool insideY = mousePos.Y <= (relativePosition.Y + relativeScale.Y) && mousePos.Y >= (relativePosition.Y - relativeScale.Y);
 
 		if (insideX && insideY)
 		{

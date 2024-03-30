@@ -1,26 +1,16 @@
 ﻿using GameEngine.Components.ScriptableObjects;
+using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components;
 
-public class WorldCamera : ScriptableWorldComponent
+public class WorldCamera : ScriptableWorldObject
 {
-	public bool Standalone { get; }
+	public CameraRenderingMask<string> RenderingMaskTags { get; } = new CameraRenderingMask<string>();
 
-	public WorldCamera()
-		: base(new WorldObject())
-	{
-		Standalone = true;
-	}
-
+	public WorldCamera() { }
 	public WorldCamera(WorldObject parent)
-		: base(parent)
-	{
-		Standalone = false;
-	}
+		: base(parent) { }
 
-	public override void Update(float deltaTime)
-	{
-
-	}
+	public override void Update(float deltaTime) { }
 }

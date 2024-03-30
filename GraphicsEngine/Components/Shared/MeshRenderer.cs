@@ -39,13 +39,26 @@ internal class MeshRenderer
 		Material.Unbind();
 	}
 
-	public void Update(Transform transform)
+	public void Update(Transform transform, Transform? relativeTransform = null)
 	{
-		Matrix4x4 rotationMatrix =
-			Matrix4x4.CreateRotationX(MathHelper.DegToRad(transform.Rotation.X))
-			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y + 180))
-			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(transform.Rotation.Z));
 
-		modelMatrix = rotationMatrix * Matrix4x4.CreateScale(transform.Scale) * Matrix4x4.CreateTranslation(transform.Position);
+		if (relativeTransform is null)
+		{
+			Matrix4x4 rotationMatrix =
+				Matrix4x4.CreateRotationX(MathHelper.DegToRad(transform.Rotation.X))
+				* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y + 180))
+				* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(transform.Rotation.Z));
+
+			modelMatrix = rotationMatrix * Matrix4x4.CreateScale(transform.Scale) * Matrix4x4.CreateTranslation(transform.Position);
+		}
+		else
+		{
+			Matrix4x4 relativeRotationMatrix =
+				Matrix4x4.CreateRotationX(MathHelper.DegToRad(transform.Rotation.X + relativeTransform.Rotation.X))
+				* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y + relativeTransform.Rotation.Y + 180))
+				* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(transform.Rotation.Z + relativeTransform.Rotation.Z));
+
+			modelMatrix = relativeRotationMatrix * Matrix4x4.CreateScale(transform.Scale * relativeTransform.Scale) * Matrix4x4.CreateTranslation(transform.Position * relativeTransform.Scale + relativeTransform.Position);
+		}
 	}
 }

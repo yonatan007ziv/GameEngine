@@ -3,7 +3,6 @@ using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
-using GameEngine.Extensions;
 using GameEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -30,8 +29,8 @@ internal class GameEngine : IGameEngine
 	private readonly Dictionary<int, WorldObject> worldObjects = new Dictionary<int, WorldObject>();
 	private readonly Dictionary<int, UIObject> uiObjects = new Dictionary<int, UIObject>();
 
-	private readonly Dictionary<int, WorldComponent> worldCameras = new Dictionary<int, WorldComponent>();
-	private readonly Dictionary<int, UIComponent> uiCameras = new Dictionary<int, UIComponent>();
+	private readonly Dictionary<int, WorldObject> worldCameras = new Dictionary<int, WorldObject>();
+	private readonly Dictionary<int, UIObject> uiCameras = new Dictionary<int, UIObject>();
 
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
@@ -119,8 +118,8 @@ internal class GameEngine : IGameEngine
 			{
 				WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
 				// Update components
-				foreach (WorldComponent worldComponent in worldObject.components)
-					if (worldComponent is ScriptableWorldComponent scriptableWorldComponent)
+				foreach (WorldObject worldComponent in worldObject.Children)
+					if (worldComponent is ScriptableWorldObject scriptableWorldComponent)
 						scriptableWorldComponent.Update(TickDeltaTime);
 
 				// Update object
@@ -133,8 +132,8 @@ internal class GameEngine : IGameEngine
 			{
 				UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
 				// Update components
-				foreach (UIComponent uiComponent in uiObject.components)
-					if (uiComponent is ScriptableUIComponent scriptableComponent)
+				foreach (UIObject uiComponent in uiObject.Children)
+					if (uiComponent is ScriptableUIObject scriptableComponent)
 						scriptableComponent.Update(TickDeltaTime);
 
 				// Update object
@@ -208,7 +207,7 @@ internal class GameEngine : IGameEngine
 		PhysicsEngine.AddPhysicsObject(worldObject);
 		GraphicsEngine.AddWorldObject(worldObject);
 	}
-	public void AddWorldCamera(WorldComponent worldCamera, ViewPort viewport)
+	public void AddWorldCamera(WorldObject worldCamera, CameraRenderingMask<string> renderingMask, ViewPort viewport)
 	{
 		if (allObjectIds.Contains(worldCamera.Id))
 		{
@@ -219,8 +218,8 @@ internal class GameEngine : IGameEngine
 		worldCameras.Add(worldCamera.Id, worldCamera);
 		allObjectIds.Add(worldCamera.Id);
 
-		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		GraphicsEngine.AddWorldCamera(worldCameraData, viewport);
+		// Add to engines
+		GraphicsEngine.AddWorldCamera(worldCamera, renderingMask, viewport);
 	}
 	public void AddUIObject(UIObject uiObject)
 	{
@@ -236,7 +235,7 @@ internal class GameEngine : IGameEngine
 		// Add to engines
 		GraphicsEngine.AddUIObject(uiObject);
 	}
-	public void AddUICamera(UIComponent uiCamera, ViewPort viewport)
+	public void AddUICamera(UIObject uiCamera, CameraRenderingMask<string> renderingMask, ViewPort viewport)
 	{
 		if (allObjectIds.Contains(uiCamera.Id))
 		{
@@ -247,8 +246,8 @@ internal class GameEngine : IGameEngine
 		uiCameras.Add(uiCamera.Id, uiCamera);
 		allObjectIds.Add(uiCamera.Id);
 
-		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		GraphicsEngine.AddUICamera(uiCameraData, viewport);
+		// Add to engines
+		GraphicsEngine.AddUICamera(uiCamera, renderingMask, viewport);
 	}
 
 	public void RemoveWorldObject(WorldObject worldObject)
@@ -266,7 +265,7 @@ internal class GameEngine : IGameEngine
 		PhysicsEngine.RemovePhysicsObject(worldObject);
 		GraphicsEngine.RemoveWorldObject(worldObject);
 	}
-	public void RemoveWorldCamera(WorldComponent worldCamera)
+	public void RemoveWorldCamera(WorldObject worldCamera)
 	{
 		if (!allObjectIds.Contains(worldCamera.Id))
 		{
@@ -277,8 +276,8 @@ internal class GameEngine : IGameEngine
 		worldCameras.Remove(worldCamera.Id);
 		allObjectIds.Remove(worldCamera.Id);
 
-		GameComponentData worldCameraData = worldCamera.TranslateWorldComponent();
-		GraphicsEngine.RemoveWorldCamera(worldCameraData);
+		// Remove from engines
+		GraphicsEngine.RemoveWorldCamera(worldCamera);
 	}
 	public void RemoveUIObject(UIObject uiObject)
 	{
@@ -294,7 +293,7 @@ internal class GameEngine : IGameEngine
 		// Remove from engines
 		GraphicsEngine.RemoveUIObject(uiObject);
 	}
-	public void RemoveUICamera(UIComponent uiCamera)
+	public void RemoveUICamera(UIObject uiCamera)
 	{
 		if (!allObjectIds.Contains(uiCamera.Id))
 		{
@@ -305,8 +304,7 @@ internal class GameEngine : IGameEngine
 		uiCameras.Remove(uiCamera.Id);
 		allObjectIds.Remove(uiCamera.Id);
 
-		GameComponentData uiCameraData = uiCamera.TranslateUIComponent();
-		GraphicsEngine.RemoveUICamera(uiCameraData);
+		GraphicsEngine.RemoveUICamera(uiCamera);
 	}
 	#endregion
 
