@@ -5,7 +5,7 @@ namespace GameEngine.Core.Components;
 public class TextData
 {
 	public string Text { get; set; } = "";
-	public Color TextColor { get; set; } = Color.DarkCyan;
+	public Color TextColor { get; set; } = Color.Black;
 	public string FontName { get; set; }
 	public float FontSize { get; set; }
 

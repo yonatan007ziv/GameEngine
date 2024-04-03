@@ -2,7 +2,7 @@
 
 namespace GraphicsEngine.Components.Shared;
 
-internal abstract class Camera
+internal abstract class RenderingCamera
 {
 	protected const float FOV = 90;
 	protected const float Near = 0.1f;

@@ -1,89 +1,75 @@
 ﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Components.UIComponents;
 using GameEngine.Core.Components.Input.Buttons;
+using GameEngine.Core.Components.Objects;
+using System.Numerics;
 
 namespace SampleFont;
 
 internal class TestingMovingElement : ScriptableUIObject
 {
-	private readonly UIButton aButton;
-	private readonly UILabel bLabel;
-	private readonly UILabel cLabel;
-	private readonly UILabel deLabel;
+	public bool EnabledMovement { get; set; }
 
-	private int d, e;
+	private readonly UIButton button;
 
-	public string Name { get => aButton.Text; set => aButton.Text = value; }
-	public string HostName { get => aButton.Text; set => aButton.Text = value; }
-	public int CurrentPlayerCount { get => d; set { d = value; UpdateLabel(); } }
-	public int MaxPlayerCount { get => e; set { e = value; UpdateLabel(); } }
-
-	public TestingMovingElement(string a, string b, string c, int d, int e)
+	public TestingMovingElement(int count)
 	{
-		aButton = new UIButton("Red.mat");
-		bLabel = new UILabel() { Text = b };
-		cLabel = new UILabel() { Text = c };
-		deLabel = new UILabel();
+		button = new UIButton();
+		button.Text = "Click me\nAnd check the console";
+		button.OnFullClicked += () => Console.WriteLine("Pressed the moving button");
+		button.Transform.Scale = new Vector3(0.5f, 0.5f, 1);
 
-		aButton.Text = "Click me\nAnd check the console";
-		aButton.OnFullClicked += () => Console.WriteLine("Pressed the moving button");
+		string mat;
+		if (count == 1)
+			mat = "Wall.mat";
+		else if (count == 2)
+			mat = "Green.mat";
+		else if (count == 3)
+			mat = "Blue.mat";
+		else
+			mat = "Ground.mat";
 
-		aButton.Transform.Position = new System.Numerics.Vector3(0.5f, 0.75f, 0);
-		aButton.Transform.Scale = new System.Numerics.Vector3(0.25f, 0.25f, 0);
+		Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", mat));
+		button.Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", "Green.mat"));
+		Children.Add(button);
 
-		bLabel.Transform.Position = new System.Numerics.Vector3(-0.5f, 0.55f, 0);
-		bLabel.Transform.Scale = new System.Numerics.Vector3(0.25f, 0.25f, 0);
-		bLabel.Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", "Blue.mat"));
-
-		cLabel.Transform.Scale = new System.Numerics.Vector3(0.25f, 0.25f, 0);
-		cLabel.Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", "missing texture and stuff"));
-
-		deLabel.Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", "Red.mat"));
-		deLabel.Transform.Scale /= 4;
-		deLabel.Transform.Position = new System.Numerics.Vector3(-0.5f, -0.5f, 0);
-
-		this.d = d;
-		this.e = e;
-		UpdateLabel();
-
-		Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", "Green.mat"));
-
-		Children.Add(aButton);
-		Children.Add(bLabel);
-		Children.Add(cLabel);
-		Children.Add(deLabel);
-	}
-
-	public void UpdateLabel()
-	{
-		deLabel.Text = $"({d}/{e})";
+		if (count > 0)
+		{
+			UIObject obj = new TestingMovingElement(count - 1);
+			obj.Transform.Scale /= 5;
+			obj.Transform.Position -= Vector3.One * count / (5);
+			Children.Add(obj);
+		}
 	}
 
 	public override void Update(float deltaTime)
 	{
+		if (!EnabledMovement)
+			return;
+
 		if (GetKeyboardButtonPressed(KeyboardButton.A))
-			Transform.Position -= System.Numerics.Vector3.UnitX * deltaTime / 5;
+			Transform.Position -= Vector3.UnitX * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.D))
-			Transform.Position += System.Numerics.Vector3.UnitX * deltaTime / 5;
+			Transform.Position += Vector3.UnitX * deltaTime / 5;
 
 		if (GetKeyboardButtonPressed(KeyboardButton.S))
-			Transform.Position -= System.Numerics.Vector3.UnitY * deltaTime / 5;
+			Transform.Position -= Vector3.UnitY * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.W))
-			Transform.Position += System.Numerics.Vector3.UnitY * deltaTime / 5;
+			Transform.Position += Vector3.UnitY * deltaTime / 5;
 
 		if (GetKeyboardButtonPressed(KeyboardButton.Q))
-			Transform.Scale -= System.Numerics.Vector3.One * deltaTime / 5;
+			Transform.Scale -= Vector3.One * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.E))
-			Transform.Scale += System.Numerics.Vector3.One * deltaTime / 5;
+			Transform.Scale += Vector3.One * deltaTime / 5;
 
 		if (GetKeyboardButtonPressed(KeyboardButton.F))
-			Transform.Scale -= System.Numerics.Vector3.UnitX * deltaTime / 5;
+			Transform.Scale -= Vector3.UnitX * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.R))
-			Transform.Scale += System.Numerics.Vector3.UnitX * deltaTime / 5;
+			Transform.Scale += Vector3.UnitX * deltaTime / 5;
 
 		if (GetKeyboardButtonPressed(KeyboardButton.G))
-			Transform.Scale -= System.Numerics.Vector3.UnitY * deltaTime / 5;
+			Transform.Scale -= Vector3.UnitY * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.T))
-			Transform.Scale += System.Numerics.Vector3.UnitY * deltaTime / 5;
+			Transform.Scale += Vector3.UnitY * deltaTime / 5;
 	}
 }

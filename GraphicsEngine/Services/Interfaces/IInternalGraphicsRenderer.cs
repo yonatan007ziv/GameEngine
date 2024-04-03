@@ -32,5 +32,5 @@ internal interface IInternalGraphicsRenderer
 	void SetBackgroundColor(Color color);
 	void SetDepthTest(bool enable);
 	void SetViewport(ViewPort viewport);
-	void DrawGlyf(CharacterGlyf glyph, Vector2 centeredPosition);
+	void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position)> glyphPositionPairs);
 }

@@ -4,8 +4,8 @@ public class UITextBox : UIButton
 {
 	private bool editingEnabled;
 
-	public UITextBox(string materialName)
-		: base(materialName)
+	public UITextBox()
+		: base()
 	{
 		// Enable textbox editing
 		OnDragClicked += () => editingEnabled = true;

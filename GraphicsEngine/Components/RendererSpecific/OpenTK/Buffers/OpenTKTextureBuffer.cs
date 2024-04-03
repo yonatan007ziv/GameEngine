@@ -6,8 +6,8 @@ namespace GraphicsEngine.Components.RendererSpecific.OpenTK.Buffers;
 
 internal class OpenTKTextureBuffer : OpenTKBuffer, ITextureBuffer
 {
-	private int Id { get; }
-	private TextureTarget Target { get; }
+	private new int Id { get; }
+	private new TextureTarget Target { get; }
 
 	public OpenTKTextureBuffer()
 		: base(BufferTarget.TextureBuffer)

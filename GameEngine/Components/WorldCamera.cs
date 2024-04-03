@@ -6,7 +6,7 @@ namespace GameEngine.Components;
 
 public class WorldCamera : ScriptableWorldObject
 {
-	public CameraRenderingMask<string> RenderingMaskTags { get; } = new CameraRenderingMask<string>();
+	public CameraRenderingMask RenderingMaskTags { get; } = new CameraRenderingMask();
 
 	public WorldCamera() { }
 	public WorldCamera(WorldObject parent)

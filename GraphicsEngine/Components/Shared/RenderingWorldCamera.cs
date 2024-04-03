@@ -5,16 +5,16 @@ using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderingWorldCamera : Camera
+internal class RenderingWorldCamera : RenderingCamera
 {
 	public WorldObject CameraObject { get; }
-	public CameraRenderingMask<string> RenderingMask { get; }
+	public CameraRenderingMask RenderingMask { get; }
 
 	public float Width { get; set; }
 	public float Height { get; set; }
 	public ViewPort ViewPort { get; private set; }
 
-	public RenderingWorldCamera(WorldObject cameraObject, CameraRenderingMask<string> renderingMask, int width, int height, ViewPort viewPort)
+	public RenderingWorldCamera(WorldObject cameraObject, CameraRenderingMask renderingMask, int width, int height, ViewPort viewPort)
 	{
 		CameraObject = cameraObject;
 		RenderingMask = renderingMask;

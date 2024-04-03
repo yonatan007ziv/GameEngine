@@ -16,12 +16,14 @@ public class UIButton : ScriptableUIObject
 		set
 		{
 			_enabled = value;
-			Meshes[0] = _enabled ? new MeshData("UIRect.obj", Material) : new MeshData("UIRect.obj", (DisabledMaterial == "" ? "Default.mat" : DisabledMaterial));
+
+			string chosenMaterial = _enabled ? Material : DisabledMaterial;
+			Meshes[0] = new MeshData("UIRect.obj", chosenMaterial);
 		}
 	}
 
-	public string Material { get; } = "";
-	public string DisabledMaterial { get; set; } = "";
+	public string Material { get; }
+	public string DisabledMaterial { get; set; } = "Default.mat";
 
 	public event Action? OnFullClicked;
 	public event Action? OnDragClicked;
@@ -37,10 +39,10 @@ public class UIButton : ScriptableUIObject
 	private void Enter() => OnEnter?.Invoke();
 	private void Exit() => OnExit?.Invoke();
 
-	public UIButton(string material)
+	public UIButton()
 	{
-		Meshes.Add(new MeshData("UIRect.obj", material));
-		Material = material;
+		Meshes.Add(new MeshData("UIRect.obj", "Default.mat"));
+		Material = "Default.mat";
 	}
 
 	public override void Update(float deltaTime)
@@ -68,7 +70,7 @@ public class UIButton : ScriptableUIObject
 
 		Vector2 mousePos = GetUIMousePosition();
 
-		(Vector3 relativePosition, Vector3 relativeRotation, Vector3 relativeScale) = Transform.GetRelativeTransform(Parent?.Transform ?? Transform.Identity);
+		(Vector3 relativePosition, Vector3 relativeRotation, Vector3 relativeScale) = GetRelativeToAncestorTransform();
 		bool insideX = mousePos.X <= (relativePosition.X + relativeScale.X) && mousePos.X >= (relativePosition.X - relativeScale.X);
 		bool insideY = mousePos.Y <= (relativePosition.Y + relativeScale.Y) && mousePos.Y >= (relativePosition.Y - relativeScale.Y);
 

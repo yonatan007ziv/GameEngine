@@ -119,40 +119,46 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 		}
 	}
 
-	public void DrawGlyf(CharacterGlyf glyph, Vector2 centeredPosition)
+	public void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position)> glyphPositionPairs)
 	{
 		bool prevLogRenderingMessages = LogRenderingMessages;
 
 		LogRenderingMessages = false;
-		foreach (CharacterContour contour in glyph.CharacterContours)
+		for (int i = 0; i < glyphPositionPairs.Count(); i++)
 		{
-			if (contour.Clockwise)
-				GL.FrontFace(FrontFaceDirection.Cw);
-			else
-				GL.FrontFace(FrontFaceDirection.Ccw);
+			CharacterGlyf glyph = glyphPositionPairs.ElementAt(i).glyph;
+			Vector2 position = glyphPositionPairs.ElementAt(i).position;
 
-			IVertexBuffer vertexBuffer = bufferFactory.GenerateVertexBuffer();
-			IIndexBuffer indexBuffer = bufferFactory.GenerateIndexBuffer();
-
-			Vector2[] points = contour.Points.ToArray();
-			for (int i = 0; i < points.Length; i++)
-				points[i] += centeredPosition;
-
-			vertexBuffer.WriteData(points);
-
-			AttributeLayout[] attributeLayouts =
+			foreach (CharacterContour contour in glyph.CharacterContours)
 			{
-				new AttributeLayout(typeof(float), 2),
-			};
+				if (contour.Clockwise)
+					GL.FrontFace(FrontFaceDirection.Cw);
+				else
+					GL.FrontFace(FrontFaceDirection.Ccw);
 
-			IVertexArray vertexArray = bufferFactory.GenerateVertexArray(vertexBuffer, indexBuffer, attributeLayouts);
+				IVertexBuffer vertexBuffer = bufferFactory.GenerateVertexBuffer();
+				IIndexBuffer indexBuffer = bufferFactory.GenerateIndexBuffer();
 
-			vertexArray.Bind();
-			GL.DrawArrays(PrimitiveType.LineLoop, 0, contour.Points.Count);
+				Vector2[] points = contour.Points.ToArray();
+				for (int j = 0; j < points.Length; j++)
+					points[j] += position;
 
-			bufferDeletor.DeleteBuffer(vertexBuffer.Id);
-			bufferDeletor.DeleteBuffer(indexBuffer.Id);
-			bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
+				vertexBuffer.WriteData(points);
+
+				AttributeLayout[] attributeLayouts =
+				{
+					new AttributeLayout(typeof(float), 2),
+				};
+
+				IVertexArray vertexArray = bufferFactory.GenerateVertexArray(vertexBuffer, indexBuffer, attributeLayouts);
+
+				vertexArray.Bind();
+				GL.DrawArrays(PrimitiveType.LineLoop, 0, contour.Points.Count);
+
+				bufferDeletor.DeleteBuffer(vertexBuffer.Id);
+				bufferDeletor.DeleteBuffer(indexBuffer.Id);
+				bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
+			}
 		}
 
 		LogRenderingMessages = prevLogRenderingMessages;

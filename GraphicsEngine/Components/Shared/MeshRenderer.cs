@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Objects;
 using GameEngine.Extensions;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Interfaces;
@@ -24,7 +25,7 @@ internal class MeshRenderer
 		Material = material;
 	}
 
-	public void Render(Camera camera)
+	public void Render(RenderingCamera camera)
 	{
 		view = camera.ViewMatrix;
 		projection = camera.ProjectionMatrix;
@@ -39,15 +40,14 @@ internal class MeshRenderer
 		Material.Unbind();
 	}
 
-	public void Update(Transform transform, Transform? relativeTransform = null)
+	public void Update(GameObject gameObject)
 	{
-		relativeTransform ??= Transform.Identity;
+		(Vector3 position, Vector3 rotation, Vector3 scale)  relativeTransform = gameObject.GetRelativeToAncestorTransform();
 
-		Matrix4x4 relativeRotationMatrix =
-			Matrix4x4.CreateRotationX(MathHelper.DegToRad(transform.Rotation.X + relativeTransform.Rotation.X))
-			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(transform.Rotation.Y + relativeTransform.Rotation.Y + 180))
-			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(transform.Rotation.Z + relativeTransform.Rotation.Z));
-
-		modelMatrix = relativeRotationMatrix * Matrix4x4.CreateScale(transform.Scale * relativeTransform.Scale) * Matrix4x4.CreateTranslation(transform.Position * relativeTransform.Scale + relativeTransform.Position);
+		modelMatrix =
+			Matrix4x4.CreateRotationX(MathHelper.DegToRad(relativeTransform.rotation.X))
+			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(relativeTransform.rotation.Y))
+			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(relativeTransform.rotation.Z))
+			* Matrix4x4.CreateScale(relativeTransform.scale) * Matrix4x4.CreateTranslation(relativeTransform.position);
 	}
 }

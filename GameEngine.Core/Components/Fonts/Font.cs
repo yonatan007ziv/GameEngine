@@ -70,7 +70,6 @@ public class Font
 		}
 
 		CharacterMaps = GetTTFCmapMappings(glyphs, cmap);
-		FontSize = 1;
 	}
 
 	private IReadOnlyDictionary<char, CharacterGlyf> GetTTFCmapMappings(CharacterGlyf[] glyphs, TTFCmap cmap)

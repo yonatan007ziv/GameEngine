@@ -107,7 +107,7 @@ internal class GameEngine : IGameEngine
 		{
 			updateStopwatch.Restart();
 
-			// Tps Limit
+			// Tps limit
 			double timeToWait = (1000 / TickRate - (int)updateStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
@@ -115,31 +115,12 @@ internal class GameEngine : IGameEngine
 
 			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
 			for (int i = 0; i < worldObjects.Keys.Count; i++)
-			{
-				WorldObject worldObject = worldObjects[worldObjects.Keys.ElementAt(i)];
-				// Update components
-				foreach (WorldObject worldComponent in worldObject.Children)
-					if (worldComponent is ScriptableWorldObject scriptableWorldComponent)
-						scriptableWorldComponent.Update(TickDeltaTime);
+				UpdateWorldObjectTree(worldObjects[worldObjects.Keys.ElementAt(i)], TickDeltaTime);
 
-				// Update object
-				if (worldObject is ScriptableWorldObject scriptableWorldObject)
-					scriptableWorldObject.Update(TickDeltaTime);
-			}
 			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
 
 			for (int i = 0; i < uiObjects.Keys.Count; i++)
-			{
-				UIObject uiObject = uiObjects[uiObjects.Keys.ElementAt(i)];
-				// Update components
-				foreach (UIObject uiComponent in uiObject.Children)
-					if (uiComponent is ScriptableUIObject scriptableComponent)
-						scriptableComponent.Update(TickDeltaTime);
-
-				// Update object
-				if (uiObject is ScriptableUIObject scriptableUIObject)
-					scriptableUIObject.Update(TickDeltaTime);
-			}
+				UpdateUIObjectTree(uiObjects[uiObjects.Keys.ElementAt(i)], TickDeltaTime);
 
 			InputEngine.InputTickPass();
 
@@ -166,7 +147,7 @@ internal class GameEngine : IGameEngine
 				updateMouseLocked = false;
 			}
 
-			// Fps Limit
+			// Fps limit
 			double timeToWait = (1000 / FpsCap - (int)renderStopwatch.ElapsedMilliseconds) / 1000d;
 			AccurateSleep(timeToWait, ExpectedTaskSchedulerPeriod);
 
@@ -178,6 +159,28 @@ internal class GameEngine : IGameEngine
 			if (LogFps)
 				logger.LogInformation("Fps: {fps}", 1 / FpsDeltaTime);
 		}
+	}
+
+	private void UpdateWorldObjectTree(WorldObject worldObject, float deltaTime)
+	{
+		// Update object
+		if (worldObject is ScriptableWorldObject scriptableWorldObject)
+			scriptableWorldObject.Update(deltaTime);
+
+		// Update components
+		foreach (WorldObject child in worldObject.Children.Cast<WorldObject>())
+			UpdateWorldObjectTree(child, deltaTime);
+	}
+
+	private void UpdateUIObjectTree(UIObject uiObject, float deltaTime)
+	{
+		// Update object
+		if (uiObject is ScriptableUIObject scriptableUIObject)
+			scriptableUIObject.Update(deltaTime);
+
+		// Update components
+		foreach (UIObject child in uiObject.Children.Cast<UIObject>())
+			UpdateUIObjectTree(child, deltaTime);
 	}
 
 	public void SetResourceFolder(string path)
@@ -207,7 +210,7 @@ internal class GameEngine : IGameEngine
 		PhysicsEngine.AddPhysicsObject(worldObject);
 		GraphicsEngine.AddWorldObject(worldObject);
 	}
-	public void AddWorldCamera(WorldObject worldCamera, CameraRenderingMask<string> renderingMask, ViewPort viewport)
+	public void AddWorldCamera(WorldObject worldCamera, CameraRenderingMask renderingMask, ViewPort viewport)
 	{
 		if (allObjectIds.Contains(worldCamera.Id))
 		{
@@ -235,7 +238,7 @@ internal class GameEngine : IGameEngine
 		// Add to engines
 		GraphicsEngine.AddUIObject(uiObject);
 	}
-	public void AddUICamera(UIObject uiCamera, CameraRenderingMask<string> renderingMask, ViewPort viewport)
+	public void AddUICamera(UIObject uiCamera, CameraRenderingMask renderingMask, ViewPort viewport)
 	{
 		if (allObjectIds.Contains(uiCamera.Id))
 		{

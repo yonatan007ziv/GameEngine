@@ -47,8 +47,8 @@ public interface IGameEngine
 	void RemoveWorldObject(WorldObject worldObject);
 	void AddUIObject(UIObject uiObject);
 	void RemoveUIObject(UIObject uiObject);
-	void AddWorldCamera(WorldObject camera, CameraRenderingMask<string> cameraRenderingMask, ViewPort viewport);
+	void AddWorldCamera(WorldObject camera, CameraRenderingMask cameraRenderingMask, ViewPort viewport);
 	void RemoveWorldCamera(WorldObject camera);
-	void AddUICamera(UIObject camera, CameraRenderingMask<string> cameraRenderingMask, ViewPort viewport);
+	void AddUICamera(UIObject camera, CameraRenderingMask cameraRenderingMask, ViewPort viewport);
 	void RemoveUICamera(UIObject camera);
 }

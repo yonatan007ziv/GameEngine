@@ -25,13 +25,6 @@ public class Transform : INotifyPropertyChanged
 	public Transform() { }
 	public Transform(Vector3 position, Vector3 rotation, Vector3 scale) { Position = position; Rotation = rotation; Scale = scale; }
 
-	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeTransform(Transform relativeTo)
-	{
-		return (relativeTo.Position + Position * relativeTo.Scale,
-			relativeTo.Rotation + Rotation,
-			relativeTo.Scale * Scale);
-	}
-
 	private void CalculateLocalVectors()
 	{
 		Matrix4x4 rotationMatrix =

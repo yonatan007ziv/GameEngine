@@ -4,16 +4,16 @@ using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderingUICamera : Camera
+internal class RenderingUICamera : RenderingCamera
 {
 	public UIObject CameraObject { get; }
-	public CameraRenderingMask<string> RenderingMask { get; }
+	public CameraRenderingMask RenderingMask { get; }
 
 	public float Width { get; set; }
 	public float Height { get; set; }
 	public ViewPort ViewPort { get; private set; }
 
-	public RenderingUICamera(UIObject cameraObject, CameraRenderingMask<string> renderingMask, int width, int height, ViewPort viewPort)
+	public RenderingUICamera(UIObject cameraObject, CameraRenderingMask renderingMask, int width, int height, ViewPort viewPort)
 	{
 		CameraObject = cameraObject;
 		RenderingMask = renderingMask;

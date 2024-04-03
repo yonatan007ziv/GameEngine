@@ -1,4 +1,6 @@
-﻿namespace GameEngine.Extensions;
+﻿using System.Numerics;
+
+namespace GameEngine.Extensions;
 
 public static partial class MathHelper
 {
@@ -17,5 +19,4 @@ public static partial class MathHelper
 		// Can expand this to the strict formula, but idc enough the stack pointer can kiss ass
 		return Lerp(Lerp(a, b, t), Lerp(b, c, t), t);
 	}
-
 }

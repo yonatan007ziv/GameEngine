@@ -6,7 +6,7 @@ namespace GameEngine.Components;
 
 public class UICamera : ScriptableUIObject
 {
-	public CameraRenderingMask<string> RenderingMaskTags { get; } = new CameraRenderingMask<string>();
+	public CameraRenderingMask RenderingMaskTags { get; } = new CameraRenderingMask();
 
 	public UICamera() { }
 	public UICamera(UIObject parent)
