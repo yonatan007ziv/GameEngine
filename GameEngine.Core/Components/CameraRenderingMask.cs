@@ -3,10 +3,10 @@
 public class CameraRenderingMask
 {
 
-    private readonly ICollection<string> mask = new List<string>();
+	private readonly ICollection<string> mask = new List<string>();
 
 	public bool MaskContains(string maskElement) => mask.Contains(maskElement);
-	public bool AddMask(string maskElement) 
+	public bool AddMask(string maskElement)
 	{
 		// Check if not empty or default
 		if (maskElement != string.Empty && !MaskContains(maskElement))
@@ -16,5 +16,5 @@ public class CameraRenderingMask
 		}
 
 		return false;
-    }
+	}
 }

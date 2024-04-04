@@ -1,5 +1,4 @@
-﻿using GameEngine.Core.Components;
-using GameEngine.Core.Components.Objects;
+﻿using GameEngine.Core.Components.Objects;
 using GameEngine.Extensions;
 using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Services.Interfaces;
@@ -42,7 +41,7 @@ internal class MeshRenderer
 
 	public void Update(GameObject gameObject)
 	{
-		(Vector3 position, Vector3 rotation, Vector3 scale)  relativeTransform = gameObject.GetRelativeToAncestorTransform();
+		(Vector3 position, Vector3 rotation, Vector3 scale) relativeTransform = gameObject.GetRelativeToAncestorTransform();
 
 		modelMatrix =
 			Matrix4x4.CreateRotationX(MathHelper.DegToRad(relativeTransform.rotation.X))

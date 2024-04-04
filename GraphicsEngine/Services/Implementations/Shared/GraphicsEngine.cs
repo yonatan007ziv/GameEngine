@@ -91,6 +91,9 @@ internal class GraphicsEngine : IGraphicsEngine
 	{
 		internalRenderer.ProcessEvents();
 
+		// Go through update queues
+		UpdateQueues();
+
 		internalRenderer.SetDepthTest(true);
 		foreach (RenderingWorldCamera worldCamera in worldCameras.Values)
 			foreach (RenderedWorldObject worldObject in worldObjects.Values)
@@ -102,6 +105,29 @@ internal class GraphicsEngine : IGraphicsEngine
 				RenderUIObject(camera, uiObject);
 
 		internalRenderer.SwapBuffers();
+	}
+
+	private void UpdateQueues()
+	{
+		// World objects updates
+		while (_addWorldObjectsQueue.Count > 0)
+			InternalAddWorldObject(_addWorldObjectsQueue.Dequeue());
+		while (_removeWorldObjectsQueue.Count > 0)
+			InternalRemoveWorldObject(_removeWorldObjectsQueue.Dequeue());
+		while (_addWorldCamerasQueue.Count > 0)
+			InternalAddWorldCamera(_addWorldCamerasQueue.Dequeue());
+		while (_removeWorldCamerasQueue.Count > 0)
+			InternalRemoveWorldCamera(_removeWorldCamerasQueue.Dequeue());
+
+		// UI objects updates
+		while (_addUIObjectsQueue.Count > 0)
+			InternalAddUIObject(_addUIObjectsQueue.Dequeue());
+		while (_removeUIObjectsQueue.Count > 0)
+			InternalRemoveUIObject(_removeUIObjectsQueue.Dequeue());
+		while (_addUICamerasQueue.Count > 0)
+			InternalAddUICamera(_addUICamerasQueue.Dequeue());
+		while (_removeUICamerasQueue.Count > 0)
+			InternalRemoveUICamera(_removeUICamerasQueue.Dequeue());
 	}
 
 	private void RenderWorldObject(RenderingWorldCamera camera, RenderedWorldObject worldObject)
@@ -266,7 +292,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		// Set the text color uniform
 		textShader.SetFloat4Uniform(new Vector4((float)textColor.R / 0xFF, (float)textColor.G / 0xFF, (float)textColor.B / 0xFF, 1), "textColor");
 
-		List<(CharacterGlyf glyph,Vector2 position)> characterGlyphs = new List<(CharacterGlyf, Vector2 position)>();
+		List<(CharacterGlyf glyph, Vector2 position)> characterGlyphs = new List<(CharacterGlyf, Vector2 position)>();
 
 		// Draw the text
 		foreach (char c in text)
@@ -342,6 +368,35 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	#region Objects management
 	#region World object
+	private readonly Queue<WorldObject> _addWorldObjectsQueue = new Queue<WorldObject>();
+	private readonly Queue<WorldObject> _removeWorldObjectsQueue = new Queue<WorldObject>();
+	private readonly Queue<(WorldObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)> _addWorldCamerasQueue = new Queue<(WorldObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)>();
+	private readonly Queue<WorldObject> _removeWorldCamerasQueue = new Queue<WorldObject>();
+	#region Internal object management
+	private void InternalAddWorldObject(WorldObject worldObject)
+	{
+		RenderedWorldObject renderedWorldObject = new RenderedWorldObject(worldObject, internalRenderer.MeshFactory);
+		worldObjects.Add(worldObject.Id, renderedWorldObject);
+		allObjectIds.Add(worldObject.Id);
+	}
+	private void InternalRemoveWorldObject(WorldObject worldObject)
+	{
+		worldObjects.Remove(worldObject.Id);
+		allObjectIds.Remove(worldObject.Id);
+	}
+	private void InternalAddWorldCamera((WorldObject camera, CameraRenderingMask renderingMask, ViewPort viewPort) cameraTuple)
+	{
+		RenderingWorldCamera renderingCamera = new RenderingWorldCamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
+		worldCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
+		allObjectIds.Add(renderingCamera.CameraObject.Id);
+	}
+	private void InternalRemoveWorldCamera(WorldObject camera)
+	{
+		worldCameras.Remove(camera.Id);
+		allObjectIds.Remove(camera.Id);
+	}
+	#endregion
+
 	public void AddWorldObject(WorldObject worldObject)
 	{
 		if (allObjectIds.Contains(worldObject.Id))
@@ -350,11 +405,23 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		RenderedWorldObject renderedWorldObject = new RenderedWorldObject(worldObject, internalRenderer.MeshFactory);
-		worldObjects.Add(worldObject.Id, renderedWorldObject);
-		allObjectIds.Add(worldObject.Id);
+		_addWorldObjectsQueue.Enqueue(worldObject);
 	}
+	public void RemoveWorldObject(WorldObject worldObject)
+	{
+		if (!allObjectIds.Contains(worldObject.Id))
+		{
+			logger.LogError("World object id not found: {id}", worldObject.Id);
+			return;
+		}
+		if (!worldObjects.ContainsKey(worldObject.Id))
+		{
+			logger.LogError("World object id not found: {id}", worldObject.Id);
+			return;
+		}
 
+		_removeWorldObjectsQueue.Enqueue(worldObject);
+	}
 	public void AddWorldCamera(WorldObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)
 	{
 		if (camera.Parent is not null && !allObjectIds.Contains(camera.Parent.Id))
@@ -368,29 +435,8 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		RenderingWorldCamera renderingCamera = new RenderingWorldCamera(camera, renderingMask, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
-
-		worldCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
-		allObjectIds.Add(renderingCamera.CameraObject.Id);
+		_addWorldCamerasQueue.Enqueue((camera, renderingMask, viewPort));
 	}
-
-	public void RemoveWorldObject(WorldObject worldObjectData)
-	{
-		if (!allObjectIds.Contains(worldObjectData.Id))
-		{
-			logger.LogError("World object id not found: {id}", worldObjectData.Id);
-			return;
-		}
-		if (!worldObjects.ContainsKey(worldObjectData.Id))
-		{
-			logger.LogError("World object id not found: {id}", worldObjectData.Id);
-			return;
-		}
-
-		worldObjects.Remove(worldObjectData.Id);
-		allObjectIds.Remove(worldObjectData.Id);
-	}
-
 	public void RemoveWorldCamera(WorldObject camera)
 	{
 		if (!allObjectIds.Contains(camera.Id))
@@ -404,12 +450,39 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		worldCameras.Remove(camera.Id);
+		_removeWorldCamerasQueue.Enqueue(camera);
+	}
+	#endregion
+	#region UI object
+	private readonly Queue<UIObject> _addUIObjectsQueue = new Queue<UIObject>();
+	private readonly Queue<UIObject> _removeUIObjectsQueue = new Queue<UIObject>();
+	private readonly Queue<(UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)> _addUICamerasQueue = new Queue<(UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)>();
+	private readonly Queue<UIObject> _removeUICamerasQueue = new Queue<UIObject>();
+	#region Internal object management
+	private void InternalAddUIObject(UIObject uiObject)
+	{
+		RenderedUIObject renderedUIObject = new RenderedUIObject(uiObject, internalRenderer.MeshFactory);
+		uiObjects.Add(uiObject.Id, renderedUIObject);
+		allObjectIds.Add(uiObject.Id);
+	}
+	private void InternalRemoveUIObject(UIObject uiObject)
+	{
+		uiObjects.Remove(uiObject.Id);
+		allObjectIds.Remove(uiObject.Id);
+	}
+	private void InternalAddUICamera((UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort) cameraTuple)
+	{
+		RenderingUICamera renderingCamera = new RenderingUICamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
+		uiCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
+		allObjectIds.Add(renderingCamera.CameraObject.Id);
+	}
+	private void InternalRemoveUICamera(UIObject camera)
+	{
+		uiCameras.Remove(camera.Id);
 		allObjectIds.Remove(camera.Id);
 	}
 	#endregion
 
-	#region UI object
 	public void AddUIObject(UIObject uiObject)
 	{
 		if (allObjectIds.Contains(uiObject.Id))
@@ -418,29 +491,8 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		RenderedUIObject renderedUIObject = new RenderedUIObject(uiObject, internalRenderer.MeshFactory);
-		uiObjects.Add(uiObject.Id, renderedUIObject);
-		allObjectIds.Add(uiObject.Id);
+		_addUIObjectsQueue.Enqueue(uiObject);
 	}
-
-	public void AddUICamera(UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)
-	{
-		if (camera.Parent is not null && !allObjectIds.Contains(camera.Parent.Id))
-		{
-			logger.LogError("Parent id not found: {id}", camera.Parent.Id);
-			return;
-		}
-		if (allObjectIds.Contains(camera.Id))
-		{
-			logger.LogError("Id already taken: {id}", camera.Id);
-			return;
-		}
-
-		RenderingUICamera renderingCamera = new RenderingUICamera(camera, renderingMask, (int)WindowSize.X, (int)WindowSize.Y, viewPort);
-		uiCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
-		allObjectIds.Add(renderingCamera.CameraObject.Id);
-	}
-
 	public void RemoveUIObject(UIObject uiObject)
 	{
 		if (!allObjectIds.Contains(uiObject.Id))
@@ -454,10 +506,23 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		uiObjects.Remove(uiObject.Id);
-		allObjectIds.Remove(uiObject.Id);
+		_removeUIObjectsQueue.Enqueue(uiObject);
 	}
+	public void AddUICamera(UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)
+	{
+		if (camera.Parent is not null && !allObjectIds.Contains(camera.Parent.Id))
+		{
+			logger.LogError("Parent id not found: {id}", camera.Parent.Id);
+			return;
+		}
+		if (allObjectIds.Contains(camera.Id))
+		{
+			logger.LogError("Id already taken: {id}", camera.Id);
+			return;
+		}
 
+		_addUICamerasQueue.Enqueue((camera, renderingMask, viewPort));
+	}
 	public void RemoveUICamera(UIObject camera)
 	{
 		if (!allObjectIds.Contains(camera.Id))
@@ -471,8 +536,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			return;
 		}
 
-		uiCameras.Remove(camera.Id);
-		allObjectIds.Remove(camera.Id);
+		_removeUICamerasQueue.Enqueue(camera);
 	}
 	#endregion
 	#endregion

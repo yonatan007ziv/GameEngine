@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace GameEngine.Core.Components.Objects;
+﻿namespace GameEngine.Core.Components.Objects;
 
 public abstract class WorldObject : GameObject
 {

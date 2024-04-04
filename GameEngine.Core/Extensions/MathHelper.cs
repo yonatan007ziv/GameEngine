@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace GameEngine.Extensions;
+﻿namespace GameEngine.Extensions;
 
 public static partial class MathHelper
 {
