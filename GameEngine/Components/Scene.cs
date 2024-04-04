@@ -88,12 +88,12 @@ public class Scene : IInputMapper, IDisposable
 		foreach (WorldObject worldObject in WorldObjects)
 			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
 		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCameras)
-			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort); // Camera must have a parent
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
 
 		foreach (UIObject uiObject in UIObjects)
 			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
 		foreach ((UICamera uiCamera, ViewPort viewPort) in UICameras)
-			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort); // Camera must have a parent
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
 
 		_isLoaded = true;
 		LoadedScene = this;
