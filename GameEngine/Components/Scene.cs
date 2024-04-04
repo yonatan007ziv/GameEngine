@@ -104,10 +104,15 @@ public class Scene : IInputMapper, IDisposable
 		if (!_isLoaded)
 			return;
 
-		foreach (WorldObject gameObject in WorldObjects)
-			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(gameObject);
+		foreach (WorldObject worldObject in WorldObjects)
+			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(worldObject);
 		foreach ((WorldObject camera, _) in WorldCameras)
 			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(camera);
+
+		foreach (UIObject uiObject in UIObjects)
+			Services.Implementations.GameEngine.EngineContext.RemoveUIObject(uiObject);
+		foreach ((UIObject camera, _) in UICameras)
+			Services.Implementations.GameEngine.EngineContext.RemoveUICamera(camera);
 
 		_isLoaded = false;
 		LoadedScene = null!;

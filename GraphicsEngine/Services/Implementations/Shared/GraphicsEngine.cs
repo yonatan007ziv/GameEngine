@@ -92,7 +92,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		internalRenderer.ProcessEvents();
 
 		// Go through update queues
-		UpdateQueues();
+		UpdateObjects();
 
 		internalRenderer.SetDepthTest(true);
 		foreach (RenderingWorldCamera worldCamera in worldCameras.Values)
@@ -107,7 +107,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		internalRenderer.SwapBuffers();
 	}
 
-	private void UpdateQueues()
+	private void UpdateObjects()
 	{
 		// World objects updates
 		while (_addWorldObjectsQueue.Count > 0)
