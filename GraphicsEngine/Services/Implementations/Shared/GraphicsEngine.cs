@@ -510,7 +510,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	}
 	public void AddUICamera(UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort)
 	{
-		if (camera.Parent is not null && !(allObjectIds.Contains(camera.Parent.Id) || _addWorldObjectsQueue.Contains(camera.Parent)))
+		if (camera.Parent is not null && !(allObjectIds.Contains(camera.Parent.Id) || _addUIObjectsQueue.Contains(camera.Parent)))
 		{
 			logger.LogError("Parent id not found: {id}", camera.Parent.Id);
 			return;
