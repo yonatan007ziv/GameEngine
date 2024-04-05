@@ -1,8 +1,6 @@
 ﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.Components;
-using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Extensions;
-using Silk.NET.Vulkan;
 using System.Numerics;
 
 namespace BoxColliderSample;

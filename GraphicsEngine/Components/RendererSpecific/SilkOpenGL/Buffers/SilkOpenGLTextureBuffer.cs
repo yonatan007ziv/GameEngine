@@ -61,6 +61,6 @@ internal class SilkOpenGLTextureBuffer : ITextureBuffer
 
 	~SilkOpenGLTextureBuffer()
 	{
-		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedTextureBuffers.Add(Id);
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedTextureBuffers.Enqueue(Id);
 	}
 }

@@ -52,6 +52,6 @@ internal abstract class SilkOpenGLBuffer : IBuffer
 
 	~SilkOpenGLBuffer()
 	{
-		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedBuffers.Add(Id);
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedBuffers.Enqueue(Id);
 	}
 }

@@ -64,6 +64,6 @@ internal class SilkOpenGLVertexArray : IVertexArray
 
 	~SilkOpenGLVertexArray()
 	{
-		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedVertexArrayBuffers.Add(Id);
+		Services.Implementations.Shared.GraphicsEngine.EngineContext.FinalizedVertexArrayBuffers.Enqueue(Id);
 	}
 }

@@ -12,65 +12,67 @@ public abstract class GameObject
 	public bool Visible { get; set; } = true;
 	public readonly TextData TextData;
 
-	public GameObject? Parent { get; set; }
+	private event Action OnAncestryTreeChanged;
+
+	// Relative to ancestry tree
+	private Vector3 relativePosition;
+	private Vector3 relativeRotation;
+	private Vector3 relativeScale;
+
+	private GameObject? _parent;
+	public GameObject? Parent { get => _parent; set { _parent?.Children.Remove(this); _parent = value; NotifyTreeChanged(); } }
+	public ObservableCollection<GameObject> Children { get; }
+
 	public BoxCollider? BoxCollider { get; set; }
 	public Vector3 Velocity { get; set; }
 	public Transform Transform { get; set; }
-	public ObservableCollection<GameObject> Children { get; }
 	public ObservableCollection<MeshData> Meshes { get; }
 	public ObservableCollection<Vector3> Forces { get; }
 
 	public GameObject(GameObject? parent = null)
 	{
 		Id = IdGenerator.GenerateNext();
-
-		Parent = parent;
 		TextData = new TextData();
 		Transform = new Transform();
 		Children = new ObservableCollection<GameObject>();
 		Meshes = new ObservableCollection<MeshData>();
 		Forces = new ObservableCollection<Vector3>();
 
+		Parent = parent;
 		Children.CollectionChanged += ChildrenChanged;
-	}
 
-	public event Action OnAncestryTreeChanged;
+		OnAncestryTreeChanged += RecalculateRelativeTransform;
+		Transform.PropertyChanged += (s, e) => NotifyTreeChanged();
+	}
 
 	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeToAncestorTransform()
 	{
-		if (Parent is null)
-			return (Transform.Position, Transform.Rotation, Transform.Scale);
-		else
-			return ((Parent.Transform.Position + Transform.Position * Parent.Transform.Scale),
-				Parent.Transform.Rotation + Transform.Rotation,
-				Parent.Transform.Scale * Transform.Scale);
-		/*
+		// TEMP SOLUTION: try to figure out WHEN to recalculate
+		RecalculateRelativeTransform();
+		return (relativePosition, relativeRotation, relativeScale);
+	}
+
+	private void RecalculateRelativeTransform()
+	{
 		// Recursively find the ancestry path to the ancestor
 		Stack<GameObject> ancestorPath = FindAncestryPath();
 
-		// Get the parent's size
-		Vector3 parentSize = Parent.Transform.Scale;
-
-		// Initialize position, rotation, and scale relative to ancestor
-		Vector3 position = Transform.Position / (parentSize / 2f); // Normalize position
-		Vector3 rotation = Transform.Rotation;
-		Vector3 scale = Transform.Scale / parentSize; // Normalize scale
+		Vector3 position = Vector3.Zero;
+		Vector3 rotation = Vector3.Zero;
+		Vector3 scale = Vector3.One;
 
 		// Iterate over the ancestor path
-		foreach (GameObject ancestor in ancestorPath)
+		while (ancestorPath.Count > 0)
 		{
-			// Update position relative to ancestor
-			position = (position + ancestor.Transform.Position / (ancestor.Transform.Scale / 2f)) / 2f; // Normalize position
-
-			// Update rotation (assuming this accumulates rotations)
+			GameObject ancestor = ancestorPath.Pop();
+			position += ancestor.Transform.Position * scale;
 			rotation += ancestor.Transform.Rotation;
-
-			// Update scale relative to ancestor
-			scale *= ancestor.Transform.Scale / parentSize; // Normalize scale
+			scale *= ancestor.Transform.Scale;
 		}
 
-		return (position, rotation, scale);
-		*/
+		relativePosition = position + Transform.Position * scale;
+		relativeRotation = rotation + Transform.Rotation;
+		relativeScale = scale * Transform.Scale;
 	}
 
 	private Stack<GameObject> FindAncestryPath(Stack<GameObject>? path = null!)
@@ -85,10 +87,17 @@ public abstract class GameObject
 		return Parent.FindAncestryPath(path);
 	}
 
+	private void NotifyTreeChanged()
+	{
+		// OnAncestryTreeChanged?.Invoke();
+		// // Notify every "blood"-related gameobject that the sub-tree has changed
+		// foreach (GameObject child in Children)
+		// 	child.OnAncestryTreeChanged?.Invoke();
+	}
+
 	private void ChildrenChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
-		// TODO: Notify every "blood"-related gameobject that the tree has changed
-		OnAncestryTreeChanged?.Invoke();
+		NotifyTreeChanged();
 
 		// New children was added
 		if (e.Action == NotifyCollectionChangedAction.Add)

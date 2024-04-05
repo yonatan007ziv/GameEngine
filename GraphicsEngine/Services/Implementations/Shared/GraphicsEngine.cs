@@ -47,9 +47,9 @@ internal class GraphicsEngine : IGraphicsEngine
 	private readonly Dictionary<int, RenderingUICamera> uiCameras = new Dictionary<int, RenderingUICamera>();
 
 	// Finalized buffer ids
-	public List<int> FinalizedBuffers { get; } = new List<int>();
-	public List<int> FinalizedVertexArrayBuffers { get; } = new List<int>();
-	public List<int> FinalizedTextureBuffers { get; } = new List<int>();
+	public Queue<int> FinalizedBuffers { get; } = new Queue<int>();
+	public Queue<int> FinalizedVertexArrayBuffers { get; } = new Queue<int>();
+	public Queue<int> FinalizedTextureBuffers { get; } = new Queue<int>();
 
 	public event Action? Load;
 	public event Action<MouseEventData>? MouseEvent;
@@ -188,18 +188,12 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	public void DeleteFinalizedBuffers()
 	{
-		for (int i = 0; i < FinalizedBuffers.Count; i++)
-			bufferDeletor.DeleteBuffer(FinalizedBuffers[i]);
-
-		for (int i = 0; i < FinalizedVertexArrayBuffers.Count; i++)
-			bufferDeletor.DeleteVertexArrayBuffer(FinalizedVertexArrayBuffers[i]);
-
-		for (int i = 0; i < FinalizedTextureBuffers.Count; i++)
-			bufferDeletor.DeleteTextureBuffer(FinalizedTextureBuffers[i]);
-
-		FinalizedBuffers.Clear();
-		FinalizedVertexArrayBuffers.Clear();
-		FinalizedTextureBuffers.Clear();
+		while (FinalizedBuffers.Count > 0)
+			bufferDeletor.DeleteBuffer(FinalizedBuffers.Dequeue());
+		while (FinalizedVertexArrayBuffers.Count > 0)
+			bufferDeletor.DeleteVertexArrayBuffer(FinalizedVertexArrayBuffers.Dequeue());
+		while (FinalizedTextureBuffers.Count > 0)
+			bufferDeletor.DeleteTextureBuffer(FinalizedTextureBuffers.Dequeue());
 	}
 
 	private void BufferText(TextData textData, (Vector3 position, Vector3 scale) textArea)

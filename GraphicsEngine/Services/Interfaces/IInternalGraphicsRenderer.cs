@@ -2,8 +2,8 @@
 using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
-using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Interfaces;
+using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
 using System.Drawing;
 using System.Numerics;

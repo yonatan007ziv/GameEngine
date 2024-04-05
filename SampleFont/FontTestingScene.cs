@@ -8,12 +8,14 @@ internal class FontTestingScene : Scene
 	{
 		UICameras.Add((new UICamera(), new GameEngine.Core.Components.ViewPort(0.5f, 0.5f, 1, 1)));
 
-		TestingMovingElement recursiveElement = new TestingMovingElement(0);
+		// TestingMovingElement movingElement = new TestingMovingElement(0);
+		// movingElement.EnabledMovement = true;
+		// movingElement.Transform.Scale /= 4;
+		// movingElement.Transform.Position += new System.Numerics.Vector3(0.5f, 0, 0);
+		// UIObjects.Add(movingElement);
 
-		recursiveElement.EnabledMovement = true;
-		recursiveElement.Transform.Scale /= 4;
-		recursiveElement.Transform.Position += new System.Numerics.Vector3(0.5f, 0, 0);
-
+		TestingRecursiveElement recursiveElement = new TestingRecursiveElement(5);
+		recursiveElement.Transform.Scale /= 2;
 		UIObjects.Add(recursiveElement);
 	}
 }
