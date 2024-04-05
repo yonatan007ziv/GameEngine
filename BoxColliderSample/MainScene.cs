@@ -35,8 +35,9 @@ internal class MainScene : Scene
 		WorldObjects.Add(new Ground(new Vector2(100, 100)));
 
 		// Wall
-		Wall wall = new Wall(new Vector3(100, 100, 1));
+		Wall wall = new Wall(new Vector3(100, 100, 5));
 		wall.Transform.Position += new Vector3(0, 50, 10);
+		wall.Transform.Rotation += new Vector3(0, 180, 0);
 		WorldObjects.Add(wall);
 
 		// Trex

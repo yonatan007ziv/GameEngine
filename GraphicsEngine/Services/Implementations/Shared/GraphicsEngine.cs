@@ -5,7 +5,9 @@ using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.Components.Objects;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Interfaces;
+using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.Shared;
+using GraphicsEngine.Components.Shared.Data;
 using GraphicsEngine.Components.Shared.RenderedObjects;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -18,6 +20,7 @@ internal class GraphicsEngine : IGraphicsEngine
 {
 	private readonly ILogger logger;
 	private readonly IInternalGraphicsRenderer internalRenderer;
+	private readonly IBufferFactory bufferFactory;
 	private readonly IBufferDeletor bufferDeletor;
 	private readonly IFileReader<Font> fontLoader;
 	private readonly IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory;
@@ -29,8 +32,12 @@ internal class GraphicsEngine : IGraphicsEngine
 	public Vector2 WindowSize { get => internalRenderer.WindowSize; }
 	public bool LogRenderingMessages { get => internalRenderer.LogRenderingMessages; set => internalRenderer.LogRenderingMessages = value; }
 
+	private IVertexBuffer textVertexBuffer;
+	private IIndexBuffer textIndexBuffer;
+	private IVertexArray textVertexArray;
 	private IShaderProgram textShader;
 	private readonly Dictionary<string, Font> loadedFonts = new Dictionary<string, Font>();
+	private readonly List<(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor)> frameCharacterGlyphs = new List<(CharacterGlyf, Vector2, float, Color textColor)>();
 
 	private readonly List<int> allObjectIds = new List<int>();
 
@@ -39,7 +46,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	private readonly Dictionary<int, RenderingWorldCamera> worldCameras = new Dictionary<int, RenderingWorldCamera>();
 	private readonly Dictionary<int, RenderingUICamera> uiCameras = new Dictionary<int, RenderingUICamera>();
 
-	// Buffer ids
+	// Finalized buffer ids
 	public List<int> FinalizedBuffers { get; } = new List<int>();
 	public List<int> FinalizedVertexArrayBuffers { get; } = new List<int>();
 	public List<int> FinalizedTextureBuffers { get; } = new List<int>();
@@ -49,12 +56,13 @@ internal class GraphicsEngine : IGraphicsEngine
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader, IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory, IFactory<string, ShaderSource> shaderSourceFactory)
+	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferFactory bufferFactory, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader, IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory, IFactory<string, ShaderSource> shaderSourceFactory)
 	{
 		EngineContext = this;
 
 		this.logger = logger;
 		this.internalRenderer = internalRenderer;
+		this.bufferFactory = bufferFactory;
 		this.bufferDeletor = bufferDeletor;
 		this.fontLoader = fontLoader;
 		this.shaderProgramFactory = shaderProgramFactory;
@@ -66,6 +74,9 @@ internal class GraphicsEngine : IGraphicsEngine
 		internalRenderer.KeyboardEvent += (keyboardEvent) => KeyboardEvent?.Invoke(keyboardEvent);
 		internalRenderer.GamepadEvent += (joystickEvent) => GamepadEvent?.Invoke(joystickEvent);
 
+		textVertexBuffer = null!;
+		textIndexBuffer = null!;
+		textVertexArray = null!;
 		textShader = null!;
 	}
 
@@ -75,7 +86,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	private void OnInternalEngineLoad()
 	{
 		Load?.Invoke();
-		CreateTextShader();
+		CreateTextGraphics();
 	}
 
 	public void SetBackgroundColor(Color color)
@@ -103,6 +114,12 @@ internal class GraphicsEngine : IGraphicsEngine
 		foreach (RenderingUICamera camera in uiCameras.Values)
 			foreach (RenderedUIObject uiObject in uiObjects.Values)
 				RenderUIObject(camera, uiObject);
+
+		// Render "buffered" text
+		textShader.Bind();
+		internalRenderer.DrawGlyphs(frameCharacterGlyphs, textVertexBuffer, textIndexBuffer, textVertexArray, textShader);
+		textShader.Unbind();
+		frameCharacterGlyphs.Clear();
 
 		internalRenderer.SwapBuffers();
 	}
@@ -158,10 +175,10 @@ internal class GraphicsEngine : IGraphicsEngine
 		// Render UI objects' meshes
 		uiObject.Render(camera);
 
-		// Render UI objects' text
+		// // Render UI objects' text
 		(Vector3 position, Vector3 rotation, Vector3 scale) relativeAncestorTransform = uiObject.UIObject.GetRelativeToAncestorTransform();
 		textShader.Bind();
-		DrawText(uiObject.UIObject.TextData, (relativeAncestorTransform.position, relativeAncestorTransform.scale));
+		BufferText(uiObject.UIObject.TextData, (relativeAncestorTransform.position, relativeAncestorTransform.scale));
 		textShader.Unbind();
 
 		// Render objects' children
@@ -185,7 +202,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		FinalizedTextureBuffers.Clear();
 	}
 
-	private void DrawText(TextData textData, (Vector3 position, Vector3 scale) textArea)
+	private void BufferText(TextData textData, (Vector3 position, Vector3 scale) textArea)
 	{
 		string text = textData.Text;
 		Color textColor = textData.TextColor;
@@ -289,11 +306,6 @@ internal class GraphicsEngine : IGraphicsEngine
 		float x = textArea.position.X - textWidth / 2;
 		float y = textArea.position.Y + (linesHeight - font.CharacterMaps['L'].Height) / 2;
 
-		// Set the text color uniform
-		textShader.SetFloat4Uniform(new Vector4((float)textColor.R / 0xFF, (float)textColor.G / 0xFF, (float)textColor.B / 0xFF, 1), "textColor");
-
-		List<(CharacterGlyf glyph, Vector2 position)> characterGlyphs = new List<(CharacterGlyf, Vector2 position)>();
-
 		// Draw the text
 		foreach (char c in text)
 		{
@@ -319,18 +331,15 @@ internal class GraphicsEngine : IGraphicsEngine
 			}
 
 			CharacterGlyf currentGlyph = font.CharacterMaps[c];
-			characterGlyphs.Add((currentGlyph, new Vector2(x, y)));
+			frameCharacterGlyphs.Add((currentGlyph, new Vector2(x, y), font.FontSize, textData.TextColor));
 			x += currentGlyph.Width;
 		}
-
-		//// Draw glyphs
-		internalRenderer.DrawGlyphs(characterGlyphs);
 
 		// Revert to original font size after shrinking to fit
 		font.FontSize = originalFontSize;
 	}
 
-	private void CreateTextShader()
+	private void CreateTextGraphics()
 	{
 		// Create text shader program
 		if (!shaderSourceFactory.Create("TextVertex.glsl", out ShaderSource textVertexSource))
@@ -350,6 +359,10 @@ internal class GraphicsEngine : IGraphicsEngine
 			logger.LogCritical("Text shader not created successfully");
 			return;
 		}
+
+		textVertexBuffer = bufferFactory.GenerateVertexBuffer();
+		textIndexBuffer = bufferFactory.GenerateIndexBuffer();
+		textVertexArray = bufferFactory.GenerateVertexArray(textVertexBuffer, textIndexBuffer, [new AttributeLayout(typeof(float), 2)]);
 	}
 
 	private void WindowResized()

@@ -2,6 +2,8 @@
 using GameEngine.Core.Components.Fonts;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
+using GraphicsEngine.Components.Interfaces.Buffers;
+using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Shared;
 using System.Drawing;
 using System.Numerics;
@@ -32,5 +34,5 @@ internal interface IInternalGraphicsRenderer
 	void SetBackgroundColor(Color color);
 	void SetDepthTest(bool enable);
 	void SetViewport(ViewPort viewport);
-	void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position)> glyphPositionPairs);
+	void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor)> glyphPositionPairs, IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, IVertexArray vertexArray, IShaderProgram textShader);
 }

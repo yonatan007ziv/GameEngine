@@ -6,30 +6,26 @@ namespace PhysicsEngine.Components;
 
 internal class PhysicsObject
 {
-	private readonly WorldObject worldObject;
+	private readonly GameObject gameObject;
 
-	public int Id => worldObject.Id;
-	public Transform Transform => worldObject.Transform;
-	public BoxCollider? BoxCollider => worldObject.BoxCollider;
-	public Vector3 Velocity { get => worldObject.Velocity; set => worldObject.Velocity = value; }
+	public int Id => gameObject.Id;
+	public Transform Transform => gameObject.Transform;
+	public BoxCollider? BoxCollider => gameObject.BoxCollider;
+	public Vector3 Velocity { get => gameObject.Velocity; set => gameObject.Velocity = value; }
 	public Vector3 NetForce { get; set; }
 
-	public PhysicsObject(WorldObject worldObject)
+	public PhysicsObject(GameObject gameObject)
 	{
-		this.worldObject = worldObject;
+		this.gameObject = gameObject;
 
-		worldObject.Forces.CollectionChanged += (s, e) => UpdateForces();
+		gameObject.Forces.CollectionChanged += (s, e) => UpdateForces();
+		UpdateForces();
 	}
 
 	private void UpdateForces()
 	{
 		NetForce = Vector3.Zero;
-		foreach (var force in worldObject.Forces)
-			AddForce(force);
-	}
-
-	public void AddForce(Vector3 force)
-	{
-		NetForce += force;
+		foreach (var force in gameObject.Forces)
+			NetForce += force;
 	}
 }

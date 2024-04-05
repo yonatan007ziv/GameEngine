@@ -19,6 +19,9 @@ internal class TestingMovingElement : ScriptableUIObject
 		button.OnFullClicked += () => Console.WriteLine("Pressed the moving button");
 		button.Transform.Scale = new Vector3(0.5f, 0.5f, 1);
 
+
+		Children.Add(new TestButton());
+
 		string mat;
 		if (count == 1)
 			mat = "Wall.mat";

@@ -12,6 +12,7 @@ using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
+using System.Drawing;
 using System.Numerics;
 
 namespace GraphicsEngine.Services.Implementations.SilkOpenGL.Renderer;
@@ -24,8 +25,6 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 
 	private readonly IFactory<string, ModelData> modelFactory;
 	private readonly IFactory<string, Material> materialFactory;
-	private readonly IBufferFactory bufferFactory;
-	private readonly IBufferDeletor bufferDeletor;
 
 	private IMouse mainMouse;
 	public Vector2 MousePosition { get => mainMouse.Position; set => mainMouse.Position = value; }
@@ -36,13 +35,12 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
 
-	public SilkOpenGLRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory, IBufferFactory bufferFactory, IBufferDeletor bufferDeletor)
+	public SilkOpenGLRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory, IBufferFactory bufferFactory)
 	{
 		this.logger = logger;
 		this.modelFactory = modelFactory;
 		this.materialFactory = materialFactory;
-		this.bufferFactory = bufferFactory;
-		this.bufferDeletor = bufferDeletor;
+
 		window.Resize += (size) => { ResizedEvent?.Invoke(); };
 
 		mainMouse = null!;
@@ -149,15 +147,16 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 		}
 	}
 
-	public void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position)> glyphPositionPairs)
+	public void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor)> glyphData, IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, IVertexArray vertexArray, IShaderProgram textShader)
 	{
 		bool prevLogRenderingMessages = LogRenderingMessages;
 
 		LogRenderingMessages = false;
-		for (int i = 0; i < glyphPositionPairs.Count(); i++)
+		for (int i = 0; i < glyphData.Count(); i++)
 		{
-			CharacterGlyf glyph = glyphPositionPairs.ElementAt(i).glyph;
-			Vector2 position = glyphPositionPairs.ElementAt(i).position;
+			(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor) = glyphData.ElementAt(i);
+			glyph.FontSize = fontSize;
+			textShader.SetFloat4Uniform(new Vector4((float)textColor.R / 0xFF, (float)textColor.G / 0xFF, (float)textColor.B / 0xFF, 1), "textColor");
 
 			foreach (CharacterContour contour in glyph.CharacterContours)
 			{
@@ -166,29 +165,14 @@ internal class SilkOpenGLRenderer : BaseSilkOpenGLRenderer, IInternalGraphicsRen
 				else
 					OpenGLContext.FrontFace(FrontFaceDirection.Ccw);
 
-				IVertexBuffer vertexBuffer = bufferFactory.GenerateVertexBuffer();
-				IIndexBuffer indexBuffer = bufferFactory.GenerateIndexBuffer();
-
 				Vector2[] points = contour.Points.ToArray();
 				for (int j = 0; j < points.Length; j++)
 					points[j] += position;
 
 				vertexBuffer.WriteData(points);
 
-				AttributeLayout[] attributeLayouts =
-				{
-					new AttributeLayout(typeof(float), 2),
-				};
-
-				IVertexArray vertexArray = bufferFactory.GenerateVertexArray(vertexBuffer, indexBuffer, attributeLayouts);
-
 				vertexArray.Bind();
 				OpenGLContext.DrawArrays(PrimitiveType.LineLoop, 0, (uint)contour.Points.Count);
-
-
-				bufferDeletor.DeleteBuffer(vertexBuffer.Id);
-				bufferDeletor.DeleteBuffer(indexBuffer.Id);
-				bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
 			}
 		}
 

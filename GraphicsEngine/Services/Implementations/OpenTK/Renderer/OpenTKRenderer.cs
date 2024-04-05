@@ -4,6 +4,7 @@ using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Input.Events;
 using GameEngine.Core.SharedServices.Interfaces;
 using GraphicsEngine.Components.Extensions;
+using GraphicsEngine.Components.Interfaces;
 using GraphicsEngine.Components.Interfaces.Buffers;
 using GraphicsEngine.Components.RendererSpecific.OpenTK;
 using GraphicsEngine.Components.Shared;
@@ -12,6 +13,7 @@ using GraphicsEngine.Services.Implementations.Shared;
 using GraphicsEngine.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using OpenTK.Graphics.OpenGL4;
+using System.Drawing;
 using System.Numerics;
 
 namespace GraphicsEngine.Services.Implementations.OpenTK.Renderer;
@@ -19,7 +21,6 @@ namespace GraphicsEngine.Services.Implementations.OpenTK.Renderer;
 internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 {
 	private readonly ILogger logger;
-	private readonly IBufferFactory bufferFactory;
 	private readonly IBufferDeletor bufferDeletor;
 
 	public IFactory<string, string, MeshRenderer> MeshFactory { get; }
@@ -34,11 +35,11 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 	private readonly KeyboardEventData keyboardEventData = new KeyboardEventData();
 	// NOT IMPLEMENTED: private readonly GamepadEventData gamepadEventData = new GamepadEventData();
 
-	public OpenTKRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory, IBufferFactory bufferFactory, IBufferDeletor bufferDeletor)
+	public OpenTKRenderer(ILogger logger, IFactory<string, ModelData> modelFactory, IFactory<string, Material> materialFactory, IBufferDeletor bufferDeletor)
 	{
 		this.logger = logger;
-		this.bufferFactory = bufferFactory;
 		this.bufferDeletor = bufferDeletor;
+
 		MeshFactory = new MeshRendererFactory(logger, new OpenTKDrawingCall(), modelFactory, materialFactory);
 
 		MouseDown += (mouseButtonArgs) =>
@@ -119,15 +120,16 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 		}
 	}
 
-	public void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position)> glyphPositionPairs)
+	public void DrawGlyphs(IEnumerable<(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor)> glyphData, IVertexBuffer vertexBuffer, IIndexBuffer indexBuffer, IVertexArray vertexArray, IShaderProgram textShader)
 	{
 		bool prevLogRenderingMessages = LogRenderingMessages;
 
 		LogRenderingMessages = false;
-		for (int i = 0; i < glyphPositionPairs.Count(); i++)
+		for (int i = 0; i < glyphData.Count(); i++)
 		{
-			CharacterGlyf glyph = glyphPositionPairs.ElementAt(i).glyph;
-			Vector2 position = glyphPositionPairs.ElementAt(i).position;
+			(CharacterGlyf glyph, Vector2 position, float fontSize, Color textColor) = glyphData.ElementAt(i);
+			glyph.FontSize = fontSize;
+			textShader.SetFloat4Uniform(new Vector4((float)textColor.R / 0xFF, (float)textColor.G / 0xFF, (float)textColor.B / 0xFF, 1), "textColor");
 
 			foreach (CharacterContour contour in glyph.CharacterContours)
 			{
@@ -136,28 +138,14 @@ internal class OpenTKRenderer : BaseOpenTKRenderer, IInternalGraphicsRenderer
 				else
 					GL.FrontFace(FrontFaceDirection.Ccw);
 
-				IVertexBuffer vertexBuffer = bufferFactory.GenerateVertexBuffer();
-				IIndexBuffer indexBuffer = bufferFactory.GenerateIndexBuffer();
-
 				Vector2[] points = contour.Points.ToArray();
 				for (int j = 0; j < points.Length; j++)
 					points[j] += position;
 
 				vertexBuffer.WriteData(points);
 
-				AttributeLayout[] attributeLayouts =
-				{
-					new AttributeLayout(typeof(float), 2),
-				};
-
-				IVertexArray vertexArray = bufferFactory.GenerateVertexArray(vertexBuffer, indexBuffer, attributeLayouts);
-
 				vertexArray.Bind();
 				GL.DrawArrays(PrimitiveType.LineLoop, 0, contour.Points.Count);
-
-				bufferDeletor.DeleteBuffer(vertexBuffer.Id);
-				bufferDeletor.DeleteBuffer(indexBuffer.Id);
-				bufferDeletor.DeleteVertexArrayBuffer(vertexArray.Id);
 			}
 		}
 
