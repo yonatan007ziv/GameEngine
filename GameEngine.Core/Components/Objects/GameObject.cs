@@ -13,6 +13,9 @@ public abstract class GameObject
 	public readonly TextData TextData;
 
 	// Relative to ancestry tree
+	public bool UseRelativePosition { get; set; } = true;
+	public bool UseRelativeRotation { get; set; } = true;
+	public bool UseRelativeScale { get; set; } = true;
 	private Vector3 relativePosition;
 	private Vector3 relativeRotation;
 	private Vector3 relativeScale;
@@ -42,7 +45,11 @@ public abstract class GameObject
 	}
 
 	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeToAncestorTransform()
-		=> (relativePosition, relativeRotation, relativeScale);
+		=> (
+			UseRelativePosition ? relativePosition : Transform.Position,
+			UseRelativeRotation ? relativeRotation : Transform.Rotation,
+			UseRelativeScale ? relativeScale : Transform.Scale
+			);
 
 	private void RecalculateRelativeTransform()
 	{
