@@ -27,7 +27,8 @@ internal class RenderedUIObject : RenderedObject
 	protected override void UpdateChildren()
 	{
 		Children.Clear();
-		foreach (UIObject child in UIObject.Children)
-			Children.Add(new RenderedUIObject(child, meshFactory, UIObject));
+		for (int i = 0; i < UIObject.Children.Count; i++)
+			if (UIObject.Children[i] is UIObject childUIObject)
+				Children.Add(new RenderedUIObject(childUIObject, meshFactory, UIObject));
 	}
 }

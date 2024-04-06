@@ -27,7 +27,8 @@ internal class RenderedWorldObject : RenderedObject
 	protected override void UpdateChildren()
 	{
 		Children.Clear();
-		foreach (WorldObject child in WorldObject.Children)
-			Children.Add(new RenderedWorldObject(child, meshFactory, WorldObject));
+		for (int i = 0; i < WorldObject.Children.Count; i++)
+			if (WorldObject.Children[i] is WorldObject childWorldObject)
+				Children.Add(new RenderedWorldObject(childWorldObject, meshFactory, WorldObject));
 	}
 }
