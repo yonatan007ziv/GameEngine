@@ -114,13 +114,16 @@ internal class GameEngine : IGameEngine
 			TickDeltaTime = TickDeltaTimeStopper;
 
 			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
+
 			for (int i = 0; i < worldObjects.Keys.Count; i++)
 				UpdateWorldObjectTree(worldObjects[worldObjects.Keys.ElementAt(i)], TickDeltaTime);
-
-			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
+			for (int i = 0; i < worldCameras.Keys.Count; i++)
+				UpdateWorldObjectTree(worldCameras[worldCameras.Keys.ElementAt(i)], TickDeltaTime);
 
 			for (int i = 0; i < uiObjects.Keys.Count; i++)
 				UpdateUIObjectTree(uiObjects[uiObjects.Keys.ElementAt(i)], TickDeltaTime);
+			for (int i = 0; i < uiCameras.Keys.Count; i++)
+				UpdateUIObjectTree(uiCameras[uiCameras.Keys.ElementAt(i)], TickDeltaTime);
 
 			InputEngine.InputTickPass();
 
@@ -168,8 +171,9 @@ internal class GameEngine : IGameEngine
 			scriptableWorldObject.Update(deltaTime);
 
 		// Update components
-		foreach (WorldObject child in worldObject.Children.Cast<WorldObject>())
-			UpdateWorldObjectTree(child, deltaTime);
+		foreach (GameObject child in worldObject.Children)
+			if (child is WorldObject childWorldObject)
+				UpdateWorldObjectTree(childWorldObject, deltaTime);
 	}
 
 	private void UpdateUIObjectTree(UIObject uiObject, float deltaTime)
@@ -179,8 +183,9 @@ internal class GameEngine : IGameEngine
 			scriptableUIObject.Update(deltaTime);
 
 		// Update components
-		foreach (UIObject child in uiObject.Children.Cast<UIObject>())
-			UpdateUIObjectTree(child, deltaTime);
+		foreach (GameObject child in uiObject.Children)
+			if (child is UIObject childUIObject)
+				UpdateUIObjectTree(childUIObject, deltaTime);
 	}
 
 	public void SetResourceFolder(string path)
