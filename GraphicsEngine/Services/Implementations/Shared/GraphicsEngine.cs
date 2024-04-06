@@ -211,7 +211,6 @@ internal class GraphicsEngine : IGraphicsEngine
 		}
 
 		font = loadedFonts[textData.FontName];
-		font.FontSize = textData.FontSize;
 
 		// Check if all of the characters are supported
 		foreach (char c in textData.Text)
@@ -223,37 +222,12 @@ internal class GraphicsEngine : IGraphicsEngine
 
 		string[] textLines = textData.Text.Split('\n');
 
-
-		int longestLineLength = 0;
+		int longestLineLength = (textLines.OrderByDescending(s => s.Length).FirstOrDefault() ?? "").Length;
 		// Compute total line width and height
-		float textWidth = 0, linesHeight = 0;
-		foreach (string line in textLines)
-		{
-			float currentWidth = 0;
-
-			// Go through each letter, guaranteed to not be a newline due to split
-			bool firstChar = true;
-			foreach (char c in line)
-			{
-				if (firstChar)
-					firstChar = false;
-				else
-					currentWidth += /*(c == ' ') ?*/ font.CharacterMaps['L'].Width /*: font.CharacterMaps[c].Width*/;
-			}
-
-			if (textWidth < currentWidth)
-			{
-				textWidth = currentWidth;
-				longestLineLength = line.Length;
-			}
-
-			// Get the tallest letter's height
-			linesHeight += font.CharacterMaps['L'].Height;
-		}
+		float textWidth = textData.FontSize * longestLineLength - font.FontSize;
+		float linesHeight = textData.FontSize * textLines.Length;
 
 		// Shrink to fit
-		float originalFontSize = font.FontSize;
-
 		bool shrinkHorizontally = textWidth >= textArea.scale.X * 2;
 		bool shrinkVertically = linesHeight >= textArea.scale.Y * 2;
 
@@ -267,29 +241,11 @@ internal class GraphicsEngine : IGraphicsEngine
 			font.FontSize = Math.Min(horizontalMaximumFont, verticalMaximumFont);
 
 			// Recompute line metrics after shrinking
-			textWidth = 0;
-			linesHeight = 0;
-			foreach (string line in textLines)
-			{
-				float currentWidth = 0;
-
-				// Go through each letter, guaranteed to not be a newline due to split
-				bool firstChar = true;
-				foreach (char c in line)
-				{
-					if (firstChar)
-						firstChar = false;
-					else
-						currentWidth += /*(c == ' ') ?*/ font.CharacterMaps['L'].Width /*: font.CharacterMaps[c].Width*/;
-				}
-
-				if (textWidth < currentWidth)
-					textWidth = currentWidth;
-
-				// Get the tallest letter's height
-				linesHeight += font.CharacterMaps['L'].Height;
-			}
+			textWidth = font.FontSize * longestLineLength - font.FontSize;
+			linesHeight = font.FontSize * textLines.Length;
 		}
+		else
+			font.FontSize = textData.FontSize;
 
 		// Starting position is the centered position minus half of the total line length
 		float x = textArea.position.X - textWidth / 2;
@@ -323,9 +279,6 @@ internal class GraphicsEngine : IGraphicsEngine
 			frameCharacterGlyphs.Add((currentGlyph, new Vector2(x, y), font.FontSize, textData.TextColor));
 			x += currentGlyph.Width;
 		}
-
-		// Revert to original font size after shrinking to fit
-		font.FontSize = originalFontSize;
 	}
 
 	private void CreateTextGraphics()
