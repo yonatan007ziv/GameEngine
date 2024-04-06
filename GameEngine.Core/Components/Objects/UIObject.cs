@@ -2,7 +2,7 @@
 
 namespace GameEngine.Core.Components.Objects;
 
-public abstract class UIObject : GameObject
+public class UIObject : GameObject
 {
 	public string Text { get => TextData.Text; set => TextData.Text = value; }
 	public Color TextColor { get => TextData.TextColor; set => TextData.TextColor = value; }
