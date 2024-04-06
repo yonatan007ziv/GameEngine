@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Numerics;
 
 namespace GameEngine.Core.Components.Objects;
@@ -12,15 +13,13 @@ public abstract class GameObject
 	public bool Visible { get; set; } = true;
 	public readonly TextData TextData;
 
-	private event Action OnAncestryTreeChanged;
-
 	// Relative to ancestry tree
 	private Vector3 relativePosition;
 	private Vector3 relativeRotation;
 	private Vector3 relativeScale;
 
 	private GameObject? _parent;
-	public GameObject? Parent { get => _parent; set { _parent?.Children.Remove(this); _parent = value; NotifyTreeChanged(); } }
+	public GameObject? Parent { get => _parent; set { _parent?.Children.Remove(this); _parent = value; ChildTreeChanged(); } }
 	public ObservableCollection<GameObject> Children { get; }
 
 	public BoxCollider? BoxCollider { get; set; }
@@ -40,17 +39,11 @@ public abstract class GameObject
 
 		Parent = parent;
 		Children.CollectionChanged += ChildrenChanged;
-
-		OnAncestryTreeChanged += RecalculateRelativeTransform;
-		Transform.PropertyChanged += (s, e) => NotifyTreeChanged();
+		Transform.PropertyChanged += (s, e) => ChildTreeChanged();
 	}
 
 	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeToAncestorTransform()
-	{
-		// TEMP SOLUTION: try to figure out WHEN to recalculate
-		RecalculateRelativeTransform();
-		return (relativePosition, relativeRotation, relativeScale);
-	}
+		=> (relativePosition, relativeRotation, relativeScale);
 
 	private void RecalculateRelativeTransform()
 	{
@@ -87,17 +80,17 @@ public abstract class GameObject
 		return Parent.FindAncestryPath(path);
 	}
 
-	private void NotifyTreeChanged()
+	private void ChildTreeChanged()
 	{
-		// OnAncestryTreeChanged?.Invoke();
-		// // Notify every "blood"-related gameobject that the sub-tree has changed
-		// foreach (GameObject child in Children)
-		// 	child.OnAncestryTreeChanged?.Invoke();
+		RecalculateRelativeTransform();
+		// Notify every "blood"-related gameobject that the sub-tree has changed
+		foreach (GameObject child in Children)
+			child.ChildTreeChanged();
 	}
 
 	private void ChildrenChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
-		NotifyTreeChanged();
+		ChildTreeChanged();
 
 		// New children was added
 		if (e.Action == NotifyCollectionChangedAction.Add)

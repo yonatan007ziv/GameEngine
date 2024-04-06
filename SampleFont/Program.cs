@@ -14,7 +14,6 @@ internal class Program
 		GameEngine.SetBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Sample Font";
 		GameEngine.FpsCap = 144;
-		GameEngine.LogRenderingLogs = false;
 
 		new FontTestingScene().LoadScene();
 

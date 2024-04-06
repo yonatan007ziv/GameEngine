@@ -1,15 +1,15 @@
-﻿using GameEngine.Components.ScriptableObjects;
-using GameEngine.Components.UIComponents;
+﻿using GameEngine.Components.UIComponents;
 using GameEngine.Core.Components.Input.Buttons;
 using System.Drawing;
 using System.Numerics;
 
 namespace SampleFont;
 
-internal class TestingRecursiveElement : ScriptableUIObject
+internal class TestingRecursiveElement : UIButton
 {
 	public TestingRecursiveElement(int times)
 	{
+		OnFullClicked += () => Console.WriteLine($"Clicked iter: {times}");
 		Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", ""));
 
 		Color color = Color.Purple;
@@ -24,25 +24,20 @@ internal class TestingRecursiveElement : ScriptableUIObject
 		else if (times == 0)
 			color = Color.White;
 
+		Text = "Recursion";
+		TextColor = color;
 
-		UIButton button = new UIButton();
-		button.Text = "Recursion";
-		button.TextColor = color;
-		button.Transform.Scale /= 2;
-		button.Transform.Position = new Vector3(0.5f, 0, 0);
-		Children.Add(button);
-
-		if (times >= 0)
+		if (times > 0)
 		{
 			TestingRecursiveElement recursiveElement = new TestingRecursiveElement(times - 1);
 			recursiveElement.Transform.Scale /= 2;
-			recursiveElement.Transform.Position = new Vector3(-0.5f, 0, 0);
 			Children.Add(recursiveElement);
 		}
 	}
 
 	public override void Update(float deltaTime)
 	{
+		base.Update(deltaTime);
 		if (GetKeyboardButtonPressed(KeyboardButton.A))
 			Transform.Position -= Vector3.UnitX * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.D))

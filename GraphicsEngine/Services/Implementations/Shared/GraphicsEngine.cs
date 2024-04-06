@@ -198,35 +198,30 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	private void BufferText(TextData textData, (Vector3 position, Vector3 scale) textArea)
 	{
-		string text = textData.Text;
-		Color textColor = textData.TextColor;
-		string fontName = textData.FontName;
-		float fontSize = textData.FontSize;
-
 		Font font;
-		if (!loadedFonts.ContainsKey(fontName))
+		if (!loadedFonts.ContainsKey(textData.FontName))
 		{
-			if (!fontLoader.ReadFile(fontName, out font))
+			if (!fontLoader.ReadFile(textData.FontName, out font))
 			{
-				logger.LogError("Font {fontName} could not be loaded", fontName);
+				logger.LogError("Font {fontName} could not be loaded", textData.FontName);
 				return;
 			}
 
-			loadedFonts[fontName] = font;
+			loadedFonts[textData.FontName] = font;
 		}
 
-		font = loadedFonts[fontName];
-		font.FontSize = fontSize;
+		font = loadedFonts[textData.FontName];
+		font.FontSize = textData.FontSize;
 
 		// Check if all of the characters are supported
-		foreach (char c in text)
+		foreach (char c in textData.Text)
 			if (c != '\n' && c != ' ' && !font.CharacterMaps.ContainsKey(c))
 			{
 				logger.LogError("Text not supported by font");
 				return;
 			}
 
-		string[] textLines = text.Split('\n');
+		string[] textLines = textData.Text.Split('\n');
 
 
 		int longestLineLength = 0;
@@ -243,7 +238,7 @@ internal class GraphicsEngine : IGraphicsEngine
 				if (firstChar)
 					firstChar = false;
 				else
-					currentWidth += (c == ' ') ? font.CharacterMaps['L'].Width : font.CharacterMaps[c].Width;
+					currentWidth += /*(c == ' ') ?*/ font.CharacterMaps['L'].Width /*: font.CharacterMaps[c].Width*/;
 			}
 
 			if (textWidth < currentWidth)
@@ -285,7 +280,7 @@ internal class GraphicsEngine : IGraphicsEngine
 					if (firstChar)
 						firstChar = false;
 					else
-						currentWidth += (c == ' ') ? font.CharacterMaps['L'].Width : font.CharacterMaps[c].Width;
+						currentWidth += /*(c == ' ') ?*/ font.CharacterMaps['L'].Width /*: font.CharacterMaps[c].Width*/;
 				}
 
 				if (textWidth < currentWidth)
@@ -301,7 +296,7 @@ internal class GraphicsEngine : IGraphicsEngine
 		float y = textArea.position.Y + (linesHeight - font.CharacterMaps['L'].Height) / 2;
 
 		// Draw the text
-		foreach (char c in text)
+		foreach (char c in textData.Text)
 		{
 			// Newline
 			if (c == '\n')
