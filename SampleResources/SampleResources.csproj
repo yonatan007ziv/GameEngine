@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Materials\Colors\Black.mat" />
     <None Remove="Resources\Materials\Colors\Blue.mat" />
     <None Remove="Resources\Materials\Colors\Green.mat" />
     <None Remove="Resources\Materials\Colors\Red.mat" />
+    <None Remove="Resources\Materials\Colors\White.mat" />
     <None Remove="Resources\Materials\Ground.mat" />
     <None Remove="Resources\Materials\Trex.mat" />
     <None Remove="Resources\Materials\Wall.mat" />
@@ -25,6 +27,8 @@
     <None Remove="Resources\Models\Trex.obj" />
     <None Remove="Resources\Textures\Blue.png" />
     <None Remove="Resources\Textures\Cityscape.png" />
+    <None Remove="Resources\Textures\Colors\Black.png" />
+    <None Remove="Resources\Textures\Colors\White.png" />
     <None Remove="Resources\Textures\Dirt.png" />
     <None Remove="Resources\Textures\GrayBorder.png" />
     <None Remove="Resources\Textures\Green.png" />
@@ -33,6 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Materials\Colors\Black.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Materials\Colors\White.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Materials\WhiteGrayBorder.mat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -87,7 +97,13 @@
     <Content Include="Resources\Textures\Cityscape.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\Colors\Black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\Colors\Blue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\Colors\White.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Dirt.png">

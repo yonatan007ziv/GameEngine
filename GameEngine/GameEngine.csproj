@@ -23,6 +23,8 @@
   <ItemGroup>
     <None Remove="EngineResources\Fonts\Arial.ttf" />
     <None Remove="EngineResources\Fonts\LoveDays.ttf" />
+    <None Remove="EngineResources\Materials\Colors\Black.mat" />
+    <None Remove="EngineResources\Materials\Colors\White.mat" />
     <None Remove="EngineResources\Materials\Default.mat" />
     <None Remove="EngineResources\Materials\MissingTexture.mat" />
     <None Remove="EngineResources\Models\Cube.obj" />
@@ -40,6 +42,7 @@
     <None Remove="EngineResources\Shaders\GLSL\TexturedFragment.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\TexturedVertex.glsl" />
     <None Remove="EngineResources\Shaders\GLSL\TextVertex.glsl" />
+    <None Remove="EngineResources\Textures\Colors\White.png" />
     <None Remove="EngineResources\Textures\MissingTexture.png" />
   </ItemGroup>
 
@@ -48,6 +51,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Fonts\LoveDays.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Materials\Colors\Black.mat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Materials\Colors\White.mat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Materials\Default.mat">
@@ -96,6 +105,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Shaders\GLSL\TextVertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineResources\Textures\Colors\White.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineResources\Textures\MissingTexture.png">

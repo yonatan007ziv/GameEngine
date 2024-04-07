@@ -8,7 +8,7 @@ public abstract class GameObject
 {
 	public int Id { get; }
 
-	public string Tag { get; protected set; } = "";
+	public string Tag { get; set; } = "";
 	public bool Visible { get; set; } = true;
 	public readonly TextData TextData;
 
