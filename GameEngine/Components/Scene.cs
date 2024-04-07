@@ -90,16 +90,6 @@ public class Scene : IInputMapper, IDisposable
 
 		LoadedScene?.UnloadScene();
 
-		foreach (WorldObject worldObject in WorldObjectsQueue)
-			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
-		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCamerasQueue)
-			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
-
-		foreach (UIObject uiObject in UIObjectsQueue)
-			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
-		foreach ((UICamera uiCamera, ViewPort viewPort) in UICamerasQueue)
-			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
-
 		foreach (WorldObject worldObject in WorldObjects)
 			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
 		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCameras)
@@ -110,6 +100,23 @@ public class Scene : IInputMapper, IDisposable
 		foreach ((UICamera uiCamera, ViewPort viewPort) in UICameras)
 			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
 
+		foreach (WorldObject worldObject in WorldObjectsQueue)
+			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
+		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCamerasQueue)
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
+
+		foreach (UIObject uiObject in UIObjectsQueue)
+			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
+		foreach ((UICamera uiCamera, ViewPort viewPort) in UICamerasQueue)
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
+
+
+		// Clear queues
+		WorldObjectsQueue.Clear();
+		WorldCamerasQueue.Clear();
+		UIObjectsQueue.Clear();
+		UICamerasQueue.Clear();
+		
 		_isLoaded = true;
 		LoadedScene = this;
 	}
