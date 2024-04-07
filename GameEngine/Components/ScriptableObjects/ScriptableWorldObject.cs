@@ -10,19 +10,51 @@ public abstract class ScriptableWorldObject : WorldObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
-	public static WorldObject? GetWorldObjectFromId(int id)
-		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
-	public static UIObject? GetUIObjectFromId(int id)
-		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
-
-	public ObservableCollection<WorldObject> WorldObjects => Scene.LoadedScene.WorldObjects;
-	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras => Scene.LoadedScene.WorldCameras;
-	public ObservableCollection<WorldObject> UIObjects => Scene.LoadedScene.WorldObjects;
-	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras => Scene.LoadedScene.UICameras;
+	public ObservableCollection<WorldObject> WorldObjects
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.WorldObjects;
+			return Scene.WorldObjectsQueue;
+		}
+	}
+	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.WorldCameras;
+			return Scene.WorldCamerasQueue;
+		}
+	}
+	public ObservableCollection<UIObject> UIObjects
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.UIObjects;
+			return Scene.UIObjectsQueue;
+		}
+	}
+	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.UICameras;
+			return Scene.UICamerasQueue;
+		}
+	}
 
 	public ScriptableWorldObject() { }
 	public ScriptableWorldObject(WorldObject parent)
 		: base(parent) { }
+
+	public static WorldObject? GetWorldObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
+	public static UIObject? GetUIObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
 
 	#region Collider info
 	public bool TouchingColliderTag(string tag)

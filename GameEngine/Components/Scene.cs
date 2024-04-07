@@ -9,15 +9,20 @@ namespace GameEngine.Components;
 
 public class Scene : IInputMapper, IDisposable
 {
-	public static Scene LoadedScene { get; private set; } = null!;
+	public static Scene? LoadedScene { get; private set; } = null;
 
 	private bool _isLoaded;
-
 	public ObservableCollection<WorldObject> WorldObjects { get; } = new ObservableCollection<WorldObject>();
 	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
 
 	public ObservableCollection<UIObject> UIObjects { get; } = new ObservableCollection<UIObject>();
 	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
+
+	public static ObservableCollection<WorldObject> WorldObjectsQueue { get; } = new ObservableCollection<WorldObject>();
+	public static ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCamerasQueue { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
+
+	public static ObservableCollection<UIObject> UIObjectsQueue { get; } = new ObservableCollection<UIObject>();
+	public static ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICamerasQueue { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
 
 	public Scene()
 	{
@@ -84,6 +89,16 @@ public class Scene : IInputMapper, IDisposable
 			return;
 
 		LoadedScene?.UnloadScene();
+
+		foreach (WorldObject worldObject in WorldObjectsQueue)
+			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
+		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCamerasQueue)
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
+
+		foreach (UIObject uiObject in UIObjectsQueue)
+			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
+		foreach ((UICamera uiCamera, ViewPort viewPort) in UICamerasQueue)
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
 
 		foreach (WorldObject worldObject in WorldObjects)
 			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);

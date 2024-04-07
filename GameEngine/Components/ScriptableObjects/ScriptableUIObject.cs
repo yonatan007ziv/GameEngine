@@ -1,5 +1,7 @@
-﻿using GameEngine.Core.Components.Input.Buttons;
+﻿using GameEngine.Core.Components;
+using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Objects;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
 
@@ -9,9 +11,51 @@ public abstract class ScriptableUIObject : UIObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
 
+	public ObservableCollection<WorldObject> WorldObjects
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.WorldObjects;
+			return Scene.WorldObjectsQueue;
+		}
+	}
+	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.WorldCameras;
+			return Scene.WorldCamerasQueue;
+		}
+	}
+	public ObservableCollection<UIObject> UIObjects
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.UIObjects;
+			return Scene.UIObjectsQueue;
+		}
+	}
+	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras
+	{
+		get
+		{
+			if (Scene.LoadedScene is not null)
+				return Scene.LoadedScene.UICameras;
+			return Scene.UICamerasQueue;
+		}
+	}
+
 	public ScriptableUIObject() { }
 	public ScriptableUIObject(UIObject parent)
 		: base(parent) { }
+
+	public static WorldObject? GetWorldObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
+	public static UIObject? GetUIObjectFromId(int id)
+		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
 
 	public static Vector2 GetUIMousePosition()
 		=> Services.Implementations.GameEngine.EngineContext.NormalizedMousePosition;
