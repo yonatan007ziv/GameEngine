@@ -51,39 +51,23 @@ public abstract class GameObject
 			UseRelativeScale ? relativeScale : Transform.Scale
 			);
 
+	// Recursive using ChildTreeChanged, do not use alone
+	// Relies on parent having the correct relative transform according to its entire ancestry
 	private void RecalculateRelativeTransform()
 	{
-		// Recursively find the ancestry path to the ancestor
-		Stack<GameObject> ancestorPath = FindAncestryPath();
-
-		Vector3 position = Vector3.Zero;
-		Vector3 rotation = Vector3.Zero;
-		Vector3 scale = Vector3.One;
-
-		// Iterate over the ancestor path
-		while (ancestorPath.Count > 0)
+		if (Parent is null)
 		{
-			GameObject ancestor = ancestorPath.Pop();
-			position += ancestor.Transform.Position * scale;
-			rotation += ancestor.Transform.Rotation;
-			scale *= ancestor.Transform.Scale;
+			relativePosition = Transform.Position;
+			relativeRotation = Transform.Rotation;
+			relativeScale = Transform.Scale;
+			return;
 		}
+
+		(Vector3 position, Vector3 rotation, Vector3 scale) = Parent.GetRelativeToAncestorTransform();
 
 		relativePosition = position + Transform.Position * scale;
 		relativeRotation = rotation + Transform.Rotation;
 		relativeScale = scale * Transform.Scale;
-	}
-
-	private Stack<GameObject> FindAncestryPath(Stack<GameObject>? path = null!)
-	{
-		if (path is null)
-			path = new Stack<GameObject>();
-
-		if (Parent is null)
-			return path;
-
-		path.Push(Parent);
-		return Parent.FindAncestryPath(path);
 	}
 
 	private void ChildTreeChanged()
