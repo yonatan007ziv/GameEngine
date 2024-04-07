@@ -27,13 +27,11 @@ internal abstract class RenderedObject
 		this.gameObject.Meshes.CollectionChanged += (s, e) => { shouldUpdateMeshes = true; };
 		this.gameObject.Children.CollectionChanged += (s, e) => { shouldUpdateChildren = true; };
 
-		this.gameObject.Transform.PropertyChanged += (s, e) => Update();
-		if (parent is not null)
-			parent.Transform.PropertyChanged += (s, e) => Update();
+		this.gameObject.Transform.PropertyChanged += (s, e) => UpdateChildTree();
 
 		UpdateMeshes();
 		UpdateChildren();
-		Update();
+		UpdateChildTree();
 	}
 
 	protected abstract void UpdateMeshes();
@@ -52,13 +50,17 @@ internal abstract class RenderedObject
 			shouldUpdateChildren = false;
 		}
 
+
 		foreach (MeshRenderer meshRenderer in Meshes)
 			meshRenderer.Render(camera);
 	}
 
-	public void Update()
+	public void UpdateChildTree()
 	{
 		foreach (MeshRenderer meshRenderer in Meshes)
 			meshRenderer.Update(gameObject);
+
+		foreach (RenderedObject child in Children)
+			child.UpdateChildTree();
 	}
 }

@@ -164,7 +164,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			RenderWorldObject(camera, child);
 	}
 
-	private void RenderUIObject(RenderingUICamera camera, RenderedUIObject uiObject, RenderedUIObject? parent = null)
+	private void RenderUIObject(RenderingUICamera camera, RenderedUIObject uiObject)
 	{
 		internalRenderer.SetViewport(camera.ViewPort);
 

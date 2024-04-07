@@ -21,7 +21,7 @@ internal class RenderedUIObject : RenderedObject
 				Meshes.Add(meshRenderer);
 			else
 				Console.WriteLine("Error creating MeshRenderer: {0}, {1}", UIObject.Meshes[i].Model, UIObject.Meshes[i].Material);
-		Update();
+		UpdateChildTree();
 	}
 
 	protected override void UpdateChildren()

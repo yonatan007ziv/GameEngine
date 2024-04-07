@@ -21,7 +21,7 @@ internal class RenderedWorldObject : RenderedObject
 				Meshes.Add(meshRenderer);
 			else
 				Console.WriteLine("Error creating MeshRenderer: {0}, {1}", WorldObject.Meshes[i].Model, WorldObject.Meshes[i].Material);
-		Update();
+		UpdateChildTree();
 	}
 
 	protected override void UpdateChildren()

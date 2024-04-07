@@ -46,9 +46,9 @@ public abstract class GameObject
 
 	public (Vector3 position, Vector3 rotation, Vector3 scale) GetRelativeToAncestorTransform()
 		=> (
-			UseRelativePosition ? relativePosition : Transform.Position,
-			UseRelativeRotation ? relativeRotation : Transform.Rotation,
-			UseRelativeScale ? relativeScale : Transform.Scale
+				UseRelativePosition ? relativePosition : Transform.Position,
+				UseRelativeRotation ? relativeRotation : Transform.Rotation,
+				UseRelativeScale ? relativeScale : Transform.Scale
 			);
 
 	// Recursive using ChildTreeChanged, do not use alone

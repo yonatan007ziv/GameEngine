@@ -7,7 +7,9 @@ namespace SampleFont;
 
 internal class TestingRecursiveElement : UIButton
 {
-	public TestingRecursiveElement(int times)
+	private readonly bool enabled;
+
+	public TestingRecursiveElement(int times, bool enabled = false)
 	{
 		OnFullClicked += () => Console.WriteLine($"Clicked iter: {times}");
 		Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", ""));
@@ -33,11 +35,20 @@ internal class TestingRecursiveElement : UIButton
 			recursiveElement.Transform.Scale /= 2;
 			Children.Add(recursiveElement);
 		}
+
+		this.enabled = enabled;
 	}
 
 	public override void Update(float deltaTime)
 	{
 		base.Update(deltaTime);
+
+		if (!enabled)
+		{
+			// Console.WriteLine(Transform.Position);
+			return;
+		}
+
 		if (GetKeyboardButtonPressed(KeyboardButton.A))
 			Transform.Position -= Vector3.UnitX * deltaTime / 5;
 		if (GetKeyboardButtonPressed(KeyboardButton.D))

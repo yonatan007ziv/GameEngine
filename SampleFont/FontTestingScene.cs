@@ -1,7 +1,5 @@
 ﻿using GameEngine.Components;
-using GameEngine.Components.UIComponents;
 using GameEngine.Core.Components;
-using System.Numerics;
 
 namespace SampleFont;
 
@@ -29,7 +27,7 @@ internal class FontTestingScene : Scene
 
 		UICameras.Add((new UICamera(), new ViewPort(0.5f, 0.5f, 1, 1)));
 
-		TestingRecursiveElement recursiveElement = new TestingRecursiveElement(100);
+		TestingRecursiveElement recursiveElement = new TestingRecursiveElement(5, true);
 		recursiveElement.Transform.Scale /= 2;
 		UIObjects.Add(recursiveElement);
 	}
