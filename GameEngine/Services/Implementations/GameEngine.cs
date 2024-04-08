@@ -171,8 +171,8 @@ internal class GameEngine : IGameEngine
 			scriptableWorldObject.Update(deltaTime);
 
 		// Update components
-		foreach (GameObject child in worldObject.Children)
-			if (child is WorldObject childWorldObject)
+		for (int i = 0; i < worldObject.Children.Count; i++)
+			if (worldObject.Children[i] is WorldObject childWorldObject)
 				UpdateWorldObjectTree(childWorldObject, deltaTime);
 	}
 
@@ -183,8 +183,8 @@ internal class GameEngine : IGameEngine
 			scriptableUIObject.Update(deltaTime);
 
 		// Update components
-		foreach (GameObject child in uiObject.Children)
-			if (child is UIObject childUIObject)
+		for (int i = 0; i < uiObject.Children.Count; i++)
+			if (uiObject.Children[i] is UIObject childUIObject)
 				UpdateUIObjectTree(childUIObject, deltaTime);
 	}
 

@@ -90,33 +90,32 @@ public class Scene : IInputMapper, IDisposable
 
 		LoadedScene?.UnloadScene();
 
-		foreach (WorldObject worldObject in WorldObjects)
-			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
-		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCameras)
-			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
+		for (int i = 0; i < WorldObjects.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddWorldObject(WorldObjects[i]);
+		for (int i = 0; i < WorldCameras.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(WorldCameras[i].worldCamera, WorldCameras[i].worldCamera.RenderingMaskTags, WorldCameras[i].viewPort);
 
-		foreach (UIObject uiObject in UIObjects)
-			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
-		foreach ((UICamera uiCamera, ViewPort viewPort) in UICameras)
-			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
+		for (int i = 0; i < UIObjects.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddUIObject(UIObjects[i]);
+		for (int i = 0; i < UICameras.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(UICameras[i].uiCamera, UICameras[i].uiCamera.RenderingMaskTags, UICameras[i].viewPort);
 
-		foreach (WorldObject worldObject in WorldObjectsQueue)
-			Services.Implementations.GameEngine.EngineContext.AddWorldObject(worldObject);
-		foreach ((WorldCamera worldCamera, ViewPort viewPort) in WorldCamerasQueue)
-			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(worldCamera, worldCamera.RenderingMaskTags, viewPort);
+		for (int i = 0; i < WorldObjectsQueue.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddWorldObject(WorldObjectsQueue[i]);
+		for (int i = 0; i < WorldCamerasQueue.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddWorldCamera(WorldCamerasQueue[i].worldCamera, WorldCamerasQueue[i].worldCamera.RenderingMaskTags, WorldCamerasQueue[i].viewPort);
 
-		foreach (UIObject uiObject in UIObjectsQueue)
-			Services.Implementations.GameEngine.EngineContext.AddUIObject(uiObject);
-		foreach ((UICamera uiCamera, ViewPort viewPort) in UICamerasQueue)
-			Services.Implementations.GameEngine.EngineContext.AddUICamera(uiCamera, uiCamera.RenderingMaskTags, viewPort);
-
+		for (int i = 0; i < UIObjectsQueue.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddUIObject(UIObjectsQueue[i]);
+		for (int i = 0; i < UICamerasQueue.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.AddUICamera(UICamerasQueue[i].uiCamera, UICamerasQueue[i].uiCamera.RenderingMaskTags, UICamerasQueue[i].viewPort);
 
 		// Clear queues
 		WorldObjectsQueue.Clear();
 		WorldCamerasQueue.Clear();
 		UIObjectsQueue.Clear();
 		UICamerasQueue.Clear();
-		
+
 		_isLoaded = true;
 		LoadedScene = this;
 	}
@@ -126,15 +125,15 @@ public class Scene : IInputMapper, IDisposable
 		if (!_isLoaded)
 			return;
 
-		foreach (WorldObject worldObject in WorldObjects)
-			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(worldObject);
-		foreach ((WorldObject camera, _) in WorldCameras)
-			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(camera);
+		for (int i = 0; i < WorldObjects.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(WorldObjects[i]);
+		for (int i = 0; i < WorldCameras.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(WorldCameras[i].worldCamera);
 
-		foreach (UIObject uiObject in UIObjects)
-			Services.Implementations.GameEngine.EngineContext.RemoveUIObject(uiObject);
-		foreach ((UIObject camera, _) in UICameras)
-			Services.Implementations.GameEngine.EngineContext.RemoveUICamera(camera);
+		for (int i = 0; i < UIObjects.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.RemoveUIObject(UIObjects[i]);
+		for (int i = 0; i < UICameras.Count; i++)
+			Services.Implementations.GameEngine.EngineContext.RemoveUICamera(UICameras[i].uiCamera);
 
 		_isLoaded = false;
 		LoadedScene = null!;

@@ -51,16 +51,16 @@ internal abstract class RenderedObject
 		}
 
 
-		foreach (MeshRenderer meshRenderer in Meshes)
-			meshRenderer.Render(camera);
+		for (int i = 0; i < Meshes.Count; i++)
+			Meshes[i].Render(camera);
 	}
 
 	public void UpdateChildTree()
 	{
-		foreach (MeshRenderer meshRenderer in Meshes)
-			meshRenderer.Update(gameObject);
+		for (int i = 0; i < Meshes.Count; i++)
+			Meshes[i].Update(gameObject);
 
-		foreach (RenderedObject child in Children)
-			child.UpdateChildTree();
+		for (int i = 0; i < Children.Count; i++)
+			Children[i].UpdateChildTree();
 	}
 }

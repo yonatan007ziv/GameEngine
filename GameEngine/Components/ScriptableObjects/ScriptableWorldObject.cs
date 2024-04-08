@@ -60,9 +60,9 @@ public abstract class ScriptableWorldObject : WorldObject
 	public bool TouchingColliderTag(string tag)
 	{
 		int[] touchingIds = GetTouchingColliderIds();
-		foreach (int id in touchingIds)
+		for (int i = 0; i < touchingIds.Length; i++)
 		{
-			WorldObject? obj = GetWorldObjectFromId(id);
+			WorldObject? obj = GetWorldObjectFromId(touchingIds[i]);
 
 			if (obj is null)
 				continue;

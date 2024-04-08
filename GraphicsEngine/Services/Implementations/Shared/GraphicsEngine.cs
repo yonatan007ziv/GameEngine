@@ -106,14 +106,14 @@ internal class GraphicsEngine : IGraphicsEngine
 		UpdateObjects();
 
 		internalRenderer.SetDepthTest(true);
-		foreach (RenderingWorldCamera worldCamera in worldCameras.Values)
-			foreach (RenderedWorldObject worldObject in worldObjects.Values)
-				RenderWorldObject(worldCamera, worldObject);
+		for (int i = 0; i < worldCameras.Count; i++)
+			for (int j = 0; j < worldObjects.Count; j++)
+				RenderWorldObject(worldCameras.Values.ElementAt(i), worldObjects.Values.ElementAt(j));
 
 		internalRenderer.SetDepthTest(false);
-		foreach (RenderingUICamera camera in uiCameras.Values)
-			foreach (RenderedUIObject uiObject in uiObjects.Values)
-				RenderUIObject(camera, uiObject);
+		for (int i = 0; i < uiCameras.Count; i++)
+			for (int j = 0; j < uiObjects.Count; j++)
+				RenderUIObject(uiCameras.Values.ElementAt(i), uiObjects.Values.ElementAt(j));
 
 		// Render "buffered" text
 		textShader.Bind();
@@ -160,8 +160,9 @@ internal class GraphicsEngine : IGraphicsEngine
 		worldObject.Render(camera);
 
 		// Render objects' children
-		foreach (RenderedWorldObject child in worldObject.Children)
-			RenderWorldObject(camera, child);
+		for (int i = 0; i < worldObject.Children.Count; i++)
+			if (worldObject.Children[i] is RenderedWorldObject worldChild)
+				RenderWorldObject(camera, worldChild);
 	}
 
 	private void RenderUIObject(RenderingUICamera camera, RenderedUIObject uiObject)
@@ -182,8 +183,9 @@ internal class GraphicsEngine : IGraphicsEngine
 		textShader.Unbind();
 
 		// Render objects' children
-		foreach (RenderedUIObject child in uiObject.Children)
-			RenderUIObject(camera, child);
+		for (int i = 0; i < uiObject.Children.Count; i++)
+			if (uiObject.Children[i] is RenderedUIObject uiChild)
+				RenderUIObject(camera, uiChild);
 	}
 
 	public void DeleteFinalizedBuffers()
@@ -309,15 +311,15 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	private void WindowResized()
 	{
-		foreach (RenderingWorldCamera camera in worldCameras.Values)
+		for (int i = 0; i < worldCameras.Count; i++)
 		{
-			camera.Width = WindowSize.X;
-			camera.Height = WindowSize.Y;
+			worldCameras.Values.ElementAt(i).Width = WindowSize.X;
+			worldCameras.Values.ElementAt(i).Height = WindowSize.Y;
 		}
-		foreach (RenderingUICamera camera in uiCameras.Values)
+		for (int i = 0; i < uiCameras.Count; i++)
 		{
-			camera.Width = WindowSize.X;
-			camera.Height = WindowSize.Y;
+			uiCameras.Values.ElementAt(i).Width = WindowSize.X;
+			uiCameras.Values.ElementAt(i).Height = WindowSize.Y;
 		}
 	}
 

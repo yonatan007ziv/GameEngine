@@ -44,10 +44,7 @@ internal class TestingRecursiveElement : UIButton
 		base.Update(deltaTime);
 
 		if (!enabled)
-		{
-			// Console.WriteLine(Transform.Position);
 			return;
-		}
 
 		if (GetKeyboardButtonPressed(KeyboardButton.A))
 			Transform.Position -= Vector3.UnitX * deltaTime / 5;

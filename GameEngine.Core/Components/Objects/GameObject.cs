@@ -74,8 +74,8 @@ public abstract class GameObject
 	{
 		RecalculateRelativeTransform();
 		// Notify every "blood"-related gameobject that the sub-tree has changed
-		foreach (GameObject child in Children)
-			child.ChildTreeChanged();
+		for (int i = 0; i < Children.Count; i++)
+			Children[i].ChildTreeChanged();
 	}
 
 	private void ChildrenChanged(object? sender, NotifyCollectionChangedEventArgs e)
