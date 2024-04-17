@@ -43,8 +43,8 @@ internal class GraphicsEngine : IGraphicsEngine
 
 	private readonly Dictionary<int, RenderedWorldObject> worldObjects = new Dictionary<int, RenderedWorldObject>();
 	private readonly Dictionary<int, RenderedUIObject> uiObjects = new Dictionary<int, RenderedUIObject>();
-	private readonly Dictionary<int, RenderingWorldCamera> worldCameras = new Dictionary<int, RenderingWorldCamera>();
-	private readonly Dictionary<int, RenderingUICamera> uiCameras = new Dictionary<int, RenderingUICamera>();
+	private readonly Dictionary<int, WorldRenderingCamera> worldCameras = new Dictionary<int, WorldRenderingCamera>();
+	private readonly Dictionary<int, UIRenderingCamera> uiCameras = new Dictionary<int, UIRenderingCamera>();
 
 	// Finalized buffer ids
 	public Queue<int> FinalizedBuffers { get; } = new Queue<int>();
@@ -147,7 +147,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			InternalRemoveUICamera(_removeUICamerasQueue.Dequeue());
 	}
 
-	private void RenderWorldObject(RenderingWorldCamera camera, RenderedWorldObject worldObject)
+	private void RenderWorldObject(WorldRenderingCamera camera, RenderedWorldObject worldObject)
 	{
 		internalRenderer.SetViewport(camera.ViewPort);
 
@@ -165,7 +165,7 @@ internal class GraphicsEngine : IGraphicsEngine
 				RenderWorldObject(camera, worldChild);
 	}
 
-	private void RenderUIObject(RenderingUICamera camera, RenderedUIObject uiObject)
+	private void RenderUIObject(UIRenderingCamera camera, RenderedUIObject uiObject)
 	{
 		internalRenderer.SetViewport(camera.ViewPort);
 
@@ -343,7 +343,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	}
 	private void InternalAddWorldCamera((WorldObject camera, CameraRenderingMask renderingMask, ViewPort viewPort) cameraTuple)
 	{
-		RenderingWorldCamera renderingCamera = new RenderingWorldCamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
+		WorldRenderingCamera renderingCamera = new WorldRenderingCamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
 		worldCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
 		allObjectIds.Add(renderingCamera.CameraObject.Id);
 	}
@@ -429,7 +429,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	}
 	private void InternalAddUICamera((UIObject camera, CameraRenderingMask renderingMask, ViewPort viewPort) cameraTuple)
 	{
-		RenderingUICamera renderingCamera = new RenderingUICamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
+		UIRenderingCamera renderingCamera = new UIRenderingCamera(cameraTuple.camera, cameraTuple.renderingMask, (int)WindowSize.X, (int)WindowSize.Y, cameraTuple.viewPort);
 		uiCameras.Add(renderingCamera.CameraObject.Id, renderingCamera);
 		allObjectIds.Add(renderingCamera.CameraObject.Id);
 	}

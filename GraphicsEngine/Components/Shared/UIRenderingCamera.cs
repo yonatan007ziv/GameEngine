@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace GraphicsEngine.Components.Shared;
 
-internal class RenderingUICamera : RenderingCamera
+internal class UIRenderingCamera : RenderingCamera
 {
 	public UIObject CameraObject { get; }
 	public CameraRenderingMask RenderingMask { get; }
@@ -13,7 +13,7 @@ internal class RenderingUICamera : RenderingCamera
 	public float Height { get; set; }
 	public ViewPort ViewPort { get; private set; }
 
-	public RenderingUICamera(UIObject cameraObject, CameraRenderingMask renderingMask, int width, int height, ViewPort viewPort)
+	public UIRenderingCamera(UIObject cameraObject, CameraRenderingMask renderingMask, int width, int height, ViewPort viewPort)
 	{
 		CameraObject = cameraObject;
 		RenderingMask = renderingMask;
