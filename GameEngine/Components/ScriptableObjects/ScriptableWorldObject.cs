@@ -3,6 +3,7 @@ using GameEngine.Core.Components.Input.Buttons;
 using GameEngine.Core.Components.Objects;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Numerics;
 
 namespace GameEngine.Components.ScriptableObjects;
 
@@ -51,12 +52,23 @@ public abstract class ScriptableWorldObject : WorldObject
 	public ScriptableWorldObject(WorldObject parent)
 		: base(parent) { }
 
+	public List<WorldObject> GetWorldObjectsWithinOriginDistance(float distance)
+	{
+		List<int>  ids = Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetObjectIdsWithinDistance(Transform.Position, distance);
+
+		List<WorldObject> objects = new List<WorldObject>(ids.Count);	
+		foreach(int id in ids)
+			objects.Add(GetWorldObjectFromId(id)!);
+		return objects;
+	}
 	public static WorldObject? GetWorldObjectFromId(int id)
 		=> Services.Implementations.GameEngine.EngineContext.GetWorldObjectFromId(id);
 	public static UIObject? GetUIObjectFromId(int id)
 		=> Services.Implementations.GameEngine.EngineContext.GetUIObjectFromId(id);
 
 	#region Collider info
+	public void RaycastHitAll(Vector3 fromPos, Vector3 direction, out List<RaycastHit> hits)
+		=> Services.Implementations.GameEngine.EngineContext.PhysicsEngine.RaycastHitAll([Id], fromPos, direction, out hits);
 	public bool TouchingColliderTag(string tag)
 	{
 		int[] touchingIds = GetTouchingColliderIds();

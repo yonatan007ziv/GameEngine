@@ -17,7 +17,7 @@ internal class PlayerCameraController : WorldCamera
 		RenderingMaskTags.AddMask(Tag);
 
 		Transform = parent.Transform;
-		Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
+        Meshes.Add(new MeshData("Camera.obj", "Red.mat"));
 	}
 
 	public override void Update(float deltaTime)

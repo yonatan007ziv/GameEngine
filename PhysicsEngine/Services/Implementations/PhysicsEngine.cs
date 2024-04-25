@@ -2,6 +2,7 @@
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
 using PhysicsEngine.Components;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace PhysicsEngine.Services.Implementations;
@@ -111,5 +112,78 @@ internal class PhysicsEngine : IPhysicsEngine
 			positionDelta = new Vector3(0, 0, depthZ / 2);
 
 		return true; // Overlap detected and position adjusted
+	}
+
+	private void RaycastHitInternal(List<PhysicsObject> toHit,int[] ignoreIds, Vector3 fromPos, Vector3 direction, out List<RaycastHit> hits)
+	{
+		hits = new List<RaycastHit>();
+
+		// Iterate through each box collider
+		foreach (PhysicsObject physicsObj in toHit)
+		{
+			if (physicsObj.BoxCollider is null)
+				continue;
+
+			BoxCollider collider = physicsObj.BoxCollider;
+
+			// Calculate the center of the collider
+			Vector3 colliderCenter = physicsObj.Transform.Position + collider.Center;
+
+			// Calculate the half extents of the collider
+			Vector3 halfExtents = collider.Size * 0.5f * physicsObj.Transform.Scale;
+
+			// Calculate the distance from the origin to the collider center along the ray direction
+			float t = Vector3.Dot(colliderCenter - fromPos, direction);
+
+			// Calculate the point on the ray closest to the collider center
+			Vector3 closestPoint = fromPos + direction * t;
+
+			// Check if the closest point is within the bounds of the collider
+			if (Math.Abs(closestPoint.X - colliderCenter.X) <= halfExtents.X &&
+				Math.Abs(closestPoint.Y - colliderCenter.Y) <= halfExtents.Y &&
+				Math.Abs(closestPoint.Z - colliderCenter.Z) <= halfExtents.Z)
+			{
+				// Calculate the hit point and distance
+				RaycastHit hit;
+				hit.point = closestPoint;
+				hit.distance = t;
+				hit.gameObjectHitId = physicsObj.Id;
+
+				if (!ignoreIds.Contains(physicsObj.Id))
+					// Add the hit to the list
+					hits.Add(hit);
+			}
+		}
+	}
+
+	public void RaycastHitAll(int[] ignoreIds, Vector3 fromPos, Vector3 direction, out List<RaycastHit> hits)
+	{
+		// Initialize a list to store hits
+		hits = new List<RaycastHit>();
+
+		RaycastHitInternal(dynamicColliders.Values.ToList(), ignoreIds, fromPos, direction, out List<RaycastHit> dynamicColliderHits);
+		RaycastHitInternal(staticColliders.Values.ToList(), ignoreIds, fromPos, direction, out List<RaycastHit> staticColliderHits);
+
+		hits.AddRange(dynamicColliderHits);
+		hits.AddRange(staticColliderHits);
+	}
+
+	public void InternalGetWorldObjectsWithinDistance(List<PhysicsObject> toCheck, Vector3 origin, float distance, out List<int> objectIdsWithin)
+	{
+		objectIdsWithin = new List<int>();
+
+		foreach (PhysicsObject physicsObject in toCheck)
+			if ((physicsObject.Transform.Position - origin).Length() <= distance)
+				objectIdsWithin.Add(physicsObject.Id);
+	}
+
+	public List<int> GetObjectIdsWithinDistance(Vector3 origin, float distance)
+	{
+		// Initialize a list to store hits
+		List<int> objs;
+
+		InternalGetWorldObjectsWithinDistance(physicsObjects.Values.ToList(), origin, distance, out objs);
+
+		return objs;
 	}
 }

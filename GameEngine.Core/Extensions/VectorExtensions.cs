@@ -4,7 +4,7 @@ namespace GameEngine.Extensions;
 
 public static class VectorExtensions
 {
-	public static Vector3 ClampYZTo360Degrees(this Vector3 vec)
+	public static Vector3 ClampTo360Degrees(this Vector3 vec)
 	{
 		// Ensure rotation is within 0-360
 		float x = (vec.X % 360 + 360) % 360;
@@ -17,11 +17,6 @@ public static class VectorExtensions
 		z = (z > 180) ? z - 360 : z;
 
 		return new Vector3(x, y, z);
-
-
-		//float y = (vec.Y % 360 + 360) % 360;
-		//float z = (vec.Z % 360 + 360) % 360;
-		//return new Vector3(vec.X, y, z);
 	}
 
 	public static Vector3 ClampMagnitude(this Vector3 vec, float magnitude)

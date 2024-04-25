@@ -28,7 +28,10 @@ internal class WorldRenderingCamera : RenderingCamera
 
 	public void Update()
 	{
-		ViewMatrix = Matrix4x4.CreateLookAt(CameraObject.Transform.Position, CameraObject.Transform.Position + CameraObject.Transform.LocalFront, CameraObject.Transform.LocalUp);
+		Vector3 alteredCameraLocalUp = CameraObject.Transform.LocalUp;
+		Vector3 alteredCameraLocalFront = CameraObject.Transform.LocalFront;
+
+		ViewMatrix = Matrix4x4.CreateLookAt(CameraObject.Transform.Position, CameraObject.Transform.Position + alteredCameraLocalFront, alteredCameraLocalUp);
 		ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegToRad(FOV), Width / Height, Near, Far);
 	}
 }

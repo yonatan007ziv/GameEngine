@@ -43,10 +43,14 @@ internal class MeshRenderer
 	{
 		(Vector3 position, Vector3 rotation, Vector3 scale) relativeTransform = gameObject.GetRelativeToAncestorTransform();
 
+		Vector3 alteredPosition = relativeTransform.position;
+		Vector3 alteredRotation = relativeTransform.rotation; 
+		Vector3 alteredScale = relativeTransform.scale;
+
 		modelMatrix =
-			Matrix4x4.CreateRotationX(MathHelper.DegToRad(relativeTransform.rotation.X))
-			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(relativeTransform.rotation.Y))
-			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(relativeTransform.rotation.Z))
-			* Matrix4x4.CreateScale(relativeTransform.scale) * Matrix4x4.CreateTranslation(relativeTransform.position);
+			Matrix4x4.CreateRotationX(MathHelper.DegToRad(alteredRotation.X))
+			* Matrix4x4.CreateRotationY(MathHelper.DegToRad(alteredRotation.Y))
+			* Matrix4x4.CreateRotationZ(MathHelper.DegToRad(alteredRotation.Z))
+			* Matrix4x4.CreateScale(alteredScale) * Matrix4x4.CreateTranslation(alteredPosition);
 	}
 }

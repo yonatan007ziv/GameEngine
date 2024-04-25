@@ -9,12 +9,12 @@ internal class MainScene : Scene
 {
 	public MainScene()
 	{
-		MapKeyboardAxis("XMovement", KeyboardButton.D, KeyboardButton.A, 1, 0);
+		MapKeyboardAxis("XMovement", KeyboardButton.D, KeyboardButton.A, -1, 0);
 		MapKeyboardAxis("YMovement", KeyboardButton.W, KeyboardButton.S, 1, 0);
 		MapGamepadAxis("XMovement", GamepadAxis.LeftAnalogHorizontal, 1, 0);
 		MapGamepadAxis("YMovement", GamepadAxis.LeftAnalogVertical, -1, 0);
 
-		MapMouseAxis("XCamera", MouseAxis.MouseHorizontal, 1, 0);
+		MapMouseAxis("XCamera", MouseAxis.MouseHorizontal, -1, 0);
 		MapMouseAxis("YCamera", MouseAxis.MouseVertical, -1, 0);
 		MapGamepadAxis("XCamera", GamepadAxis.RightAnalogHorizontal, 5, 0);
 		MapGamepadAxis("YCamera", GamepadAxis.RightAnalogVertical, -5, 0);
