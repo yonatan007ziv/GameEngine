@@ -13,6 +13,8 @@ public abstract class GameObject
 	public readonly TextData TextData;
 
 	// Invoked when the object gets added to a children list of another object
+	public Action? OnLoaded;
+	public Action? OnUnloaded;
 	public Action? OnAddedToChildren;
 	public Action? OnRemovedFromChildren;
 
@@ -27,6 +29,7 @@ public abstract class GameObject
 	private GameObject? _parent;
 	public GameObject? Parent { get => _parent; set { _parent?.Children.Remove(this); _parent = value; ChildTreeChanged(); } }
 	public ObservableCollection<GameObject> Children { get; }
+	private List<GameObject> backingChildrenList = new List<GameObject>();
 
 	public BoxCollider? BoxCollider { get; set; }
 	public Vector3 Velocity { get; set; }
@@ -54,6 +57,20 @@ public abstract class GameObject
 				UseRelativeRotation ? relativeRotation : Transform.Rotation,
 				UseRelativeScale ? relativeScale : Transform.Scale
 			);
+
+	public void NotifyLoaded()
+	{
+		OnLoaded?.Invoke();
+		foreach (GameObject child in Children)
+			child.NotifyLoaded();
+	}
+
+	public void NotifyUnloaded()
+	{
+		OnUnloaded?.Invoke();
+		foreach (GameObject child in Children)
+			child.NotifyUnloaded();
+	}
 
 	// Recursive using ChildTreeChanged, do not use alone
 	// Relies on parent having the correct relative transform according to its entire ancestry
@@ -92,13 +109,27 @@ public abstract class GameObject
 			{
 				addedUIObject.Parent = this;
 				addedUIObject.OnAddedToChildren?.Invoke();
+				backingChildrenList.Add(addedUIObject);
 			}
 		// Old children was removed
 		else if (e.Action == NotifyCollectionChangedAction.Remove)
-			foreach (GameObject addedUIObject in e.OldItems!)
+			foreach (GameObject removedUIObject in e.OldItems!)
+			{
+				removedUIObject.Parent = null;
+				removedUIObject.OnRemovedFromChildren?.Invoke();
+				backingChildrenList.Remove(removedUIObject);
+			}
+
+		// All children were removed
+		else if (e.Action == NotifyCollectionChangedAction.Reset)
+		{
+			foreach (GameObject addedUIObject in backingChildrenList)
 			{
 				addedUIObject.Parent = null;
 				addedUIObject.OnRemovedFromChildren?.Invoke();
+
 			}
+			backingChildrenList.Clear();
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using GameEngine.Components.ScriptableObjects;
+﻿using GameEngine.Components;
+using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
@@ -224,6 +225,8 @@ internal class GameEngine : IGameEngine
 		// Add to engines
 		PhysicsEngine.AddPhysicsObject(worldObject);
 		GraphicsEngine.AddWorldObject(worldObject);
+
+		worldObject.NotifyLoaded();
 	}
 	public void AddWorldCamera(WorldObject worldCamera, CameraRenderingMask renderingMask, ViewPort viewport)
 	{
@@ -238,6 +241,8 @@ internal class GameEngine : IGameEngine
 
 		// Add to engines
 		GraphicsEngine.AddWorldCamera(worldCamera, renderingMask, viewport);
+
+		worldCamera.NotifyLoaded();
 	}
 	public void AddUIObject(UIObject uiObject)
 	{
@@ -252,6 +257,8 @@ internal class GameEngine : IGameEngine
 
 		// Add to engines
 		GraphicsEngine.AddUIObject(uiObject);
+
+		uiObject.NotifyLoaded();
 	}
 	public void AddUICamera(UIObject uiCamera, CameraRenderingMask renderingMask, ViewPort viewport)
 	{
@@ -266,6 +273,8 @@ internal class GameEngine : IGameEngine
 
 		// Add to engines
 		GraphicsEngine.AddUICamera(uiCamera, renderingMask, viewport);
+
+		uiCamera.NotifyLoaded();
 	}
 
 	public void RemoveWorldObject(WorldObject worldObject)
@@ -282,6 +291,8 @@ internal class GameEngine : IGameEngine
 		// Remove from engines
 		PhysicsEngine.RemovePhysicsObject(worldObject);
 		GraphicsEngine.RemoveWorldObject(worldObject);
+
+		worldObject.NotifyUnloaded();
 	}
 	public void RemoveWorldCamera(WorldObject worldCamera)
 	{
@@ -296,6 +307,8 @@ internal class GameEngine : IGameEngine
 
 		// Remove from engines
 		GraphicsEngine.RemoveWorldCamera(worldCamera);
+
+		worldCamera.NotifyUnloaded();
 	}
 	public void RemoveUIObject(UIObject uiObject)
 	{
@@ -310,6 +323,8 @@ internal class GameEngine : IGameEngine
 
 		// Remove from engines
 		GraphicsEngine.RemoveUIObject(uiObject);
+
+		uiObject.NotifyUnloaded();
 	}
 	public void RemoveUICamera(UIObject uiCamera)
 	{
@@ -323,6 +338,8 @@ internal class GameEngine : IGameEngine
 		allObjectIds.Remove(uiCamera.Id);
 
 		GraphicsEngine.RemoveUICamera(uiCamera);
+
+		uiCamera.NotifyUnloaded();
 	}
 	#endregion
 

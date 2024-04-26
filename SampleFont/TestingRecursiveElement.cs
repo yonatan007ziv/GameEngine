@@ -11,6 +11,7 @@ internal class TestingRecursiveElement : UIButton
 
 	public TestingRecursiveElement(int times, bool enabled = false)
 	{
+		OnUnloaded += () => Console.WriteLine("Removed");
 		OnFullClicked += () => Console.WriteLine($"Clicked iter: {times}");
 		Meshes.Add(new GameEngine.Core.Components.MeshData("UIRect.obj", ""));
 
@@ -45,6 +46,8 @@ internal class TestingRecursiveElement : UIButton
 
 		if (!enabled)
 			return;
+		if (GetKeyboardButtonDown(KeyboardButton.Delete))
+			new FontTestingScene().LoadScene();
 
 		if (GetKeyboardButtonPressed(KeyboardButton.A))
 			Transform.Position -= Vector3.UnitX * deltaTime / 5;
