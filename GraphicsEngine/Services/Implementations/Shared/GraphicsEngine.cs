@@ -55,6 +55,7 @@ internal class GraphicsEngine : IGraphicsEngine
 	public event Action<MouseEventData>? MouseEvent;
 	public event Action<KeyboardEventData>? KeyboardEvent;
 	public event Action<GamepadEventData>? GamepadEvent;
+	public Action<Vector2> ScreenSizeChanged { get; set; }
 
 	public GraphicsEngine(ILogger logger, IInternalGraphicsRenderer internalRenderer, IBufferFactory bufferFactory, IBufferDeletor bufferDeletor, IFileReader<Font> fontLoader, IFactory<ShaderSource, ShaderSource, IShaderProgram> shaderProgramFactory, IFactory<string, ShaderSource> shaderSourceFactory)
 	{
@@ -321,6 +322,7 @@ internal class GraphicsEngine : IGraphicsEngine
 			uiCameras.Values.ElementAt(i).Width = WindowSize.X;
 			uiCameras.Values.ElementAt(i).Height = WindowSize.Y;
 		}
+		ScreenSizeChanged?.Invoke(internalRenderer.WindowSize);
 	}
 
 	#region Objects management

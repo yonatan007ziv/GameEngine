@@ -13,6 +13,7 @@ public interface IGraphicsEngine
 	event Action<MouseEventData>? MouseEvent;
 	event Action<KeyboardEventData>? KeyboardEvent;
 	event Action<GamepadEventData>? GamepadEvent;
+	Action<Vector2> ScreenSizeChanged { get; set; }
 
 	string Title { get; set; }
 	IntPtr WindowHandle { get; }

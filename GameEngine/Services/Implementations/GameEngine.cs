@@ -35,6 +35,9 @@ internal class GameEngine : IGameEngine
 	private readonly Stopwatch renderStopwatch, updateStopwatch, engineTime;
 	private readonly int ExpectedTaskSchedulerPeriod;
 
+	private bool screenSizeChanged;
+	private Vector2 newScreenSize; 
+
 	public string Title { get => GraphicsEngine.Title; set => GraphicsEngine.Title = value; }
 
 	// Vector2.One limits the position to [-1 : 1] range and Vector2(1, -1) used to flip the y sign
@@ -76,6 +79,7 @@ internal class GameEngine : IGameEngine
 
 		EngineLoadingTask = new TaskCompletionSource();
 		GraphicsEngine.Load += EngineLoadingTask.SetResult;
+		GraphicsEngine.ScreenSizeChanged += (vec) => { screenSizeChanged = true; newScreenSize = vec; };
 
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			ExpectedTaskSchedulerPeriod = 8;
@@ -124,6 +128,9 @@ internal class GameEngine : IGameEngine
 				UpdateUIObjectTree(uiObjects[uiObjects.Keys.ElementAt(i)], TickDeltaTime);
 			for (int i = 0; i < uiCameras.Keys.Count; i++)
 				UpdateUIObjectTree(uiCameras[uiCameras.Keys.ElementAt(i)], TickDeltaTime);
+
+			// Reset screen size changed flag
+			screenSizeChanged = false;
 
 			InputEngine.InputTickPass();
 
@@ -178,6 +185,9 @@ internal class GameEngine : IGameEngine
 
 	private void UpdateUIObjectTree(UIObject uiObject, float deltaTime)
 	{
+		if (screenSizeChanged)
+			uiObject.OnScreenSizeChanged?.Invoke(newScreenSize);
+
 		// Update object
 		if (uiObject is ScriptableUIObject scriptableUIObject)
 			scriptableUIObject.Update(deltaTime);
