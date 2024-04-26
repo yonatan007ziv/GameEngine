@@ -2,7 +2,6 @@
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
 using PhysicsEngine.Components;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace PhysicsEngine.Services.Implementations;
@@ -114,7 +113,7 @@ internal class PhysicsEngine : IPhysicsEngine
 		return true; // Overlap detected and position adjusted
 	}
 
-	private void RaycastHitInternal(List<PhysicsObject> toHit,int[] ignoreIds, Vector3 fromPos, Vector3 direction, out List<RaycastHit> hits)
+	private void RaycastHitInternal(List<PhysicsObject> toHit, int[] ignoreIds, Vector3 fromPos, Vector3 direction, out List<RaycastHit> hits)
 	{
 		hits = new List<RaycastHit>();
 

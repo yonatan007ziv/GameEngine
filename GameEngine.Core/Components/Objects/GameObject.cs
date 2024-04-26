@@ -12,6 +12,10 @@ public abstract class GameObject
 	public bool Visible { get; set; } = true;
 	public readonly TextData TextData;
 
+	// Invoked when the object gets added to a children list of another object
+	public Action? OnAddedToChildren;
+	public Action? OnRemovedFromChildren;
+
 	// Relative to ancestry tree
 	public bool UseRelativePosition { get; set; } = true;
 	public bool UseRelativeRotation { get; set; } = true;
@@ -85,10 +89,16 @@ public abstract class GameObject
 		// New children was added
 		if (e.Action == NotifyCollectionChangedAction.Add)
 			foreach (GameObject addedUIObject in e.NewItems!)
+			{
 				addedUIObject.Parent = this;
+				addedUIObject.OnAddedToChildren?.Invoke();
+			}
 		// Old children was removed
 		else if (e.Action == NotifyCollectionChangedAction.Remove)
 			foreach (GameObject addedUIObject in e.OldItems!)
+			{
 				addedUIObject.Parent = null;
+				addedUIObject.OnRemovedFromChildren?.Invoke();
+			}
 	}
 }

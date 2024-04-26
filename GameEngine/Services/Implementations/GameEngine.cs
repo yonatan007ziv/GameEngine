@@ -36,7 +36,7 @@ internal class GameEngine : IGameEngine
 	private readonly int ExpectedTaskSchedulerPeriod;
 
 	private bool screenSizeChanged;
-	private Vector2 newScreenSize; 
+	private Vector2 newScreenSize;
 
 	public string Title { get => GraphicsEngine.Title; set => GraphicsEngine.Title = value; }
 

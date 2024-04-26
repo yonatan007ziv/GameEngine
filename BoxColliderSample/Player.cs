@@ -34,7 +34,7 @@ internal class Player : ScriptableWorldObject
 	{
 		grounded = TouchingColliderTag("Ground");
 
-        if (grounded && !removedGravity)
+		if (grounded && !removedGravity)
 		{
 			if (addedGravity)
 				Forces.Remove(gravity);
@@ -57,10 +57,10 @@ internal class Player : ScriptableWorldObject
 			Transform.Rotation = Vector3.Zero;
 
 		Vector3 movementVector = movementSpeed * (GetAxis("XMovement") * Transform.LocalRight + GetAxis("YMovement") * Transform.LocalRight.RotateVectorByAxis(Transform.GlobalUp, -90));
-        movementVector = movementVector.ClampMagnitude(movementSpeed);
+		movementVector = movementVector.ClampMagnitude(movementSpeed);
 		Transform.Position += movementVector * deltaTime;
 
-        if (GetButtonDown("Jump") && grounded)
+		if (GetButtonDown("Jump") && grounded)
 			Velocity += Vector3.UnitY * jumpSpeed;
 
 		if (GetButtonDown("Escape"))

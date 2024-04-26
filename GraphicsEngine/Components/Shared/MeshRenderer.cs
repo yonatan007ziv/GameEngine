@@ -44,7 +44,7 @@ internal class MeshRenderer
 		(Vector3 position, Vector3 rotation, Vector3 scale) relativeTransform = gameObject.GetRelativeToAncestorTransform();
 
 		Vector3 alteredPosition = relativeTransform.position;
-		Vector3 alteredRotation = relativeTransform.rotation; 
+		Vector3 alteredRotation = relativeTransform.rotation;
 		Vector3 alteredScale = relativeTransform.scale;
 
 		modelMatrix =

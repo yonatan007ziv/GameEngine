@@ -54,10 +54,10 @@ public abstract class ScriptableWorldObject : WorldObject
 
 	public List<WorldObject> GetWorldObjectsWithinOriginDistance(float distance)
 	{
-		List<int>  ids = Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetObjectIdsWithinDistance(Transform.Position, distance);
+		List<int> ids = Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetObjectIdsWithinDistance(Transform.Position, distance);
 
-		List<WorldObject> objects = new List<WorldObject>(ids.Count);	
-		foreach(int id in ids)
+		List<WorldObject> objects = new List<WorldObject>(ids.Count);
+		foreach (int id in ids)
 			objects.Add(GetWorldObjectFromId(id)!);
 		return objects;
 	}
