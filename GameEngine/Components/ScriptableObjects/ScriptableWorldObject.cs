@@ -7,6 +7,7 @@ using System.Numerics;
 
 namespace GameEngine.Components.ScriptableObjects;
 
+// Defined a scriptable world object with helper methods attached
 public abstract class ScriptableWorldObject : WorldObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
@@ -52,6 +53,7 @@ public abstract class ScriptableWorldObject : WorldObject
 	public ScriptableWorldObject(WorldObject parent)
 		: base(parent) { }
 
+	// Gets all world objects within a certain distance from the current one
 	public List<WorldObject> GetWorldObjectsWithinOriginDistance(float distance)
 	{
 		List<int> ids = Services.Implementations.GameEngine.EngineContext.PhysicsEngine.GetObjectIdsWithinDistance(Transform.Position, distance);
@@ -115,8 +117,9 @@ public abstract class ScriptableWorldObject : WorldObject
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonDown(joystickButton);
 	#endregion
 
-	public static void SetBackgroundColor(Color color)
-		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);
+	public static void SetWindowBackgroundColor(Color color)
+		=> Services.Implementations.GameEngine.EngineContext.SetWindowBackgroundColor(color);
 
+	// The scriptable part of the WorldObject
 	public abstract void Update(float deltaTime);
 }

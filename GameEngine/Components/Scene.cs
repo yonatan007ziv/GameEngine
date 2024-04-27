@@ -7,23 +7,36 @@ using System.Collections.Specialized;
 
 namespace GameEngine.Components;
 
+// Defines a scene construct for loading and unloading a lot of objects together as a batch
 public class Scene : IInputMapper, IDisposable
 {
+	// The current loaded scene
 	public static Scene? LoadedScene { get; private set; } = null;
 
+	// Flag to check if the scene is loaded
 	private bool _isLoaded;
+
+	// World objects
 	public ObservableCollection<WorldObject> WorldObjects { get; } = new ObservableCollection<WorldObject>();
+	// World cameras
 	public ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCameras { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
 
+	// UI objects
 	public ObservableCollection<UIObject> UIObjects { get; } = new ObservableCollection<UIObject>();
+	// UI cameras
 	public ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICameras { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
 
+	// The world objects queue
 	public static ObservableCollection<WorldObject> WorldObjectsQueue { get; } = new ObservableCollection<WorldObject>();
+	// The world cameras queue
 	public static ObservableCollection<(WorldCamera worldCamera, ViewPort viewPort)> WorldCamerasQueue { get; } = new ObservableCollection<(WorldCamera caworldCameramera, ViewPort viewPort)>();
 
+	// The UI objects queue
 	public static ObservableCollection<UIObject> UIObjectsQueue { get; } = new ObservableCollection<UIObject>();
+	// The UI cameras queue
 	public static ObservableCollection<(UICamera uiCamera, ViewPort viewPort)> UICamerasQueue { get; } = new ObservableCollection<(UICamera uiCamera, ViewPort viewPort)>();
 
+	// Attaches the collections to event handlers
 	public Scene()
 	{
 		WorldObjects.CollectionChanged += WorldObjectsChanged;
@@ -32,6 +45,7 @@ public class Scene : IInputMapper, IDisposable
 		UICameras.CollectionChanged += UICamerasChanged;
 	}
 
+	// Called when the world objects collection changed
 	private void WorldObjectsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
@@ -44,6 +58,8 @@ public class Scene : IInputMapper, IDisposable
 				if (obj is WorldObject worldObject)
 					Services.Implementations.GameEngine.EngineContext.RemoveWorldObject(worldObject);
 	}
+
+	// Called when the world cameras collection changed
 	private void WorldCamerasChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
@@ -56,6 +72,8 @@ public class Scene : IInputMapper, IDisposable
 				if (obj is (WorldCamera worldCamera, _))
 					Services.Implementations.GameEngine.EngineContext.RemoveWorldCamera(worldCamera);
 	}
+
+	// Called when the UI objects collection changed
 	private void UIObjectsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
@@ -68,6 +86,8 @@ public class Scene : IInputMapper, IDisposable
 				if (obj is UIObject uiObject)
 					Services.Implementations.GameEngine.EngineContext.RemoveUIObject(uiObject);
 	}
+
+	// Called when the UI cameras collection changed
 	private void UICamerasChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (_isLoaded && e.Action == NotifyCollectionChangedAction.Add)
@@ -81,6 +101,7 @@ public class Scene : IInputMapper, IDisposable
 					Services.Implementations.GameEngine.EngineContext.RemoveUICamera(uiCamera);
 	}
 
+	// Loads the scene
 	public async void LoadScene()
 	{
 		await Services.Implementations.GameEngine.EngineContext.EngineLoadingTask.Task;
@@ -120,6 +141,7 @@ public class Scene : IInputMapper, IDisposable
 		LoadedScene = this;
 	}
 
+	// Unloads the scene
 	public void UnloadScene()
 	{
 		if (!_isLoaded)

@@ -1,11 +1,12 @@
 ﻿namespace GameEngine.Components.UIComponents;
 
+// Defines a text box using a button, which is basically a text box with less functionality
 public class UITextBox : UIButton
 {
-	private bool editingEnabled;
+	private bool editingEnabled; // The TextBox is in edit mode
 
+	// Appropriately use the button's events to tell when the editing should be enabled
 	public UITextBox()
-		: base()
 	{
 		// Enable textbox editing
 		OnDragClicked += () => editingEnabled = true;
@@ -18,6 +19,7 @@ public class UITextBox : UIButton
 	{
 		base.Update(deltaTime);
 
+		// Change text based on keyboard input
 		if (editingEnabled)
 			TextData.Text = CaptureKeyboardInput(TextData.Text);
 	}

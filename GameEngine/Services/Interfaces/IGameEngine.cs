@@ -6,6 +6,7 @@ using System.Numerics;
 
 namespace GameEngine.Services.Interfaces;
 
+// The interface in which you talk with the game engine as a product
 public interface IGameEngine
 {
 	IGraphicsEngine GraphicsEngine { get; }
@@ -13,6 +14,7 @@ public interface IGameEngine
 	IInputEngine InputEngine { get; }
 	IPhysicsEngine PhysicsEngine { get; }
 
+	// Title of the window
 	string Title { get; set; }
 
 	// Used for ui interactions, (-1, -1) bottom left and (1, 1) top right
@@ -23,10 +25,9 @@ public interface IGameEngine
 	bool LogFps { get; set; }
 	bool LogTps { get; set; }
 
-	// Future implementation
-	bool DrawColliderGizmos { get; set; }
-
+	// The wanted tick rate for the update thread
 	int TickRate { get; set; }
+	// The wanted fps cap for the render thread
 	int FpsCap { get; set; }
 
 	float FpsDeltaTimeStopper { get; }
@@ -35,14 +36,20 @@ public interface IGameEngine
 	bool MouseLocked { get; set; }
 	TaskCompletionSource EngineLoadingTask { get; }
 
+	// Starts the engine
 	void Run();
 
+	// Sets the custom resource folder slot
 	void SetResourceFolder(string path);
-	void SetBackgroundColor(Color color);
+	// Changes the window's background color
+	void SetWindowBackgroundColor(Color color);
 
+	// Gets a world object from id
 	public WorldObject? GetWorldObjectFromId(int id);
+	// Gets a ui object from id
 	public UIObject? GetUIObjectFromId(int id);
 
+	#region object management
 	void AddWorldObject(WorldObject worldObject);
 	void RemoveWorldObject(WorldObject worldObject);
 	void AddUIObject(UIObject uiObject);
@@ -51,4 +58,5 @@ public interface IGameEngine
 	void RemoveWorldCamera(WorldObject camera);
 	void AddUICamera(UIObject camera, CameraRenderingMask cameraRenderingMask, ViewPort viewport);
 	void RemoveUICamera(UIObject camera);
+	#endregion
 }

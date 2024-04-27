@@ -11,7 +11,7 @@ internal class Program
 		IGameEngine GameEngine = new GameEngineProvider().UseSilkOpenGL().BuildEngine();
 
 		GameEngine.SetResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
-		GameEngine.SetBackgroundColor(Color.LightBlue);
+		GameEngine.SetWindowBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Box Colliders";
 		GameEngine.FpsCap = 120;
 		GameEngine.LogRenderingLogs = true;

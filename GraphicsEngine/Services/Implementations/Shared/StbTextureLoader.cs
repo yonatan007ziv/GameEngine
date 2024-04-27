@@ -8,7 +8,7 @@ namespace GraphicsEngine.Services.Implementations.Shared;
 public class StbTextureLoader : ITextureLoader
 {
 	private const bool flipHorizontally = true;
-	private const bool flipVertically = true;
+	private const bool flipVertically = false;
 
 	private readonly IResourceManager resourceManager;
 

@@ -7,6 +7,7 @@ using System.Numerics;
 
 namespace GameEngine.Components.ScriptableObjects;
 
+// Defined a scriptable ui object with helper methods attached
 public abstract class ScriptableUIObject : UIObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }
@@ -91,7 +92,8 @@ public abstract class ScriptableUIObject : UIObject
 		=> Services.Implementations.GameEngine.EngineContext.InputEngine.GetGamepadButtonDown(joystickButton);
 
 	public static void SetBackgroundColor(Color color)
-		=> Services.Implementations.GameEngine.EngineContext.SetBackgroundColor(color);
+		=> Services.Implementations.GameEngine.EngineContext.SetWindowBackgroundColor(color);
 
+	// The scriptable part of the UIObject
 	public abstract void Update(float deltaTime);
 }

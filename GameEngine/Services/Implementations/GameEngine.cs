@@ -1,5 +1,4 @@
-﻿using GameEngine.Components;
-using GameEngine.Components.ScriptableObjects;
+﻿using GameEngine.Components.ScriptableObjects;
 using GameEngine.Core.API;
 using GameEngine.Core.Components;
 using GameEngine.Core.Components.Objects;
@@ -69,6 +68,7 @@ internal class GameEngine : IGameEngine
 		this.logger = logger;
 		this.resourceDiscoverer = resourceDiscoverer;
 
+		// Adds default engine folder
 		resourceDiscoverer.AddResourceFolder(Directory.GetCurrentDirectory() + @"\EngineResources");
 
 		GraphicsEngine = renderer;
@@ -97,12 +97,14 @@ internal class GameEngine : IGameEngine
 		AttachInput();
 	}
 
+	// Starts the engine's update and render loops
 	public void Run()
 	{
 		new Thread(UpdateLoop).Start(); // Update Thread;
 		RenderLoop(); // Render Thread
 	}
 
+	// The update loop of the engine
 	private void UpdateLoop()
 	{
 		Thread.CurrentThread.Name = "Update Thread";
@@ -121,14 +123,14 @@ internal class GameEngine : IGameEngine
 			PhysicsEngine.PhysicsTickPass(TickDeltaTime);
 
 			for (int i = 0; i < worldObjects.Keys.Count; i++)
-				UpdateWorldObjectTree(worldObjects[worldObjects.Keys.ElementAt(i)], TickDeltaTime);
+				UpdateGameObjectTree(worldObjects[worldObjects.Keys.ElementAt(i)], TickDeltaTime);
 			for (int i = 0; i < worldCameras.Keys.Count; i++)
-				UpdateWorldObjectTree(worldCameras[worldCameras.Keys.ElementAt(i)], TickDeltaTime);
+				UpdateGameObjectTree(worldCameras[worldCameras.Keys.ElementAt(i)], TickDeltaTime);
 
 			for (int i = 0; i < uiObjects.Keys.Count; i++)
-				UpdateUIObjectTree(uiObjects[uiObjects.Keys.ElementAt(i)], TickDeltaTime);
+				UpdateGameObjectTree(uiObjects[uiObjects.Keys.ElementAt(i)], TickDeltaTime);
 			for (int i = 0; i < uiCameras.Keys.Count; i++)
-				UpdateUIObjectTree(uiCameras[uiCameras.Keys.ElementAt(i)], TickDeltaTime);
+				UpdateGameObjectTree(uiCameras[uiCameras.Keys.ElementAt(i)], TickDeltaTime);
 
 			// Reset screen size changed flag
 			screenSizeChanged = false;
@@ -140,6 +142,7 @@ internal class GameEngine : IGameEngine
 		}
 	}
 
+	// The render loop of the engine
 	private void RenderLoop()
 	{
 		Thread.CurrentThread.Name = "Render Thread";
@@ -172,37 +175,30 @@ internal class GameEngine : IGameEngine
 		}
 	}
 
-	private void UpdateWorldObjectTree(WorldObject worldObject, float deltaTime)
+	// Updates scriptable object and its children 
+	private void UpdateGameObjectTree(GameObject gameObject, float deltaTime)
 	{
+		if (screenSizeChanged && gameObject is UIObject uiGameObject)
+			uiGameObject.OnScreenSizeChanged?.Invoke(newScreenSize);
+
 		// Update object
-		if (worldObject is ScriptableWorldObject scriptableWorldObject)
+		if (gameObject is ScriptableWorldObject scriptableWorldObject)
 			scriptableWorldObject.Update(deltaTime);
-
-		// Update components
-		for (int i = 0; i < worldObject.Children.Count; i++)
-			if (worldObject.Children[i] is WorldObject childWorldObject)
-				UpdateWorldObjectTree(childWorldObject, deltaTime);
-	}
-
-	private void UpdateUIObjectTree(UIObject uiObject, float deltaTime)
-	{
-		if (screenSizeChanged)
-			uiObject.OnScreenSizeChanged?.Invoke(newScreenSize);
-
-		// Update object
-		if (uiObject is ScriptableUIObject scriptableUIObject)
+		if (gameObject is ScriptableUIObject scriptableUIObject)
 			scriptableUIObject.Update(deltaTime);
 
-		// Update components
-		for (int i = 0; i < uiObject.Children.Count; i++)
-			if (uiObject.Children[i] is UIObject childUIObject)
-				UpdateUIObjectTree(childUIObject, deltaTime);
+		// Update children
+		for (int i = 0; i < gameObject.Children.Count; i++)
+			if (gameObject.Children[i] is GameObject child)
+				UpdateGameObjectTree(child, deltaTime);
 	}
 
+	// Adds a resource folder
 	public void SetResourceFolder(string path)
 		=> resourceDiscoverer.AddResourceFolder(path);
 
-	public void SetBackgroundColor(Color color)
+	// Sets the window's background color
+	public void SetWindowBackgroundColor(Color color)
 		=> GraphicsEngine.SetBackgroundColor(color);
 
 	#region Object management
@@ -343,6 +339,7 @@ internal class GameEngine : IGameEngine
 	}
 	#endregion
 
+	// Attached to the graphic's engine input handling mechanism
 	private void AttachInput()
 	{
 		GraphicsEngine.MouseEvent += InputEngine.OnMouseEvent;
@@ -350,6 +347,7 @@ internal class GameEngine : IGameEngine
 		GraphicsEngine.GamepadEvent += InputEngine.OnGamepadEvent;
 	}
 
+	// Sleeps in a more accurate way than Thread.Sleep using expected thread scheduler period
 	private static void AccurateSleep(double seconds, int expectedSchedulerPeriod)
 	{
 		if (seconds <= 0)

@@ -5,6 +5,7 @@ using System.Numerics;
 
 namespace GameEngine.Components.UIComponents;
 
+// Defines an easy to deal with UI button, including appropriate events
 public class UIButton : ScriptableUIObject
 {
 	private bool _onEnterCalled = true, _onExitCalled = true, _clicked = true, _released = true;
@@ -25,12 +26,12 @@ public class UIButton : ScriptableUIObject
 	public string Material { get; }
 	public string DisabledMaterial { get; set; } = "Default.mat";
 
-	public event Action? OnFullClicked;
-	public event Action? OnDragClicked;
-	public event Action? OnDeselected;
-	public event Action? OnReleased;
-	public event Action? OnEnter;
-	public event Action? OnExit;
+	public event Action? OnFullClicked; // When fully clicked the button
+	public event Action? OnDragClicked; // When drag clicked the button
+	public event Action? OnDeselected; // When deselected the button
+	public event Action? OnReleased; // When releasing the button
+	public event Action? OnEnter; // When entering the button's area
+	public event Action? OnExit; // when exiting the button's area
 
 	private void FullClicked() => OnFullClicked?.Invoke();
 	private void DragClicked() => OnDragClicked?.Invoke();
@@ -39,12 +40,14 @@ public class UIButton : ScriptableUIObject
 	private void Enter() => OnEnter?.Invoke();
 	private void Exit() => OnExit?.Invoke();
 
+	// Builds a button texture and material
 	public UIButton()
 	{
 		Meshes.Add(new MeshData("UIRect.obj", "Default.mat"));
 		Material = "Default.mat";
 	}
 
+	// Button logic
 	public override void Update(float deltaTime)
 	{
 		// Disabled or not visible
