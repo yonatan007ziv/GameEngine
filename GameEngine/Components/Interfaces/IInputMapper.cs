@@ -2,7 +2,6 @@
 
 namespace GameEngine.Components.Interfaces;
 
-// Defines basic input mapping capabilities
 internal interface IInputMapper
 {
 	void MapMouseButton(string buttonName, MouseButton mouseButton);

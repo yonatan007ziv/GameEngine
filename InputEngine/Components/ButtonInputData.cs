@@ -2,6 +2,7 @@
 
 namespace InputEngine.Components;
 
+// Defines data used for button input polling
 internal class ButtonInputData
 {
 	public bool IsMouseRegistered { get; set; }

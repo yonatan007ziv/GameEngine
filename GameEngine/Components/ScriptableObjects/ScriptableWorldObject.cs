@@ -7,7 +7,6 @@ using System.Numerics;
 
 namespace GameEngine.Components.ScriptableObjects;
 
-// Defined a scriptable world object with helper methods attached
 public abstract class ScriptableWorldObject : WorldObject
 {
 	protected static bool MouseLocked { get => Services.Implementations.GameEngine.EngineContext.MouseLocked; set => Services.Implementations.GameEngine.EngineContext.MouseLocked = value; }

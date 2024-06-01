@@ -1,6 +1,5 @@
 ﻿namespace GameEngine.Components.UIComponents;
 
-// Defines a text box using a button, which is basically a text box with less functionality
 public class UITextBox : UIButton
 {
 	private bool editingEnabled; // The TextBox is in edit mode

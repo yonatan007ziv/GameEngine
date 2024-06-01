@@ -4,7 +4,6 @@ using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components;
 
-// Defines a world camera
 public class WorldCamera : ScriptableWorldObject
 {
 	// Objects that have the tags in this list won't be rendered from this camera

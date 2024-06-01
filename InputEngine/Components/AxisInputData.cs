@@ -2,6 +2,7 @@
 
 namespace InputEngine.Components;
 
+// Defines data used for axis input polling
 internal class AxisInputData
 {
 	public bool IsMouseRegistered { get; set; }

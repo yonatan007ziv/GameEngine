@@ -6,7 +6,6 @@ using System.Numerics;
 
 namespace GameEngine.Services.Interfaces;
 
-// The interface in which you talk with the game engine as a product
 public interface IGameEngine
 {
 	IGraphicsEngine GraphicsEngine { get; }
@@ -49,7 +48,7 @@ public interface IGameEngine
 	// Gets a ui object from id
 	public UIObject? GetUIObjectFromId(int id);
 
-	#region object management
+	#region Object management
 	void AddWorldObject(WorldObject worldObject);
 	void RemoveWorldObject(WorldObject worldObject);
 	void AddUIObject(UIObject uiObject);

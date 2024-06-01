@@ -4,7 +4,6 @@ using GameEngine.Core.Components.Objects;
 
 namespace GameEngine.Components;
 
-// Defines a ui camera
 public class UICamera : ScriptableUIObject
 {
 	// Objects that have the tags in this list won't be rendered from this camera

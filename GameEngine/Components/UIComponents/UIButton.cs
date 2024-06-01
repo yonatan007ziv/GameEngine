@@ -5,7 +5,6 @@ using System.Numerics;
 
 namespace GameEngine.Components.UIComponents;
 
-// Defines an easy to deal with UI button, including appropriate events
 public class UIButton : ScriptableUIObject
 {
 	private bool _onEnterCalled = true, _onExitCalled = true, _clicked = true, _released = true;

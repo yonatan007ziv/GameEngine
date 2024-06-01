@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 
 namespace GameEngine.Components;
 
-// Defines a scene construct for loading and unloading a lot of objects together as a batch
 public class Scene : IInputMapper, IDisposable
 {
 	// The current loaded scene

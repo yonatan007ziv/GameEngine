@@ -199,7 +199,7 @@ internal class InputEngine : IInputEngine
 				break;
 		}
 
-		bool ctrl = keyboardButtons.Contains(KeyboardButton.LCtrl) || keyboardButtons.Contains(KeyboardButton.RCtrl);
+		bool ctrl = false; // keyboardButtons.Contains(KeyboardButton.LCtrl) || keyboardButtons.Contains(KeyboardButton.RCtrl);
 
 		if (backspace)
 		{
@@ -361,7 +361,7 @@ internal class InputEngine : IInputEngine
 
 		return axisSum;
 	}
-	public float GetAxisRaw(string axis)
+	public int GetAxisRaw(string axis)
 	{
 		float axisValue = GetAxis(axis);
 		if (axisValue > 0)
