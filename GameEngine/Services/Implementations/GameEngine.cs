@@ -194,7 +194,7 @@ internal class GameEngine : IGameEngine
 	}
 
 	// Adds a resource folder
-	public void SetResourceFolder(string path)
+	public void AddResourceFolder(string path)
 		=> resourceDiscoverer.AddResourceFolder(path);
 
 	// Sets the window's background color

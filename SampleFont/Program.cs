@@ -10,7 +10,7 @@ internal class Program
 	{
 		IGameEngine GameEngine = new GameEngineProvider().UseSilkOpenGL().BuildEngine();
 
-		GameEngine.SetResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
+		GameEngine.AddResourceFolder(@$"{Directory.GetCurrentDirectory()}\Resources");
 		GameEngine.SetWindowBackgroundColor(Color.LightBlue);
 		GameEngine.Title = "Game Engine Sample - Sample Font";
 		GameEngine.FpsCap = 144;

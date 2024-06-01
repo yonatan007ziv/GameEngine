@@ -38,8 +38,9 @@ public interface IGameEngine
 	// Starts the engine
 	void Run();
 
-	// Sets the custom resource folder slot
-	void SetResourceFolder(string path);
+	// Adds a custom resource folder
+	void AddResourceFolder(string path);
+
 	// Changes the window's background color
 	void SetWindowBackgroundColor(Color color);
 
