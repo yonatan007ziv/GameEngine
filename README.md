@@ -17,7 +17,7 @@ This repository consists of 5 projects:
 
 ### Aims:
 * Educational:
-    * The main aim behind this project is to learn about game engines and the corporation of multiple projects into 1 working product.
+    * The main aim behind this project is to learn about game engines and the cooperation of multiple projects into 1 working product.
 * Modularity over efficiency:
     * The aim with this project wasn't making an optimized game engine that could run the latest features and whatnot, it was intended more to learn about design patterns and project incorporation between a few modules, so I've made the design choice of abstracting every project to a specific interface, for example, the GraphicsEngine project currently has to implement IGraphicsEngine in it's DI Container for the GameEngine to work, the same applies for the other projects.
     * This approach is anti-efficiency because it makes the renderer for instance stick to it's interface (which doesn't give it a lot of freedom), so specific render features must be implemented for every render api using shader code only and not specific features supplied by that api.
